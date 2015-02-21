@@ -11,14 +11,16 @@ App.Router.map(function() {
 App.EditorRoute = Em.Route.extend({});
 App.EditorView = Em.View.extend({
     didInsertElement: function() {
-        if(!Ex.editor) {
-            var view = this;
-            Em.run.schedule('afterRender', function() {
-                Ex.editor = ace.edit("editor"); 
-                Ex.editor.setTheme("ace/theme/monokai");
-                Ex.editor.getSession().setMode("ace/mode/javascript");
+        var view = this;
+        Em.run.schedule('afterRender', function() {
+            var v = ace.edit("editor"); 
+            v.setTheme("ace/theme/monokai");
+            v.getSession().setMode("ace/mode/javascript");
+            v.setValue(Ex.editor.get('data'));
+            v.on('change', function() {
+                Ex.editor.set('data',v.getValue());
             });
-        }
+        });
     }
 });
 App.EditorController = Em.Controller.extend({

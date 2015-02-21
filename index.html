@@ -9,17 +9,15 @@
 <body>
     <script type="text/x-handlebars">
         <div class="nav_bar">
-            <div class="visual_hex"></div>
-            <span>Player</span>
-            <span>Editor</span>
+            <div class="visual_hex"><div style="background-color: purple;"></div></div><!--
+            -->{{#link-to 'player' tagName="span"}}Player{{/link-to}}<!--
+            -->{{#link-to 'editor' tagName="span"}}Editor{{/link-to}}
         </div>
         {{outlet}}
     </script>
 
     <script type="text/x-handlebars" id="editor">
-        <span {{action "presentEditor"}}>Alert</span>
-        <div id="editor">
-        </div>
+        <div id="editor"></div>
     </script>
 
     <script type="text/x-handlebars" id="player">
