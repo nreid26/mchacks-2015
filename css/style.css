@@ -18,3 +18,64 @@ pre {
 #editor {
   height: 160px;
 }
+
+/* Hexagon Formatter */
+.hex {
+    float: left;
+    margin-right: -1.3vw;
+    margin-bottom: -2.5vw;
+}
+.hex .left {
+    float: left;
+    width: 0;
+    border-right: 1.5vw solid #eee;
+    border-top: 2.6vw solid transparent;
+    border-bottom: 2.6vw solid transparent;
+}
+.hex .middle {
+    float: left;
+    width: 3.0vw;
+    height: 5.2vw;
+    background: #eee;
+}
+.hex .right {
+    float: left;
+    width: 0;
+    border-left: 1.5vw solid #eee;
+    border-top: 2.6vw solid transparent;
+    border-bottom: 2.6vw solid transparent;
+}
+.hex:nth-child(even) {
+    margin-top: 2.65vw;
+}
+.hex:nth-child(10n+1){
+	clear: left;
+}
+.hex.mine .right{
+	border-left: 1.5vw solid #00f;
+}
+.hex.mine .middle{
+	background: #00f;
+}
+.hex.mine .left {
+	border-right: 1.5vw solid #00f;
+}
+
+.hex.yours .right{
+	border-left: 1.5vw solid #f00;
+}
+.hex.yours .middle{
+	background: #f00;
+}
+.hex.yours .left {
+	border-right: 1.5vw solid #f00;
+}
+.hex.empty .right{
+	border-left: 1.5vw solid #6C6;
+}
+.hex.empty .middle{
+	background: #6C6;
+}
+.hex.empty .left {
+	border-right: 1.5vw solid #6C6;
+}

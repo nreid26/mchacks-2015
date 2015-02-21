@@ -18,6 +18,20 @@
         </div>
     </script>
 
+    <script type="text/x-handlebars">
+        {{#each row in map}}
+        <div class='hex-row'>
+            {{#each cell in row}}
+            <div class='hex'>
+                <div class='left'></div>
+                <div class='middle'></div>
+                <div class='right'></div>
+            </div>
+            {{/each}}
+        </div>
+        {{/each}}
+    </script>
+
 
     <script src="js/libs/vendor/jquery.js"></script>
     <script src="js/libs/ember-template-compiler-1.10.0.js"></script>
