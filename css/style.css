@@ -1,18 +1,14 @@
 /* Put your CSS here */
-.ember-application {
-    margin: 20px;
-}
-
-.course_logo {
-    margin: 0 auto;
-}
-
 html, body {
     margin: 20px;
+    background: black;
+
+    font: 12px "Helvetica", sans-serif;
+    color: white;
 }
 
-pre { 
-  height: 120px;
+.ember-application {
+    margin: 20px;
 }
 
 #editor {
@@ -78,4 +74,25 @@ pre {
 }
 .hex.empty .left {
 	border-right: 1.5vw solid #6C6;
+}
+
+/*Nav bar*/
+.nav_bar {
+    border-radius: 5px;
+    background: white;
+    padding: 15px;
+    vertical-align: bottom;
+
+    color: black;
+    font-size: 18px;
+}
+.nav_bar span {
+    border-right: solid 2px black;
+    padding-right: 15px;
+    margin-right: 15px;
+}
+.nav_bar span:last-of-type {
+    border-right: none;
+    padding-right: 0;
+    margin-right: 0;
 }

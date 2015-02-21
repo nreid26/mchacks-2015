@@ -8,7 +8,11 @@
 </head>
 <body>
     <script type="text/x-handlebars">
-        <div style="background: black; height: 20px"></div>
+        <div class="nav_bar">
+            <div class="visual_hex"></div>
+            <span>Player</span>
+            <span>Editor</span>
+        </div>
         {{outlet}}
     </script>
 
@@ -18,12 +22,10 @@
         </div>
     </script>
 
-    <script type="text/x-handlebars">
+    <script type="text/x-handlebars" id="player">
         {{#each cell in map}}
             <div {{bind-attr class=":hex cell.state"}}>
-                <div class='left'></div>
-                <div class='middle'></div>
-                <div class='right'></div>
+                {{hex}}
             </div>
         {{/each}}
     </script>

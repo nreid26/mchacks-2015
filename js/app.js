@@ -31,11 +31,6 @@ App.EditorController = Em.Controller.extend({
 });
 
 
-
-
-
-
-
 App.AllRoute = Em.Route.extend({
     redirect: function() {
         this.transitionTo('editor');
