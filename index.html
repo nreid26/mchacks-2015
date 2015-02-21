@@ -19,16 +19,12 @@
     </script>
 
     <script type="text/x-handlebars">
-        {{#each row in map}}
-        <div class='hex-row'>
-            {{#each cell in row}}
-            <div class='hex'>
+        {{#each cell in map}}
+            <div {{bind-attr class=":hex cell.state"}}>
                 <div class='left'></div>
                 <div class='middle'></div>
                 <div class='right'></div>
             </div>
-            {{/each}}
-        </div>
         {{/each}}
     </script>
 
