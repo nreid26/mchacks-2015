@@ -1,8 +1,3 @@
 var Ex = {
-    EditorModel: Em.Object.extend({
-        content: "var x = 'Awesome'"
-    })
+    editor: null
 }
-
-
-var editorModel = Ex.EditorModel.create();

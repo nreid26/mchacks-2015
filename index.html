@@ -8,13 +8,13 @@
 </head>
 <body>
     <script type="text/x-handlebars">
-        <div style="background: black"></div>
+        <div style="background: black; height: 20px"></div>
         {{outlet}}
     </script>
 
-    <script type="text/x-handlebars" id="index">
+    <script type="text/x-handlebars" id="editor">
+        <span {{action "presentEditor"}}>Alert</span>
         <div id="editor">
-            {{content}}
         </div>
     </script>
 

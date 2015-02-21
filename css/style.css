@@ -6,3 +6,15 @@
 .course_logo {
     margin: 0 auto;
 }
+
+html, body {
+    margin: 20px;
+}
+
+pre { 
+  height: 120px;
+}
+
+#editor {
+  height: 160px;
+}
