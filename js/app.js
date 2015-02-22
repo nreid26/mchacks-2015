@@ -25,40 +25,17 @@ App.EditView = Em.View.extend({
 });
 App.EditController = Em.Controller.extend({
     actions: {
-        presentEditor: function() {
-            var code = Ex.editor.getValue();
-            alert(code);
-        }
     }
 });
 
 App.PlayerRoute = Em.Route.extend({
-    model:function(){
-        Ex.maps.global = Ex.HexMap.create({defaultState:0});
-        Ex.maps.ai = Ex.HexMap.create({defaultState:5});
-        Ex.maps.player = Ex.HexMap.create({defaultState:5});
-        return Ex.maps.global;
-    },
-    setupController:function(controller, model){
-        var w = model.get('width');
-        var h = model.get('height');
-        //add player 1
-        model.cellAt(5,3).set('state',2);
-        //add player 2
-        model.cellAt(5,7).set('state',3);
-        //percentage of the map that's dead
-        var numOthers = Math.round(w*h*0.15);
-        for(var i=0; i<numOthers;i++){
-            var x = Math.floor(Math.random()*(w-1));
-            var y = Math.floor(Math.random()*(h-1));
-            //check that cell is ok
-            if(model.cellAt(x,y).state == 0){
-                model.cellAt(x,y).set('state',1);
-            } else {
-                i--;
-            }
+    model: function() {
+        if(!Ex.maps.global) {
+            Ex.maps.global = Ex.HexMap.create();
+            Ex.maps.yours = Ex.HexMapMirror.create({base: Ex.maps.global});
+            Ex.maps.mine = Ex.HexMapMirror.create({base: Ex.maps.global});
         }
-        controller.set('model',model);
+        return Ex.maps.global;
     }
 });
 App.PlayerView = Em.View.extend({
@@ -130,17 +107,12 @@ App.PlayerController = Em.ObjectController.extend({
         a = (a < teamA.length) ? a : 0;
         try { 
             var command = scriptA.call(teamA[a], a, teamA.length);
-            //this.get('model').cellAt(teamA[a].x,teamA[a].y).set('state',0);
-            //alert('survived');
             Ex.executeCommand(command,a,teamA);
-            //this.get('executeCommand')(command,a,teamA);
         }
         catch(e) { 
             alert('An error was enconutered during this turn. The game has been terminated');
-            console.log(e);
             this.get('actions.stopGame')();
-            }
-        //this.get('executeCommand')(command);
+        }
 
         //Prepare for next turn 
         Em.run.later(this,this.get('gameCycle'), b, teamB, scriptB, ++a, teamA, scriptA, this.get('delay')); 
@@ -151,6 +123,23 @@ App.PlayerController = Em.ObjectController.extend({
         startGame: function() {
             try { var f = eval('( function(index, teamSize) { var window = null, document = null; ' + Ex.editor.data + '} )'); }
             catch(e) { return alert('Your AI contains errors.  Please correct them and try again.'); }
+
+            var w = model.get('width');
+            var h = model.get('height');
+            model.cellAt(5,3).set('state',2); //add player 1
+            model.cellAt(5,7).set('state',3); //add player 2
+            //percentage of the map that's dead
+            var numOthers = Math.round(w*h*0.15);
+            for(var i=0; i<numOthers;i++){
+                var x = Math.floor(Math.random()*(w-1));
+                var y = Math.floor(Math.random()*(h-1));
+                //check that cell is ok
+                if(model.cellAt(x,y).state == 0){
+                    model.cellAt(x,y).set('state',1);
+                } else {
+                    i--;
+                }
+            }
             
             this.setProperties({
                 paused: false,
