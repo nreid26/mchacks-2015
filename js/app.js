@@ -92,7 +92,7 @@ App.PlayerView = Em.View.extend({
 App.PlayerController = Em.ObjectController.extend({
     yours: [Ex.Player.createYours()],
     mine: [Ex.Player.createMine()],
-    delay: 2000,
+    delay: 80,
     paused: false,
     stopped: true,
     pauseContext: null,
@@ -116,7 +116,7 @@ App.PlayerController = Em.ObjectController.extend({
             //FUUUUUUUUUCK YOU NICK
             console.log(e);
             alert('An error was enconutered during this turn. The game has been terminated');
-            this.get('actions').stopGame();
+            this.send('stopGame');
         }
 
         //Prepare for next turn 
