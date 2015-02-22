@@ -96,10 +96,43 @@ Ex.updateTile = function(team, state, lastPos, task) {
         height = Ex.maps.global.get('height');
 
     //Wraparound logic
+    //wraparound logic
+    var wraparound = [
+    {x:0,y:9,dx:10,dy:3},
+    {x:10,y:2,dx:0,dy:7},
+    {x:10,y:9,dx:0,dy:3},
+    {x:0,y:2,dx:10,dy:8},
+    {x:1,y:9,dx:9,dy:2},
+    {x:9,y:1,dx:1,dy:8},
+    {x:9,y:9,dx:1,dy:2},
+    {x:1,y:1,dx:9,dy:8},
+    {x:2,y:10,dx:8,dy:2},
+    {x:8,y:1,dx:2,dy:9},
+    {x:8,y:10,dx:2,dy:2},
+    {x:2,y:1,dx:8,dy:9},
+    {x:4,y:11,dx:6,dy:1},
+    {x:6,y:0,dx:4,dy:10},
+    {x:6,y:11,dx:4,dy:1},
+    {x:4,y:0,dx:6,dy:10},
+    {x:3,y:10,dx:7,dy:1},
+    {x:7,y:0,dx:3,dy:9},
+    {x:7,y:10,dx:3,dy:1},
+    {x:3,y:0,dx:7,dy:9},
+    {x:5,y:-1,dx:5,dy:10},
+    {x:5,y:11,dx:5,dy:0}];
     if(player.y < 0) { player.y = width - 1; } 
-    else if(player.y >= width) { player.y = 0; } 
+    else if(player.y > width) { player.y = 0; } 
     else if(player.x < 0) { player.x = width - 1; }
-    else if(player.x >= width) { player.x = 0; }
+    else if(player.x > width) { player.x = 0; }
+    else {
+        for(var i = 0; i<wraparound.length;i++){
+            if(wraparound[i].y == player.x && wraparound[i].x == player.y){
+                player.y = wraparound[i].dx;
+                player.x = wraparound[i].dy;
+                break;
+            }
+        }
+    }
 
     var futureState = player.id;
     if(futureState == 0 && task == 'move') {
