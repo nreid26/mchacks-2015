@@ -22,12 +22,19 @@ Ex.HexMap = Em.Object.extend({
         );
     },
 
+    clear:function(){
+        for(var x = 0; x<this.get('map').length;x++){
+            if(this.get('map')[x].state != 5 ){
+                this.get('map')[x].set('state',0);
+            }
+        }
+    },
     init: function() {
         var map = [], removal = [3,2,2,1,1,0,1,1,2,2,3];
         for(var x = 0; x < this.get('height'); x++) {
             for(var y = 0; y < this.get('width'); y++) {  
                 map.pushObject(Ex.HexCell.create({state: 
-                    (removal[x] > y || (x < 6 && x+5+removal[x] < y) || (x >= 6 && 15-x+removal[x] < y)) ? type : this.get('defaultState')
+                    (removal[x] > y || (x < 6 && x+5+removal[x] < y) || (x >= 6 && 15-x+removal[x] < y)) ? 5 : this.get('defaultState')
                 }));
             }
         }
@@ -47,39 +54,51 @@ Ex.HexMapMirror = Ex.HexMap.extend({
 });
 
 
-Ex.editor = Em.Object.create({data: 'return {task:"move", param: 1};'});
+Ex.editor = Em.Object.create({data: 'return {task:"assimilate", param: 1};'});
 
 Ex.maps = {}
 
-Ex.updateTile = function(player,state,lastPos){
-    console.log(player);
-    if(player.y<0){
-        player.y = Ex.maps.global.get('width') -1;
-    } else if ( player.y >= Ex.maps.global.get('width')){
-        player.y = 0;
-    } else if(player.x<0){
-        player.x = Ex.maps.global.get('height') -1;
-    } else if ( player.x >= Ex.maps.global.get('height')){
-        player.x = 0;
+Ex.updateTile = function(player,index,state,lastPos, task){
+    console.log(player[index]);
+    //wraparound logic
+    if(player[index].y<0){
+        player[index].y = Ex.maps.global.get('width') -1;
+    } else if ( player[index].y >= Ex.maps.global.get('width')){
+        player[index].y = 0;
+    } else if(player[index].x<0){
+        player[index].x = Ex.maps.global.get('height') -1;
+    } else if ( player[index].x >= Ex.maps.global.get('height')){
+        player[index].x = 0;
     }
 
+
     //for (var map in Ex.maps){
-        var futureState = Ex.maps.global.cellAt(player.x,player.y).state;
-        if(futureState == 0){
-            Ex.maps.global.cellAt(player.x,player.y).set('state',state);
+        var futureState = Ex.maps.global.cellAt(player[index].x,player[index].y).state;
+        if(futureState == 0 && task == 'move'){
+            Ex.maps.global.cellAt(player[index].x,player[index].y).set('state',state);
         } else if(futureState == 5){
             console.log('shit fucked up');
             console.log('stopped');
-            player.x = lastPos.x;
-            player.y = lastPos.y;
+            player[index].x = lastPos.x;
+            player[index].y = lastPos.y;
             Ex.maps.global.cellAt(lastPos.x,lastPos.y).set('state',state);
         } else{
+            if((futureState == 1 || futureState == 2 || futureState == 3) && task == 'attack'){
+                Ex.maps.global.cellAt(player[index].x,player[index].y).set('state',1);
+            } else if(futureState == 1 && task == 'assimilate'){
+                Ex.maps.global.cellAt(player[index].x,player[index].y).set('state',state);
+                player.push({x:player[index].x,y:player[index].y});
+            } else if((futureState == 2 || futureState == 3) && futureState != state && task == 'assimilate'){
+                state = 1;
+            }
             console.log('stopped');
-            player.x = lastPos.x;
-            player.y = lastPos.y;
+            player[index].x = lastPos.x;
+            player[index].y = lastPos.y;
             Ex.maps.global.cellAt(lastPos.x,lastPos.y).set('state',state);
+            if( state == 1){
+                delete player[index];
+            }
         }
-    //}
 }
 
 Ex.Player = {
@@ -95,147 +114,73 @@ Ex.executeCommand = function(command,a,teamA) {
         lastPos = {x:teamA[a].x,y:teamA[a].y};
         console.log(lastPos);
         var team = this.maps.global.cellAt(lastPos.x,lastPos.y).state;
-        switch(command.task){
-            case 'move':
-                // move peice
-                if(typeof command.param == 'undefined'){
-                    //invalid move command, do nothing.
-                    console.log('INVALID MOVE');
-                } else {
-                    Ex.updateTile(teamA[a],0,lastPos);
-                    switch(command.param){
-                        case 1:
-                            //move NE
-                            if(lastPos.y % 2){
-                                teamA[a].y -= 1;
-                                teamA[a].x += 1;
-                                Ex.updateTile(teamA[a],team,lastPos);
-                            } else {
-                                teamA[a].y -= 1;
-                                Ex.updateTile(teamA[a],team,lastPos);    
-                            }
-                            break;
-                        case 2:
-
-                            // move E
+            // move peice
+            if(typeof command.param == 'undefined'){
+                //invalid move command, do nothing.
+                console.log('INVALID MOVE');
+            } else {
+                Ex.updateTile(teamA,a,0,lastPos);
+                switch(command.param){
+                    case 1:
+                        //move NE
+                        if(lastPos.y % 2){
+                            teamA[a].y -= 1;
                             teamA[a].x += 1;
-                            Ex.updateTile(teamA[a],team,lastPos);
-                            break;
-                        case 3:
-                            // move SE
-                            if(lastPos.y % 2){
-                                teamA[a].y += 1;
-                                teamA[a].x += 1;
-                                Ex.updateTile(teamA[a],team,lastPos);
-                            } else {
-                                teamA[a].y += 1;
-                                Ex.updateTile(teamA[a],team,lastPos);
-                            }
-                            break;
-                        case 4:
-                            //move SW
-                            if(lastPos.y % 2){
-                                teamA[a].y += 1;
-                                Ex.updateTile(teamA[a],team,lastPos);
-                            } else {
-                                teamA[a].y += 1;
-                                teamA[a].x -= 1;
-                                Ex.updateTile(teamA[a],team,lastPos);
-                            }
-                            break;
-                        case 5:
-                            //move W
+                            Ex.updateTile(teamA,a,team,lastPos,command.task);
+                        } else {
+                            teamA[a].y -= 1;
+                            Ex.updateTile(teamA,a,team,lastPos,command.task);    
+                        }
+                        break;
+                    case 2:
+
+                        // move E
+                        teamA[a].x += 1;
+                        Ex.updateTile(teamA,a,team,lastPos,command.task);
+                        break;
+                    case 3:
+                        // move SE
+                        if(lastPos.y % 2){
+                            teamA[a].y += 1;
+                            teamA[a].x += 1;
+                            Ex.updateTile(teamA,a,team,lastPos,command.task);
+                        } else {
+                            teamA[a].y += 1;
+                            Ex.updateTile(teamA,a,team,lastPos,command.task);
+                        }
+                        break;
+                    case 4:
+                        //move SW
+                        if(lastPos.y % 2){
+                            teamA[a].y += 1;
+                            Ex.updateTile(teamA,a,team,lastPos,command.task);
+                        } else {
+                            teamA[a].y += 1;
                             teamA[a].x -= 1;
-                            Ex.updateTile(teamA[a],team,lastPos);
-                            break;
-                        case 6:
-                            //move NW
-                            if(lastPos.y % 2){
-                                teamA[a].y -= 1;
-                                Ex.updateTile(teamA[a],team,lastPos);
-                                
-                            } else {
-                                teamA[a].y -= 1;
-                                teamA[a].x -= 1;
-                                Ex.updateTile(teamA[a],team,lastPos);    
-                            }
-                            break;
-                        default:
-                            console.log('INVALID MOVE DIRECTION');
-                            Ex.updateTile(lastPos,team);
-                            break;
-                    }
+                            Ex.updateTile(teamA,a,team,lastPos,command.task);
+                        }
+                        break;
+                    case 5:
+                        //move W
+                        teamA[a].x -= 1;
+                        Ex.updateTile(teamA,a,team,lastPos,command.task);
+                        break;
+                    case 6:
+                        //move NW
+                        if(lastPos.y % 2){
+                            teamA[a].y -= 1;
+                            Ex.updateTile(teamA,a,team,lastPos,command.task);
+                            
+                        } else {
+                            teamA[a].y -= 1;
+                            teamA[a].x -= 1;
+                            Ex.updateTile(teamA,a,team,lastPos,command.task);    
+                        }
+                        break;
+                    default:
+                        console.log('INVALID DIRECTION');
+                        Ex.updateTile(lastPos,team);
+                        break;
                 }
-                break;
-            case 'assimilate':
-                if(typeof command.param == 'undefined'){
-                    //invalid move command, do nothing.
-                    console.log('INVALID MOVE');
-                } else {
-                    switch(command.param){
-                        case 1:
-                            //assimulate tile that is N
-                            break;
-                        case 2:
-                            // assimulate tile that is NE
-                            break;
-                        case 3:
-                            // assimulate tile that is SE
-                            break;
-                        case 4:
-                            //assimulate tile that is S
-                            break;
-                        case 5:
-                            //assimulate tile that is SW
-                            break;
-                        case 6:
-                            //assimulate tile that is NW
-                            break;
-                        default:
-                            console.log('INVALID MOVE DIRECTION');
-                            break;
-                    }
-                }
-                break;
-            case 'attack':
-                if(typeof command.param == 'undefined'){
-                    //invalid move command, do nothing.
-                    console.log('INVALID MOVE');
-                } else {
-                    switch(command.param){
-                        case 1:
-                            //move forward (N)
-                            break;
-                        case 2:
-                            // move NE
-                            break;
-                        case 3:
-                            // move SE
-                            break;
-                        case 4:
-                            //move S
-                            break;
-                        case 5:
-                            //move SW
-                            break;
-                        case 6:
-                            //move NW
-                            break;
-                        default:
-                            console.log('INVALID MOVE DIRECTION');
-                            break;
-                    }
-                }
-                break;
-            case 'search':
-                if(typeof command.param == 'undefined'){
-                    //add 3 to "look" area.
-                } else {
-                    //invalid search command, do nothing.
-                    console.log('INVALID search');
-                }
-                break;
-            default:
-                console.log('INVALID COMMAND')
+            }
         }
-    }

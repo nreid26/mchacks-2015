@@ -89,12 +89,10 @@ App.PlayerView = Em.View.extend({
 App.PlayerController = Em.ObjectController.extend({
     yours: [Ex.Player.createYours()],
     mine: [Ex.Player.createMine()],
-    delay: 2000,
+    delay: 200,
     paused: false,
     stopped: true,
-
     pauseContext: null,
-
 
     gameCycle: function( a, teamA, scriptA, b, teamB, scriptB) {
         //Test if game should keep running
@@ -110,6 +108,7 @@ App.PlayerController = Em.ObjectController.extend({
             Ex.executeCommand(command,a,teamA);
         }
         catch(e) { 
+            console.log(e);
             alert('An error was enconutered during this turn. The game has been terminated');
             this.get('actions.stopGame')();
         }
@@ -123,25 +122,28 @@ App.PlayerController = Em.ObjectController.extend({
         startGame: function() {
             try { var f = eval('( function(index, teamSize) { var window = null, document = null; ' + Ex.editor.data + '} )'); }
             catch(e) { return alert('Your AI contains errors.  Please correct them and try again.'); }
-
-            var w = model.get('width');
-            var h = model.get('height');
-            model.cellAt(5,3).set('state',2); //add player 1
-            model.cellAt(5,7).set('state',3); //add player 2
+            this.set('model',Ex.maps.global);
+            this.get('model').clear();
+            var w = this.get('model').get('width');
+            var h = this.get('model').get('height');
+            this.get('model').cellAt(5,3).set('state',2); //add player 1
+            this.get('model').cellAt(5,7).set('state',3); //add player 2
             //percentage of the map that's dead
             var numOthers = Math.round(w*h*0.15);
             for(var i=0; i<numOthers;i++){
                 var x = Math.floor(Math.random()*(w-1));
                 var y = Math.floor(Math.random()*(h-1));
                 //check that cell is ok
-                if(model.cellAt(x,y).state == 0){
-                    model.cellAt(x,y).set('state',1);
+                if(this.get('model').cellAt(x,y).state == 0){
+                    this.get('model').cellAt(x,y).set('state',1);
                 } else {
                     i--;
                 }
             }
             
             this.setProperties({
+                yours: [Ex.Player.createYours()],
+                mine: [Ex.Player.createMine()],
                 paused: false,
                 stopped: false
             });
