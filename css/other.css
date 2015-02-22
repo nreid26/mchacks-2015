@@ -17,3 +17,23 @@
 	margin-bottom: 10px;
 	border-bottom: solid 2px black;
 }
+
+
+#editor_table {
+	width: 100%;
+}
+#editor {
+  height: 160px;
+  width: 100%;
+}
+#info_pane {
+	width: 30%;
+	vertical-align: top;
+	padding-right: 10px;
+}
+#info_pane div {
+	margin-bottom: 10px;
+	height: 20px;
+	border-radius: 5px;
+	background: #333333;
+}

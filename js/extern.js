@@ -50,6 +50,10 @@ Ex.updateTile = function(x,y,state){
 }
 
 Ex.Player = {
-    createMine: function() { return {x: 5, y: 4}; },
-    createYours: function() { return {x: 5, y: 7} }
+    createMine: function(x, y) { return {x: x || 5, y: y || 4}; },
+    createYours: function(x, y) { return {x: x || 5, y: y || 7} }
+};
+
+Ex.aiScript = function() {
+    return {task: 'move', param: 1};
 };

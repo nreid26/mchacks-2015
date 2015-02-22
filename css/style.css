@@ -11,10 +11,6 @@ html, body {
     margin: 20px;
 }
 
-#editor {
-  height: 160px;
-}
-
 #game_wrapper{
 	display: table;
     margin: 20px auto;
@@ -130,6 +126,7 @@ html, body {
     position: relative;
     color: black;
     font-size: 18px;
+    margin-bottom: 20px;
 }
 .nav_bar span {
     border-right: solid 2px black;
