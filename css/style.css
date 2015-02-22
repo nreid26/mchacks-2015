@@ -1,8 +1,4 @@
 /* Put your CSS here */
-* {
-    position: relative;
-    transition: all 0.2s ease;
-}
 
 html, body {
     margin: 20px;
@@ -117,7 +113,7 @@ html, body {
 	border-bottom: 30px solid #000000;
 }
 .hex.null{
-    visibility: hidden;
+    opacity: 0;
 }
 
 
@@ -143,18 +139,40 @@ html, body {
     padding-right: 0;
     margin-right: 0;
 }
-.hex {
+
+.visual_hex {
+    text-align: center;
     margin: 10px;
-    height: 100px;
+    position: relative;
+    display: inline-block;
     width: 100px;
+    height: 100px;
 }
-.hex div { background-color: purple; }
-
-
-
-
-
-
+.visual_hex div {
+    height: 100%;
+    width: calc(100% * 0.57735);
+    display: inline-block;
+}
+.visual_hex div:before {
+    position: absolute;
+    top: 0;
+    right: calc((100% / 2) - ((100% * 0.57735) / 2));
+    background-color: inherit;
+    height: inherit;
+    width: inherit;
+    content: '';
+    transform: rotateZ(60deg);
+}
+.visual_hex div:after {
+    position: absolute;
+    top: 0;
+    right: calc((100% / 2) - ((100% * 0.57735) / 2));
+    background-color: inherit;
+    height: inherit;
+    width: inherit;
+    content: '';
+    transform: rotateZ(-60deg);
+}
 
 #info_pane {
     width: 30%;
@@ -179,5 +197,3 @@ html, body {
 #editor_table td {
     vertical-align: top;
 }
-
-
