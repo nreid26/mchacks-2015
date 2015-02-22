@@ -163,13 +163,9 @@ Ex.updateTile = function(team, state, lastPos, task) {
         if(state == 1) { team.players.splice(index, 1); }
     }
 }
-
-m 5, 3
-y 5, 7
 Ex.Player = function(x, y) {
     this.x = x;
     this.y = y;
-    this.state = null;
 }
 Ex.Player.createYours = function() { return new this(5, 7); }
 Ex.Player.createMine = function() { return new this(5, 3); }
@@ -195,6 +191,22 @@ Ex.executeCommand = function(command, team) {
         player = team.players[team.index],
         mod = pos.y % 2,
         state  = Ex.maps.global.cellAt(pos.x,pos.y).get('state');
+        if(state == 0){
+            //something fucked up
+            console.log(player);
+            return;
+        }
+        Ex.maps.global.cellAt(pos.x,pos.y).set('state',0);
+        Ex.maps.global.cellAt(pos.x,pos.y).set('state',0);
+        Ex.maps.global.cellAt(pos.x,pos.y).set('state',0);
+        Ex.maps.global.cellAt(pos.x,pos.y).set('state',0);
+        Ex.maps.global.cellAt(pos.x,pos.y).set('state',0);
+        Ex.maps.global.cellAt(pos.x,pos.y).set('state',0);
+        Ex.maps.global.cellAt(pos.x,pos.y).set('state',0);
+        Ex.maps.global.cellAt(pos.x,pos.y).set('state',0);
+        Ex.maps.global.cellAt(pos.x,pos.y).set('state',0);
+        Ex.maps.global.cellAt(pos.x,pos.y).set('state',0);
+        Ex.maps.global.cellAt(pos.x,pos.y).set('state',0);
         Ex.maps.global.cellAt(pos.x,pos.y).set('state',0);
     //Move peice
     if(!command || !command.param || !command.task) { 
@@ -226,7 +238,6 @@ Ex.executeCommand = function(command, team) {
             command.task = 'move';
             break;
     }
-    console.log(player.id);
-    Ex.maps.global.cellAt(pos.x,pos.y).set('state',0);
+    console.log(state);
     Ex.updateTile(team, state, pos, command.task);    
 }

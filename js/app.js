@@ -92,7 +92,7 @@ App.PlayerView = Em.View.extend({
 App.PlayerController = Em.ObjectController.extend({
     yours: [Ex.Player.createYours()],
     mine: [Ex.Player.createMine()],
-    delay: 200,
+    delay: 2000,
     paused: false,
     stopped: true,
     pauseContext: null,
