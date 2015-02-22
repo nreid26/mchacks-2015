@@ -3,16 +3,15 @@
 
   Foundation.libs.accordion = {
     name : 'accordion',
-
-    version : '5.5.1',
+               version : '5.5.1',
 
     settings : {
       content_class : 'content',
       active_class : 'active',
       multi_expand : false,
       toggleable : true,
-      callback : function () {}
-    },
+   callback : function () {}
+},
 
     init : function (scope, method, options) {
       this.bindings(method, options);
@@ -44,7 +43,7 @@
           target.toggleClass(settings.active_class, false);
           settings.callback(target);
           target.triggerHandler('toggled', [accordion]);
-          accordion.triggerHandler('toggled', [target]);
+accordion.triggerHandler('toggled', [target]);
           return;
         }
 
