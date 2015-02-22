@@ -28,7 +28,6 @@ Ex.HexMap = Em.Object.extend({
         for(var x = 0; x<this.get('height');x++) {
             for(var y = 0; y<this.get('width');y++) {  
                 if(removal[x] > y || (x < 6 && x+5+removal[x] < y) || (x >= 6 && 15-x+removal[x] < y)){
-                    console.log('test');
                     this.push(5);
                 } else {
                    this.push(this.get('defaultState'));
@@ -41,3 +40,11 @@ Ex.HexMap = Em.Object.extend({
 Ex.editor = Em.Object.create({data: 'default entry'});
 
 Ex.maps = {}
+
+Ex.updateTile = function(x,y,state){
+    for (var map in Ex.maps){
+        if(Ex.maps[map].cellAt(x,y).state != 5){
+            Ex.maps[map].cellAt(x,y).set('state',state);
+        }
+    }
+}

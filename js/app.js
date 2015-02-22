@@ -42,8 +42,6 @@ App.PlayerRoute = Em.Route.extend({
     setupController:function(controller, model){
         var w = model.get('width');
         var h = model.get('height');
-        console.log(w);
-        console.log(h);
         //add player 1
         model.cellAt(5,3).set('state',2);
         //add player 2
@@ -125,7 +123,10 @@ App.PlayerController = Em.ObjectController.extend({
             
         //Validate turn context and execute
         a = (a < teamA.length) ? a : teamA.length;
-        try { var command = scriptA.call(teamA[a], a, teamA.length); }
+        try { 
+            var command = scriptA.call(teamA[a], a, teamA.length);
+            executeCommand(command,a,teamA);
+        }
         catch(e) { 
             controller.get('actions.stopGame')();
             alert('An error was enconutered during this turn. The game has been terminated');
@@ -135,7 +136,138 @@ App.PlayerController = Em.ObjectController.extend({
         //Prepare for next turn 
         setTimeout(controller.get('gameCycle'), controller.get('delay'), b, teamB, scriptB, a++, teamA, scriptA); 
     },
-    executeCommand: function(command) { },
+    executeCommand: function(command,a,teamA) {
+        var x = teamA[a].x;
+        var y = teamA[a].y;
+        var team = this.get('model').cellAt(x,y).state;
+        switch(command.task){
+            case 'move':
+                // move peice
+                if(typeof command.param == 'undefined'){
+                    //invalid move command, do nothing.
+                    console.log('INVALID MOVE');
+                } else {
+                    Ex.updateTile(x,y,0);
+                    switch(command.param){
+                        case 1:
+                            //move NE
+                            if(x % 2){
+                                Ex.updateTile(x,y--,team);
+                            } else {
+                                Ex.updateTile(x++,y--,team);
+                            }
+                            break;
+                        case 2:
+                            // move E
+                            Ex.updateTile(x++,y,team);
+                            break;
+                        case 3:
+                            // move SE
+                            if(x % 2){
+                                Ex.updateTile(x,y++,team);
+                            } else {
+                                Ex.updateTile(x++,y++,team);
+                            }
+                            break;
+                        case 4:
+                            //move SW
+                            if(x % 2){
+                                Ex.updateTile(x--,y++,team);
+                            } else {
+                                Ex.updateTile(x,y++,team);
+                            }
+                            break;
+                        case 5:
+                            //move W
+                            Ex.updateTile(x--,y,team);
+                            break;
+                        case 6:
+                            //move NW
+                            if(x % 2){
+                                Ex.updateTile(x--,y--,team);
+                            } else {
+                                Ex.updateTile(x,y--,team);
+                            }
+                            break;
+                        default:
+                            console.log('INVALID MOVE DIRECTION');
+                            Ex.updateTile(x,y,team);
+                            break;
+                    }
+                }
+                break;
+            case 'assimilate':
+                if(typeof command.param == 'undefined'){
+                    //invalid move command, do nothing.
+                    console.log('INVALID MOVE');
+                } else {
+                    switch(command.param){
+                        case 1:
+                            //assimulate tile that is N
+                            break;
+                        case 2:
+                            // assimulate tile that is NE
+                            break;
+                        case 3:
+                            // assimulate tile that is SE
+                            break;
+                        case 4:
+                            //assimulate tile that is S
+                            break;
+                        case 5:
+                            //assimulate tile that is SW
+                            break;
+                        case 6:
+                            //assimulate tile that is NW
+                            break;
+                        default:
+                            console.log('INVALID MOVE DIRECTION');
+                            break;
+                    }
+                }
+                break;
+            case 'attack':
+                if(typeof command.param == 'undefined'){
+                    //invalid move command, do nothing.
+                    console.log('INVALID MOVE');
+                } else {
+                    switch(command.param){
+                        case 1:
+                            //move forward (N)
+                            break;
+                        case 2:
+                            // move NE
+                            break;
+                        case 3:
+                            // move SE
+                            break;
+                        case 4:
+                            //move S
+                            break;
+                        case 5:
+                            //move SW
+                            break;
+                        case 6:
+                            //move NW
+                            break;
+                        default:
+                            console.log('INVALID MOVE DIRECTION');
+                            break;
+                    }
+                }
+                break;
+            case 'search':
+                if(typeof command.param == 'undefined'){
+                    //add 3 to "look" area.
+                } else {
+                    //invalid search command, do nothing.
+                    console.log('INVALID search');
+                }
+                break;
+            default:
+                console.log('INVALID COMMAND')
+        }
+    },
 
 
     actions:{

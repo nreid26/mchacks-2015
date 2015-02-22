@@ -1,5 +1,4 @@
 /* Put your CSS here */
-
 html, body {
     margin: 20px;
     background: black;
@@ -113,7 +112,7 @@ html, body {
 	border-bottom: 30px solid #000000;
 }
 .hex.null{
-    opacity: 0;
+    visibility: hidden;
 }
 
 
@@ -172,28 +171,4 @@ html, body {
     width: inherit;
     content: '';
     transform: rotateZ(-60deg);
-}
-
-#info_pane {
-    width: 30%;
-    height: 100px;
-    padding-right: 10px;
-}
-#info_pane div {
-    border-radius: 5px;
-    background: #333333;
-    width: 100%;
-    height: 20px;
-    margin: 0 10px 10px 0;
-}
-
-#editor {
-    height: 500px;
-}
-#editor_table {
-    margin-top: 20px;
-    width: 100%;
-}
-#editor_table td {
-    vertical-align: top;
 }
