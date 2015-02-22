@@ -83,20 +83,50 @@ Ex.HexMapMirror = Ex.HexMap.extend({
 });
 
 
-Ex.editor = Em.Object.create({data: 'return {task:"assimilate", param: 1};'});
+Ex.editor = Em.Object.create({data: 'this.i;if(!this.i){        this.i = 1;    return {task:"move",param:1};} else if(this.i === 1){this.i = 2;    return {task:"move",param:1};}else if(this.i === 2){this.i = 3;    return {task:"move",param:1};} else {    return {task:"move", param: 2};}'});
 
 Ex.maps = {}
 
 Ex.updateTile = function(player,index,state,lastPos, task){
     //wraparound logic
+    var wraparound = [
+    {x:0,y:9,dx:10,dy:3},
+    {x:10,y:2,dx:0,dy:7},
+    {x:10,y:9,dx:0,dy:3},
+    {x:0,y:2,dx:10,dy:8},
+    {x:1,y:9,dx:9,dy:2},
+    {x:9,y:1,dx:1,dy:8},
+    {x:9,y:9,dx:1,dy:2},
+    {x:1,y:1,dx:9,dy:8},
+    {x:2,y:10,dx:8,dy:2},
+    {x:8,y:1,dx:2,dy:9},
+    {x:8,y:10,dx:2,dy:2},
+    {x:2,y:1,dx:8,dy:9},
+    {x:4,y:11,dx:6,dy:1},
+    {x:6,y:0,dx:4,dy:10},
+    {x:6,y:11,dx:4,dy:1},
+    {x:4,y:0,dx:6,dy:10},
+    {x:3,y:10,dx:7,dy:1},
+    {x:7,y:0,dx:3,dy:9},
+    {x:7,y:10,dx:3,dy:1},
+    {x:3,y:0,dx:7,dy:9}];
+
     if(player[index].y<0){
         player[index].y = Ex.maps.global.get('width') -1;
-    } else if ( player[index].y >= Ex.maps.global.get('width')){
+    } else if ( player[index].y > Ex.maps.global.get('width')){
         player[index].y = 0;
     } else if(player[index].x<0){
         player[index].x = Ex.maps.global.get('height') -1;
-    } else if ( player[index].x >= Ex.maps.global.get('height')){
+    } else if ( player[index].x > Ex.maps.global.get('height')){
         player[index].x = 0;
+    } else {
+        for(var i = 0; i<wraparound.length;i++){
+            if(wraparound[i].y == player[index].x && wraparound[i].x == player[index].y){
+                player[index].y = wraparound[i].dx;
+                player[index].x = wraparound[i].dy;
+                break;
+            }
+        }
     }
 
 
