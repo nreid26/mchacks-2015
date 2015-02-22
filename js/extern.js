@@ -41,7 +41,7 @@ Ex.HexMapMirror = Ex.HexMap.extend({
 
     init: function() {
         var x = [], baseMap= this.get('base.map')
-        for(var i = 0; i < baseMap.length; i++) { x.push( Ex.HexMirror.create({base: baseMap[i]}) ); }
+        for(var i = 0; i < baseMap.length; i++) { x.push( Ex.HexCellMirror.create({base: baseMap[i]}) ); }
         this.set('map',[]);
     }
 });
