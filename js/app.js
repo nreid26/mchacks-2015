@@ -122,24 +122,10 @@ App.PlayerController = Em.ObjectController.extend({
         startGame: function() {
             try { var f = eval('( function(index, teamSize) { var window = null, document = null; ' + Ex.editor.data + '} )'); }
             catch(e) { return alert('Your AI contains errors.  Please correct them and try again.'); }
-            this.set('model',Ex.maps.global);
-            this.get('model').clear();
-            var w = this.get('model').get('width');
-            var h = this.get('model').get('height');
-            this.get('model').cellAt(5,3).set('state',2); //add player 1
-            this.get('model').cellAt(5,7).set('state',3); //add player 2
-            //percentage of the map that's dead
-            var numOthers = Math.round(w*h*0.15);
-            for(var i=0; i<numOthers;i++){
-                var x = Math.floor(Math.random()*(w-1));
-                var y = Math.floor(Math.random()*(h-1));
-                //check that cell is ok
-                if(this.get('model').cellAt(x,y).state == 0){
-                    this.get('model').cellAt(x,y).set('state',1);
-                } else {
-                    i--;
-                }
-            }
+
+            var model = Ex.maps.global;
+            model.prepare();
+            this.set('model', model);
             
             this.setProperties({
                 yours: [Ex.Player.createYours()],
@@ -147,9 +133,8 @@ App.PlayerController = Em.ObjectController.extend({
                 paused: false,
                 stopped: false
             });
-            var that = this;
-            Em.run.later(this,this.get('gameCycle'), 0, this.get('mine'), f, 0, this.get('yours'), Ex.aiScript,this.get('delay')
-            ); 
+
+            Em.run.later( this, this.get('gameCycle'), 0, this.get('mine'), f, 0, this.get('yours'), Ex.aiScript,this.get('delay') ); 
         },
 
         stopGame: function() {
@@ -181,7 +166,7 @@ App.PlayerController = Em.ObjectController.extend({
 
 App.AllRoute = Em.Route.extend({
     redirect: function() {
-        this.transitionTo('editor');
+        this.transitionTo('edit');
     }
 });
 App.IndexRoute = App.AllRoute;

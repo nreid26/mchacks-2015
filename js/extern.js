@@ -16,19 +16,47 @@ Ex.HexMap = Em.Object.extend({
     width: 11,
     height: 11,
     defaultState: 0,
+
     cellAt: function(x, y) { 
         return this.get('map').objectAt(
             x + this.get('width') * y
         );
     },
-
-    clear:function(){
-        for(var x = 0; x<this.get('map').length;x++){
-            if(this.get('map')[x].state != 5 ){
-                this.get('map')[x].set('state',0);
-            }
+    arround: function arround(x, y) {
+        var arround = [];
+        arround.push( map.cellAt(x + (y % 2), y - 1) );
+        arround.push( map.cellAt(x + 1, y) );
+        arround.push( map.cellAt(x + (y % 2), y + 1) );
+        arround.push( map.cellAt(x + (y % 2) - 1, y - 1) );
+        arround.push( map.cellAt(x - 1, y) );
+        arround.push( map.cellAt(x, y - (y % 2)) );
+        return arround;
+    },
+    clear: function() {
+        var map = this.get('map'), def = this.get('defaultState');
+        for(var i = 0; i < map.length; i++) { 
+            if(map[i].get('state') != 5) { map[i].set('state', def); }
         }
     },
+    prepare: function() {
+        var w = model.get('width'),
+            h = model.get('height'),
+            numOthers = Math.round(w * h * 0.15); //Percentage of the map that's dead
+
+        model.clear();
+        model.cellAt(5,3).set('state', 2); //Player 1
+        model.cellAt(5,7).set('state', 3); //Player 2
+
+        for(var i = 0; i < numOthers; i++) {
+            var x = Math.floor(Math.random() * (w - 1));
+            var y = Math.floor(Math.random() * (h - 1));
+
+            //check that cell is ok
+            if(model.cellAt(x,y).state == 0) { model.cellAt(x,y).set('state', 1); } 
+            else { i--; }
+        }
+
+
     init: function() {
         var map = [], removal = [3,2,2,1,1,0,1,1,2,2,3];
         for(var x = 0; x < this.get('height'); x++) {
