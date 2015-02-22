@@ -112,6 +112,9 @@ App.PlayerController = Em.ObjectController.extend({
             Ex.executeCommand(command, teamA);
         }
         catch(e) { 
+            //ASDHFLKSDAHGLKAFXGHLKSCXHGLQK DFHVJGLKSDFJ L:GKaj df:GKlj adf
+            //FUUUUUUUUUCK YOU NICK
+            console.log(e);
             alert('An error was enconutered during this turn. The game has been terminated');
             this.get('actions').stopGame();
         }
