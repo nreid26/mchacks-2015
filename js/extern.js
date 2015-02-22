@@ -96,7 +96,7 @@ Ex.updateTile = function(player,index,state,lastPos, task){
             player[index].y = lastPos.y;
             Ex.maps.global.cellAt(lastPos.x,lastPos.y).set('state',state);
             if( state == 1){
-                delete player[index];
+                player.splice(index,1);
             }
         }
 }
@@ -179,7 +179,7 @@ Ex.executeCommand = function(command,a,teamA) {
                         break;
                     default:
                         console.log('INVALID DIRECTION');
-                        Ex.updateTile(lastPos,team);
+                        Ex.updateTile(teamA,a,team,lastPos,'move');
                         break;
                 }
             }
