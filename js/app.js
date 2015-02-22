@@ -43,10 +43,10 @@ App.PlayerRoute = Em.Route.extend({
         //set up game
         //alert(model);
         //new ones for e
-        console.log(model.map);
+        console.log(model.get('map'));
         controller.set('model',model);
 
-        
+
     }
 });
 App.PlayerController = Em.ObjectController.extend({

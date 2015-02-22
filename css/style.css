@@ -16,15 +16,19 @@ html, body {
 }
 
 /* Hexagon Formatter */
-.hex {
-    float: left;
-    margin-right: -1.3vw;
-    margin-bottom: -2.5vw;
+#game{
+	x:1000px;
+	background: #000;
+	-webkit-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
+	-moz-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
+	-ms-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
+	-o-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
+	transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
 }
 .hex .left {
     float: left;
     width: 0;
-    border-right: 1.5vw solid #eee;
+    border-right: 1.5vw solid #333333;
     border-top: 2.6vw solid transparent;
     border-bottom: 2.6vw solid transparent;
 }
@@ -32,12 +36,12 @@ html, body {
     float: left;
     width: 3.0vw;
     height: 5.2vw;
-    background: #eee;
+    background: #333333;
 }
 .hex .right {
     float: left;
     width: 0;
-    border-left: 1.5vw solid #eee;
+    border-left: 1.5vw solid #333333;
     border-top: 2.6vw solid transparent;
     border-bottom: 2.6vw solid transparent;
 }
@@ -48,32 +52,50 @@ html, body {
 	clear: left;
 }
 .hex.mine .right{
-	border-left: 1.5vw solid #00f;
+	border-left: 1.5vw solid #4accff;
 }
 .hex.mine .middle{
-	background: #00f;
+	background: #4accff;
 }
 .hex.mine .left {
-	border-right: 1.5vw solid #00f;
+	border-right: 1.5vw solid #4accff;
 }
 
 .hex.yours .right{
-	border-left: 1.5vw solid #f00;
+	border-left: 1.5vw solid #ff2897;
 }
 .hex.yours .middle{
-	background: #f00;
+	background: #ff2897;
 }
 .hex.yours .left {
-	border-right: 1.5vw solid #f00;
+	border-right: 1.5vw solid #ff2897;
+}
+.hex.dead .right{
+	border-left: 1.5vw solid #ffcc33;
+}
+.hex.dead .middle{
+	background: #ffcc33;
+}
+.hex.dead .left {
+	border-right: 1.5vw solid #ffcc33;
 }
 .hex.empty .right{
-	border-left: 1.5vw solid #6C6;
+	border-left: 1.5vw solid #333333;
 }
 .hex.empty .middle{
-	background: #6C6;
+	background: #333333;
 }
 .hex.empty .left {
-	border-right: 1.5vw solid #6C6;
+	border-right: 1.5vw solid #333333;
+}
+.hex.unknown .right{
+	border-left: 1.5vw solid #000;
+}
+.hex.unknown .middle{
+	background: #000;
+}
+.hex.unknown .left {
+	border-right: 1.5vw solid #000;
 }
 
 /*Nav bar*/
