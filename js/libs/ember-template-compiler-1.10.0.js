@@ -1,5 +1,5 @@
 /*!
- * @overview  Ember - JavaScript Application Framework
+		* @overview  Ember - JavaScript Application Framework
  * @copyright Copyright 2011-2014 Tilde Inc. and contributors
  *            Portions Copyright 2006-2011 Strobe Inc.
  *            Portions Copyright 2008-2011 Apple Inc. All rights reserved.
@@ -20,7 +20,7 @@ var define, requireModule, require, requirejs, Ember;
     var registry = {}, seen = {};
 
     define = function(name, deps, callback) {
-      registry[name] = { deps: deps, callback: callback };
+     registry[name] = { deps: deps, callback: callback };
     };
 
     requirejs = require = requireModule = function(name) {
@@ -28,16 +28,15 @@ var define, requireModule, require, requirejs, Ember;
 
       if (s !== undefined) { return seen[name]; }
       if (s === UNDEFINED) { return undefined;  }
-
-      seen[name] = {};
+                   seen[name] = {};
 
       if (!registry[name]) {
-        throw new Error('Could not find module ' + name);
+   //           throw new Error('Could not find module ' + name);
       }
 
-      var mod = registry[name];
-      var deps = mod.deps;
-      var callback = mod.callback;
+                 var mod = registry[name];
+	var deps = mod.deps;
+var callback = mod.callback;
       var reified = [];
       var exports;
       var length = deps.length;
@@ -54,10 +53,11 @@ var define, requireModule, require, requirejs, Ember;
 
       return seen[name] = exports || (value === undefined ? UNDEFINED : value);
     };
-
+	    function resolve(child, name) {
     function resolve(child, name) {
       if (child.charAt(0) !== '.') {
         return child;
+      }
       }
       var parts = child.split('/');
       var parentBase = name.split('/').slice(0, -1);
@@ -67,15 +67,15 @@ var define, requireModule, require, requirejs, Ember;
 
         if (part === '..') { parentBase.pop(); }
         else if (part === '.') { continue; }
-        else { parentBase.push(part); }
+  //          else { parentBase.push(part); }
       }
 
       return parentBase.join('/');
-    }
+      }
 
     requirejs._eak_seen = registry;
 
-    Ember.__loader = {
+                 Ember.__loader = {
       define: define,
       require: require,
       registry: registry
@@ -85,14 +85,13 @@ var define, requireModule, require, requirejs, Ember;
     requirejs = require = requireModule = Ember.__loader.require;
   }
 })();
-
 define("ember-metal/core",
-  ["exports"],
+  //     ["exports"],
   function(__exports__) {
     "use strict";
     /*globals Ember:true,ENV,EmberENV,MetamorphENV:true */
 
-    /**
+            /**
     @module ember
     @submodule ember-metal
     */
@@ -106,7 +105,6 @@ define("ember-metal/core",
 
       Ember-Runtime is a framework that provides core functions for Ember including
       cross-platform functions, support for property observing and objects. Its
-      focus is on small size and performance. You can use this in place of or
       along-side other cross-platform libraries such as jQuery.
 
       The core Runtime framework is based on the jQuery API with a number of
@@ -134,7 +132,6 @@ define("ember-metal/core",
     // Make sure these are set whether Ember was already defined or not
 
     Ember.isNamespace = true;
-
     Ember.toString = function() { return "Ember"; };
 
 
@@ -145,12 +142,10 @@ define("ember-metal/core",
       @static
     */
     Ember.VERSION = '1.10.0';
-
-    /**
-      Standard environmental variables. You can define these in a global `EmberENV`
+			    /**
+                 Standard environmental variables. You can define these in a global `EmberENV`
       variable before loading Ember to control various configuration settings.
-
-      For backwards compatibility with earlier versions of Ember the global `ENV`
+           For backwards compatibility with earlier versions of Ember the global `ENV`
       variable will be used if `EmberENV` is not defined.
 
       @property ENV
@@ -161,7 +156,8 @@ define("ember-metal/core",
       // do nothing if Ember.ENV is already setup
     } else if ('undefined' !== typeof EmberENV) {
       Ember.ENV = EmberENV;
-    } else if('undefined' !== typeof ENV) {
+               } else if('undefined' !== typeof ENV) {
+      Ember.ENV = ENV;
       Ember.ENV = ENV;
     } else {
       Ember.ENV = {};
@@ -173,12 +169,11 @@ define("ember-metal/core",
     if ('undefined' === typeof Ember.ENV.DISABLE_RANGE_API) {
       Ember.ENV.DISABLE_RANGE_API = true;
     }
-
-    if ("undefined" === typeof MetamorphENV) {
+      //       if ("undefined" === typeof MetamorphENV) {
       exports.MetamorphENV = {};
     }
 
-    MetamorphENV.DISABLE_RANGE_API = Ember.ENV.DISABLE_RANGE_API;
+     MetamorphENV.DISABLE_RANGE_API = Ember.ENV.DISABLE_RANGE_API;
 
     /**
       Hash of enabled Canary features. Add to this before creating your application.
@@ -191,15 +186,14 @@ define("ember-metal/core",
       @since 1.1.0
     */
 
-    Ember.FEATURES = Ember.ENV.FEATURES || {};
-
+   //     Ember.FEATURES = Ember.ENV.FEATURES || {};
+    //
     /**
       Test that a feature is enabled. Parsed by Ember's build tools to leave
       experimental features out of beta/stable builds.
+                  You can define the following configuration options:
 
-      You can define the following configuration options:
-
-      * `EmberENV.ENABLE_ALL_FEATURES` - force all features to be enabled.
+     //         * `EmberENV.ENABLE_ALL_FEATURES` - force all features to be enabled.
       * `EmberENV.ENABLE_OPTIONAL_FEATURES` - enable any features that have not been explicitly
         enabled/disabled.
 
@@ -214,19 +208,19 @@ define("ember-metal/core",
       var featureValue = Ember.FEATURES[feature];
 
       if (Ember.ENV.ENABLE_ALL_FEATURES) {
-        return true;
+//           return true;
       } else if (featureValue === true || featureValue === false || featureValue === undefined) {
         return featureValue;
       } else if (Ember.ENV.ENABLE_OPTIONAL_FEATURES) {
-        return true;
+ return true;
       } else {
-        return false;
+			return false;
       }
-    };
+					};
 
     // ..........................................................
     // BOOTSTRAP
-    //
+             //
 
     /**
       Determines whether Ember should enhance some built-in object prototypes to
@@ -235,7 +229,7 @@ define("ember-metal/core",
       which is the one that causes most trouble for people.
 
       In general we recommend leaving this option set to true since it rarely
-      conflicts with other code. If you need to turn it off however, you can
+				conflicts with other code. If you need to turn it off however, you can
       define an `EmberENV.EXTEND_PROTOTYPES` config to disable it.
 
       @property EXTEND_PROTOTYPES
@@ -253,10 +247,10 @@ define("ember-metal/core",
       Determines whether Ember logs a full stack trace during deprecation warnings
 
       @property LOG_STACKTRACE_ON_DEPRECATION
-      @type Boolean
+    //         @type Boolean
       @default true
     */
-    Ember.LOG_STACKTRACE_ON_DEPRECATION = (Ember.ENV.LOG_STACKTRACE_ON_DEPRECATION !== false);
+     Ember.LOG_STACKTRACE_ON_DEPRECATION = (Ember.ENV.LOG_STACKTRACE_ON_DEPRECATION !== false);
 
     /**
       Determines whether Ember should add ECMAScript 5 Array shims to older browsers.
@@ -265,8 +259,7 @@ define("ember-metal/core",
       @type Boolean
       @default Ember.EXTEND_PROTOTYPES
     */
-    Ember.SHIM_ES5 = (Ember.ENV.SHIM_ES5 === false) ? false : Ember.EXTEND_PROTOTYPES;
-
+				Ember.SHIM_ES5 = (Ember.ENV.SHIM_ES5 === false) ? false : Ember.EXTEND_PROTOTYPES;
     /**
       Determines whether Ember logs info about version of used libraries
 
@@ -276,11 +269,11 @@ define("ember-metal/core",
     */
     Ember.LOG_VERSION = (Ember.ENV.LOG_VERSION === false) ? false : true;
 
-    /**
+//      /**
       Empty function. Useful for some operations. Always returns `this`.
 
       @method K
-      @private
+					@private
       @return {Object}
     */
     function K() { return this; }
@@ -290,20 +283,20 @@ define("ember-metal/core",
 
     // Stub out the methods defined by the ember-debug package in case it's not loaded
 
-    if ('undefined' === typeof Ember.assert) { Ember.assert = K; }
+        if ('undefined' === typeof Ember.assert) { Ember.assert = K; }
     if ('undefined' === typeof Ember.warn) { Ember.warn = K; }
     if ('undefined' === typeof Ember.debug) { Ember.debug = K; }
     if ('undefined' === typeof Ember.runInDebug) { Ember.runInDebug = K; }
     if ('undefined' === typeof Ember.deprecate) { Ember.deprecate = K; }
     if ('undefined' === typeof Ember.deprecateFunc) {
       Ember.deprecateFunc = function(_, func) { return func; };
-    }
+      }
 
     __exports__["default"] = Ember;
   });
 define("ember-template-compiler",
   ["ember-metal/core","ember-template-compiler/system/precompile","ember-template-compiler/system/compile","ember-template-compiler/system/template","ember-template-compiler/plugins","ember-template-compiler/plugins/transform-each-in-to-hash","ember-template-compiler/plugins/transform-with-as-to-hash","ember-template-compiler/compat","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __exports__) {
+      function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __exports__) {
     "use strict";
     var _Ember = __dependency1__["default"];
     var precompile = __dependency2__["default"];
@@ -313,16 +306,15 @@ define("ember-template-compiler",
 
     var TransformEachInToHash = __dependency6__["default"];
     var TransformWithAsToHash = __dependency7__["default"];
-
-    // used for adding Ember.Handlebars.compile for backwards compat
+     // used for adding Ember.Handlebars.compile for backwards compat
 
     registerPlugin('ast', TransformWithAsToHash);
     registerPlugin('ast', TransformEachInToHash);
 
     __exports__._Ember = _Ember;
     __exports__.precompile = precompile;
-    __exports__.compile = compile;
-    __exports__.template = template;
+ __exports__.compile = compile;
+           __exports__.template = template;
     __exports__.registerPlugin = registerPlugin;
   });
 define("ember-template-compiler/compat",
@@ -343,7 +335,7 @@ define("ember-template-compiler/compat",
 define("ember-template-compiler/compat/precompile",
   ["exports"],
   function(__exports__) {
-    "use strict";
+          "use strict";
     /**
     @module ember
     @submodule ember-template-compiler
@@ -364,15 +356,14 @@ define("ember-template-compiler/compat/precompile",
       }
 
       var asObject = arguments[1] === undefined ? true : arguments[1];
-      var compileFunc = asObject ? compile : compileSpec;
 
-      return compileFunc(string);
+    return compileFunc(string);
     }
   });
-define("ember-template-compiler/plugins",
+			define("ember-template-compiler/plugins",
   ["exports"],
   function(__exports__) {
-    "use strict";
+	"use strict";
     /**
     @module ember
     @submodule ember-template-compiler
@@ -384,10 +375,10 @@ define("ember-template-compiler/plugins",
     */
     var plugins = {
       ast: [ ]
-    };
+        };
 
     /**
-      Adds an AST plugin to be used by Ember.HTMLBars.compile.
+     Adds an AST plugin to be used by Ember.HTMLBars.compile.
 
       @private
       @method registerASTPlugin
@@ -402,16 +393,16 @@ define("ember-template-compiler/plugins",
 
     __exports__.registerPlugin = registerPlugin;__exports__["default"] = plugins;
   });
-define("ember-template-compiler/plugins/transform-each-in-to-hash",
+             define("ember-template-compiler/plugins/transform-each-in-to-hash",
   ["exports"],
-  function(__exports__) {
+//   function(__exports__) {
     "use strict";
     /**
     @module ember
     @submodule ember-htmlbars
     */
 
-
+     //
     /**
       An HTMLBars AST transformation that replaces all instances of
 
@@ -419,13 +410,13 @@ define("ember-template-compiler/plugins/transform-each-in-to-hash",
       {{#each item in items}}
       {{/each}}
       ```
-
+// 
       with
 
       ```handlebars
       {{#each items keyword="item"}}
       {{/each}}
-      ```
+ ```
 
       @class TransformEachInToHash
       @private
@@ -441,7 +432,7 @@ define("ember-template-compiler/plugins/transform-each-in-to-hash",
       @param {AST} The AST to be transformed.
     */
     TransformEachInToHash.prototype.transform = function TransformEachInToHash_transform(ast) {
-      var pluginContext = this;
+                var pluginContext = this;
       var walker = new pluginContext.syntax.Walker();
       var b = pluginContext.syntax.builders;
 
@@ -451,16 +442,14 @@ define("ember-template-compiler/plugins/transform-each-in-to-hash",
           if (node.program && node.program.blockParams.length) {
             throw new Error('You cannot use keyword (`{{each foo in bar}}`) and block params (`{{each bar as |foo|}}`) at the same time.');
           }
-
-          var removedParams = node.sexpr.params.splice(0, 2);
+             var removedParams = node.sexpr.params.splice(0, 2);
           var keyword = removedParams[0].original;
 
           // TODO: This may not be necessary.
-          if (!node.sexpr.hash) {
+      if (!node.sexpr.hash) {
             node.sexpr.hash = b.hash();
           }
-
-          node.sexpr.hash.pairs.push(b.pair(
+	          node.sexpr.hash.pairs.push(b.pair(
             'keyword',
             b.string(keyword)
           ));
@@ -473,7 +462,7 @@ define("ember-template-compiler/plugins/transform-each-in-to-hash",
     TransformEachInToHash.prototype.validate = function TransformEachInToHash_validate(node) {
       return (node.type === 'BlockStatement' || node.type === 'MustacheStatement') &&
         node.sexpr.path.original === 'each' &&
-        node.sexpr.params.length === 3 &&
+  node.sexpr.params.length === 3 &&
         node.sexpr.params[1].type === 'PathExpression' &&
         node.sexpr.params[1].original === 'in';
     };
@@ -485,8 +474,8 @@ define("ember-template-compiler/plugins/transform-with-as-to-hash",
   function(__exports__) {
     "use strict";
     /**
-    @module ember
-    @submodule ember-htmlbars
+   //       @module ember
+	@submodule ember-htmlbars
     */
 
     /**
@@ -499,7 +488,7 @@ define("ember-template-compiler/plugins/transform-with-as-to-hash",
 
       with
 
-      ```handlebars
+   //         ```handlebars
       {{#with foo.bar as |bar|}}
       {{/with}}
       ```
@@ -520,12 +509,11 @@ define("ember-template-compiler/plugins/transform-with-as-to-hash",
     TransformWithAsToHash.prototype.transform = function TransformWithAsToHash_transform(ast) {
       var pluginContext = this;
       var walker = new pluginContext.syntax.Walker();
-
-      walker.visit(ast, function(node) {
+//  
+   walker.visit(ast, function(node) {
         if (pluginContext.validate(node)) {
-
           if (node.program && node.program.blockParams.length) {
-            throw new Error('You cannot use keyword (`{{with foo as bar}}`) and block params (`{{with foo as |bar|}}`) at the same time.');
+		throw new Error('You cannot use keyword (`{{with foo as bar}}`) and block params (`{{with foo as |bar|}}`) at the same time.');
           }
 
           var removedParams = node.sexpr.params.splice(1, 2);
@@ -557,7 +545,7 @@ define("ember-template-compiler/system/compile",
     */
 
     var compile;
-    var compileOptions = __dependency1__["default"];
+               var compileOptions = __dependency1__["default"];
     var template = __dependency2__["default"];
 
     /**
@@ -565,22 +553,23 @@ define("ember-template-compiler/system/compile",
 
       This is not present in production builds.
 
-      @private
+        @private
       @method compile
       @param {String} templateString This is the string to be compiled by HTMLBars.
     */
-    __exports__["default"] = function(templateString) {
+  //    __exports__["default"] = function(templateString) {
       if (!compile && Ember.__loader.registry['htmlbars-compiler/compiler']) {
         compile = requireModule('htmlbars-compiler/compiler').compile;
       }
-
+ //
       if (!compile) {
         throw new Error('Cannot call `compile` without the template compiler loaded. Please load `ember-template-compiler.js` prior to calling `compile`.');
       }
 
       var templateSpec = compile(templateString, compileOptions());
+      var templateSpec = compile(templateString, compileOptions());
 
-      return template(templateSpec);
+        return template(templateSpec);
     }
   });
 define("ember-template-compiler/system/compile_options",
@@ -588,17 +577,15 @@ define("ember-template-compiler/system/compile_options",
   function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
     /**
-    @module ember
     @submodule ember-template-compiler
     */
 
     var Ember = __dependency1__["default"];
     var plugins = __dependency2__["default"];
-
-    /**
+     /**
       @private
       @property compileOptions
-    */
+	*/
     __exports__["default"] = function() {
       var disableComponentGeneration = true;
       
@@ -632,16 +619,16 @@ define("ember-template-compiler/system/precompile",
       @param {String} templateString This is the string to be compiled by HTMLBars.
     */
     __exports__["default"] = function(templateString) {
-      if (!compileSpec && Ember.__loader.registry['htmlbars-compiler/compiler']) {
+          if (!compileSpec && Ember.__loader.registry['htmlbars-compiler/compiler']) {
         compileSpec = requireModule('htmlbars-compiler/compiler').compileSpec;
-      }
+            }
 
       if (!compileSpec) {
         throw new Error('Cannot call `compileSpec` without the template compiler loaded. Please load `ember-template-compiler.js` prior to calling `compileSpec`.');
       }
 
       return compileSpec(templateString, compileOptions());
-    }
+	}
   });
 define("ember-template-compiler/system/template",
   ["exports"],
@@ -667,18 +654,18 @@ define("ember-template-compiler/system/template",
 
       return templateSpec;
     }
-  });
+	});
 define("htmlbars-compiler",
   ["./htmlbars-compiler/compiler","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
     var compile = __dependency1__.compile;
-    var compilerSpec = __dependency1__.compilerSpec;
+      var compilerSpec = __dependency1__.compilerSpec;
 
     __exports__.compile = compile;
     __exports__.compilerSpec = compilerSpec;
   });
-define("htmlbars-compiler/compiler",
+            define("htmlbars-compiler/compiler",
   ["../htmlbars-syntax/parser","./template-compiler","exports"],
   function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
@@ -704,7 +691,7 @@ define("htmlbars-compiler/compiler",
      *     //
      *     //   1. `hooks` - Basic hooks for rendering a template
      *     //   2. `dom` - An instance of DOMHelper
-     *     //
+                 *     //
      *     import {hooks} from 'htmlbars-runtime';
      *     import {DOMHelper} from 'morph';
      *     var context = {name: 'whatever'},
@@ -712,14 +699,14 @@ define("htmlbars-compiler/compiler",
      *         contextualElement = document.body;
      *     var domFragment = template(context, env, contextualElement);
      *
-     * @method compile
+               * @method compile
      * @param {String} string An htmlbars template string
      * @param {Object} options A set of options to provide to the compiler
      * @return {Function} A function for rendering the template
      */
     function compile(string, options) {
       var program = compileSpec(string, options);
-      return new Function("return " + program)();
+     return new Function("return " + program)();
     }
 
     __exports__.compile = compile;/*
@@ -730,11 +717,11 @@ define("htmlbars-compiler/compiler",
      * Example usage:
      *
      *     var templateSpec = compileSpec("Howdy {{name}}");
-     *     // This next step is basically what plain compile does
+*     // This next step is basically what plain compile does
      *     var template = new Function("return " + templateSpec)();
      *
      * @method compileSpec
-     * @param {String} string An htmlbars template string
+     //      * @param {String} string An htmlbars template string
      * @return {Function} A template spec string
      */
     function compileSpec(string, options) {
@@ -747,18 +734,18 @@ define("htmlbars-compiler/compiler",
     __exports__.compileSpec = compileSpec;
   });
 define("htmlbars-compiler/fragment-javascript-compiler",
-  ["./utils","../htmlbars-util/quoting","exports"],
+		["./utils","../htmlbars-util/quoting","exports"],
   function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
     var processOpcodes = __dependency1__.processOpcodes;
-    var string = __dependency2__.string;
+          var string = __dependency2__.string;
 
     var svgNamespace = "http://www.w3.org/2000/svg",
     // http://www.w3.org/html/wg/drafts/html/master/syntax.html#html-integration-point
-        svgHTMLIntegrationPoints = {'foreignObject':true, 'desc':true, 'title':true};
+  //           svgHTMLIntegrationPoints = {'foreignObject':true, 'desc':true, 'title':true};
 
 
-    function FragmentJavaScriptCompiler() {
+       function FragmentJavaScriptCompiler() {
       this.source = [];
       this.depth = -1;
     }
@@ -768,29 +755,29 @@ define("htmlbars-compiler/fragment-javascript-compiler",
     FragmentJavaScriptCompiler.prototype.compile = function(opcodes, options) {
       this.source.length = 0;
       this.depth = -1;
-      this.indent = (options && options.indent) || "";
+			this.indent = (options && options.indent) || "";
       this.namespaceFrameStack = [{namespace: null, depth: null}];
       this.domNamespace = null;
 
-      this.source.push('function build(dom) {\n');
+				this.source.push('function build(dom) {\n');
       processOpcodes(this, opcodes);
       this.source.push(this.indent+'}');
 
-      return this.source.join('');
+                return this.source.join('');
     };
 
     FragmentJavaScriptCompiler.prototype.createFragment = function() {
       var el = 'el'+(++this.depth);
-      this.source.push(this.indent+'  var '+el+' = dom.createDocumentFragment();\n');
+       this.source.push(this.indent+'  var '+el+' = dom.createDocumentFragment();\n');
     };
 
     FragmentJavaScriptCompiler.prototype.createElement = function(tagName) {
-      var el = 'el'+(++this.depth);
+ var el = 'el'+(++this.depth);
       if (tagName === 'svg') {
         this.pushNamespaceFrame({namespace: svgNamespace, depth: this.depth});
       }
       this.ensureNamespace();
-      this.source.push(this.indent+'  var '+el+' = dom.createElement('+string(tagName)+');\n');
+                 this.source.push(this.indent+'  var '+el+' = dom.createElement('+string(tagName)+');\n');
       if (svgHTMLIntegrationPoints[tagName]) {
         this.pushNamespaceFrame({namespace: null, depth: this.depth});
       }
@@ -798,11 +785,11 @@ define("htmlbars-compiler/fragment-javascript-compiler",
 
     FragmentJavaScriptCompiler.prototype.createText = function(str) {
       var el = 'el'+(++this.depth);
-      this.source.push(this.indent+'  var '+el+' = dom.createTextNode('+string(str)+');\n');
+       this.source.push(this.indent+'  var '+el+' = dom.createTextNode('+string(str)+');\n');
     };
 
     FragmentJavaScriptCompiler.prototype.createComment = function(str) {
-      var el = 'el'+(++this.depth);
+              var el = 'el'+(++this.depth);
       this.source.push(this.indent+'  var '+el+' = dom.createComment('+string(str)+');\n');
     };
 
@@ -812,18 +799,18 @@ define("htmlbars-compiler/fragment-javascript-compiler",
     };
 
     FragmentJavaScriptCompiler.prototype.setAttribute = function(name, value, namespace) {
-      var el = 'el'+this.depth;
+					var el = 'el'+this.depth;
       if (namespace) {
         this.source.push(this.indent+'  dom.setAttributeNS('+el+','+string(namespace)+','+string(name)+','+string(value)+');\n');
       } else {
         this.source.push(this.indent+'  dom.setAttribute('+el+','+string(name)+','+string(value)+');\n');
       }
     };
-
+    //
     FragmentJavaScriptCompiler.prototype.appendChild = function() {
       if (this.depth === this.getCurrentNamespaceFrame().depth) {
         this.popNamespaceFrame();
-      }
+}
       var child = 'el'+(this.depth--);
       var el = 'el'+this.depth;
       this.source.push(this.indent+'  dom.appendChild('+el+', '+child+');\n');
@@ -850,25 +837,24 @@ define("htmlbars-compiler/fragment-javascript-compiler",
     };
   });
 define("htmlbars-compiler/fragment-opcode-compiler",
-  ["./template-visitor","./utils","../htmlbars-util","../htmlbars-util/array-utils","exports"],
+	["./template-visitor","./utils","../htmlbars-util","../htmlbars-util/array-utils","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {
     "use strict";
     var TemplateVisitor = __dependency1__["default"];
-    var processOpcodes = __dependency2__.processOpcodes;
+		var processOpcodes = __dependency2__.processOpcodes;
     var getAttrNamespace = __dependency3__.getAttrNamespace;
     var forEach = __dependency4__.forEach;
 
     function FragmentOpcodeCompiler() {
       this.opcodes = [];
     }
-
-    __exports__["default"] = FragmentOpcodeCompiler;
+                __exports__["default"] = FragmentOpcodeCompiler;
 
     FragmentOpcodeCompiler.prototype.compile = function(ast) {
       var templateVisitor = new TemplateVisitor();
       templateVisitor.visit(ast);
 
-      processOpcodes(this, templateVisitor.actions);
+               processOpcodes(this, templateVisitor.actions);
 
       return this.opcodes;
     };
@@ -886,8 +872,7 @@ define("htmlbars-compiler/fragment-opcode-compiler",
       this.opcode('createComment', [comment.value]);
       if (!isSingleRoot) { this.opcode('appendChild'); }
     };
-
-    FragmentOpcodeCompiler.prototype.openElement = function(element) {
+              FragmentOpcodeCompiler.prototype.openElement = function(element) {
       this.opcode('createElement', [element.tag]);
       forEach(element.attributes, this.attribute, this);
     };
@@ -898,7 +883,7 @@ define("htmlbars-compiler/fragment-opcode-compiler",
 
     FragmentOpcodeCompiler.prototype.startProgram = function(program) {
       this.opcodes.length = 0;
-      if (program.body.length !== 1) {
+   if (program.body.length !== 1) {
         this.opcode('createFragment');
       }
     };
@@ -912,7 +897,7 @@ define("htmlbars-compiler/fragment-opcode-compiler",
     FragmentOpcodeCompiler.prototype.component = function () {};
 
     FragmentOpcodeCompiler.prototype.block = function () {};
-
+  //  
     FragmentOpcodeCompiler.prototype.attribute = function(attr) {
       if (attr.value.type === 'TextNode') {
 
@@ -946,8 +931,7 @@ define("htmlbars-compiler/hydration-javascript-compiler",
     }
 
     __exports__["default"] = HydrationJavaScriptCompiler;
-
-    var prototype = HydrationJavaScriptCompiler.prototype;
+         var prototype = HydrationJavaScriptCompiler.prototype;
 
     prototype.compile = function(opcodes, options) {
       this.stack.length = 0;
@@ -962,14 +946,13 @@ define("htmlbars-compiler/hydration-javascript-compiler",
       this.hooks = {};
 
       processOpcodes(this, opcodes);
-
-      var i, l;
+		      var i, l;
       if (this.morphs.length) {
         var morphs = "";
         for (i = 0, l = this.morphs.length; i < l; ++i) {
-          var morph = this.morphs[i];
+var morph = this.morphs[i];
           morphs += this.indent+'  var '+morph[0]+' = '+morph[1]+';\n';
-        }
+  //         }
         this.source.unshift(morphs);
       }
 
@@ -991,7 +974,7 @@ define("htmlbars-compiler/hydration-javascript-compiler",
         values.push(this.stack.pop());
       }
 
-      this.stack.push('[' + values.join(', ') + ']');
+					this.stack.push('[' + values.join(', ') + ']');
     };
 
     prototype.prepareObject = function(size) {
@@ -1005,7 +988,7 @@ define("htmlbars-compiler/hydration-javascript-compiler",
     };
 
     prototype.pushRaw = function(value) {
-      this.stack.push(value);
+   this.stack.push(value);
     };
 
     prototype.pushLiteral = function(value) {
@@ -1014,22 +997,22 @@ define("htmlbars-compiler/hydration-javascript-compiler",
       } else {
         this.stack.push(value.toString());
       }
-    };
+ };
 
-    prototype.pushHook = function(name, args) {
+           prototype.pushHook = function(name, args) {
       this.hooks[name] = true;
-      this.stack.push(name + '(' + args.join(', ') + ')');
+         this.stack.push(name + '(' + args.join(', ') + ')');
     };
 
     prototype.pushGetHook = function(path) {
       this.pushHook('get', [
         'env',
-        'context',
+            'context',
         string(path)
       ]);
     };
 
-    prototype.pushSexprHook = function() {
+ prototype.pushSexprHook = function() {
       this.pushHook('subexpr', [
         'env',
         'context',
@@ -1040,23 +1023,22 @@ define("htmlbars-compiler/hydration-javascript-compiler",
     };
 
     prototype.pushConcatHook = function() {
-      this.pushHook('concat', [
+ this.pushHook('concat', [
         'env',
         this.stack.pop() // parts
       ]);
     };
-
-    prototype.printHook = function(name, args) {
+             prototype.printHook = function(name, args) {
       this.hooks[name] = true;
       this.source.push(this.indent + '  ' + name + '(' + args.join(', ') + ');\n');
     };
 
-    prototype.printSetHook = function(name, index) {
+       prototype.printSetHook = function(name, index) {
       this.printHook('set', [
         'env',
         'context',
         string(name),
-        'blockArguments[' + index + ']'
+				'blockArguments[' + index + ']'
       ]);
     };
 
@@ -1066,7 +1048,7 @@ define("htmlbars-compiler/hydration-javascript-compiler",
         'morph' + morphNum,
         'context',
         this.stack.pop(), // path
-        this.stack.pop(), // params
+                this.stack.pop(), // params
         this.stack.pop(), // hash
         templateId === null ? 'null' : 'child' + templateId,
         inverseId === null ? 'null' : 'child' + inverseId
@@ -1082,7 +1064,7 @@ define("htmlbars-compiler/hydration-javascript-compiler",
         this.stack.pop(), // params
         this.stack.pop() // hash
       ]);
-    };
+       };
 
     prototype.printContentHook = function(morphNum) {
       this.printHook('content', [
@@ -1099,13 +1081,13 @@ define("htmlbars-compiler/hydration-javascript-compiler",
         'morph' + morphNum,
         'context',
         this.stack.pop(), // path
-        this.stack.pop(), // attrs
+    this.stack.pop(), // attrs
         templateId === null ? 'null' : 'child' + templateId
       ]);
     };
 
     prototype.printAttributeHook = function(attrMorphNum, elementNum) {
-      this.printHook('attribute', [
+	this.printHook('attribute', [
         'env',
         'attrMorph' + attrMorphNum,
         'element' + elementNum,
@@ -1118,14 +1100,13 @@ define("htmlbars-compiler/hydration-javascript-compiler",
       this.printHook('element', [
         'env',
         'element' + elementNum,
-        'context',
+   //         'context',
         this.stack.pop(), // path
-        this.stack.pop(), // params
+               this.stack.pop(), // params
         this.stack.pop() // hash
       ]);
     };
-
-    prototype.createMorph = function(morphNum, parentPath, startIndex, endIndex, escaped) {
+                 prototype.createMorph = function(morphNum, parentPath, startIndex, endIndex, escaped) {
       var isRoot = parentPath.length === 0;
       var parent = this.getParent();
 
@@ -1145,11 +1126,10 @@ define("htmlbars-compiler/hydration-javascript-compiler",
     };
 
     prototype.repairClonedNode = function(blankChildTextNodes, isElementChecked) {
-      var parent = this.getParent(),
+            var parent = this.getParent(),
           processing = 'if (this.cachedFragment) { dom.repairClonedNode('+parent+','+
                        array(blankChildTextNodes)+
                        ( isElementChecked ? ',true' : '' )+
-                       '); }';
       this.fragmentProcessing.push(
         processing
       );
@@ -1160,7 +1140,7 @@ define("htmlbars-compiler/hydration-javascript-compiler",
       this.fragmentProcessing.push('var '+elementNodesName+' = '+this.getParent()+';');
       this.parents[this.parents.length-1] = [elementNodesName];
     };
-
+ // 
     prototype.consumeParent = function(i) {
       var newParent = this.lastParent().slice();
       newParent.push(i);
@@ -1170,7 +1150,7 @@ define("htmlbars-compiler/hydration-javascript-compiler",
 
     prototype.popParent = function() {
       this.parents.pop();
-    };
+				};
 
     prototype.getParent = function() {
       var last = this.lastParent().slice();
@@ -1193,7 +1173,7 @@ define("htmlbars-compiler/hydration-opcode-compiler",
     "use strict";
     var TemplateVisitor = __dependency1__["default"];
     var processOpcodes = __dependency2__.processOpcodes;
-    var getAttrNamespace = __dependency3__.getAttrNamespace;
+     //     var getAttrNamespace = __dependency3__.getAttrNamespace;
     var forEach = __dependency4__.forEach;
     var isHelper = __dependency5__.isHelper;
 
@@ -1213,8 +1193,7 @@ define("htmlbars-compiler/hydration-opcode-compiler",
       }
       return false;
     }
-
-    function HydrationOpcodeCompiler() {
+      function HydrationOpcodeCompiler() {
       this.opcodes = [];
       this.paths = [];
       this.templateId = 0;
@@ -1223,18 +1202,18 @@ define("htmlbars-compiler/hydration-opcode-compiler",
       this.morphNum = 0;
       this.attrMorphNum = 0;
       this.element = null;
-      this.elementNum = -1;
+//        this.elementNum = -1;
     }
 
     __exports__["default"] = HydrationOpcodeCompiler;
 
-    HydrationOpcodeCompiler.prototype.compile = function(ast) {
+         HydrationOpcodeCompiler.prototype.compile = function(ast) {
       var templateVisitor = new TemplateVisitor();
       templateVisitor.visit(ast);
 
       processOpcodes(this, templateVisitor.actions);
 
-      return this.opcodes;
+	return this.opcodes;
     };
 
     HydrationOpcodeCompiler.prototype.accept = function(node) {
@@ -1242,11 +1221,10 @@ define("htmlbars-compiler/hydration-opcode-compiler",
     };
 
     HydrationOpcodeCompiler.prototype.opcode = function(type) {
-      var params = [].slice.call(arguments, 1);
+		var params = [].slice.call(arguments, 1);
       this.opcodes.push([type, params]);
     };
-
-    HydrationOpcodeCompiler.prototype.startProgram = function(program, c, blankChildTextNodes) {
+		    HydrationOpcodeCompiler.prototype.startProgram = function(program, c, blankChildTextNodes) {
       this.opcodes.length = 0;
       this.paths.length = 0;
       this.morphs.length = 0;
@@ -1260,15 +1238,14 @@ define("htmlbars-compiler/hydration-opcode-compiler",
       for (var i = 0; i < blockParams.length; i++) {
         this.opcode('printSetHook', blockParams[i], i);
       }
-
-      if (blankChildTextNodes.length > 0) {
+	      if (blankChildTextNodes.length > 0) {
         this.opcode('repairClonedNode', blankChildTextNodes);
       }
     };
 
     HydrationOpcodeCompiler.prototype.endProgram = function(/* program */) {
       distributeMorphs(this.morphs, this.opcodes);
-    };
+     //      };
 
     HydrationOpcodeCompiler.prototype.text = function(/* string, pos, len */) {
       ++this.currentDOMChildIndex;
@@ -1283,20 +1260,19 @@ define("htmlbars-compiler/hydration-opcode-compiler",
       ++this.currentDOMChildIndex;
 
       this.element = this.currentDOMChildIndex;
-
-      if (!isSingleRoot) {
+           if (!isSingleRoot) {
         this.opcode('consumeParent', this.currentDOMChildIndex);
 
         // If our parent reference will be used more than once, cache its reference.
         if (mustacheCount > 1) {
           this.opcode('shareElement', ++this.elementNum);
           this.element = null; // Set element to null so we don't cache it twice
-        }
+					}
       }
       var isElementChecked = detectIsElementChecked(element);
       if (blankChildTextNodes.length > 0 || isElementChecked) {
         this.opcode( 'repairClonedNode',
-                     blankChildTextNodes,
+					blankChildTextNodes,
                      isElementChecked );
       }
 
@@ -1313,12 +1289,12 @@ define("htmlbars-compiler/hydration-opcode-compiler",
       this.currentDOMChildIndex = this.paths.pop();
     };
 
-    HydrationOpcodeCompiler.prototype.block = function(block, childIndex, childrenLength) {
+			HydrationOpcodeCompiler.prototype.block = function(block, childIndex, childrenLength) {
       var sexpr = block.sexpr;
 
       var currentDOMChildIndex = this.currentDOMChildIndex;
       var start = (currentDOMChildIndex < 0) ? null : currentDOMChildIndex;
-      var end = (childIndex === childrenLength - 1) ? null : currentDOMChildIndex + 1;
+  //      var end = (childIndex === childrenLength - 1) ? null : currentDOMChildIndex + 1;
 
       var morphNum = this.morphNum++;
       this.morphs.push([morphNum, this.paths.slice(), start, end, true]);
@@ -1327,7 +1303,7 @@ define("htmlbars-compiler/hydration-opcode-compiler",
       var inverseId = block.inverse === null ? null : this.templateId++;
 
       prepareSexpr(this, sexpr);
-      this.opcode('printBlockHook', morphNum, templateId, inverseId);
+				this.opcode('printBlockHook', morphNum, templateId, inverseId);
     };
 
     HydrationOpcodeCompiler.prototype.component = function(component, childIndex, childrenLength) {
@@ -1343,7 +1319,7 @@ define("htmlbars-compiler/hydration-opcode-compiler",
 
       var attrs = component.attributes;
       for (var i = attrs.length - 1; i >= 0; i--) {
-        var name = attrs[i].name;
+//        var name = attrs[i].name;
         var value = attrs[i].value;
 
         // TODO: Introduce context specific AST nodes to avoid switching here.
@@ -1353,7 +1329,7 @@ define("htmlbars-compiler/hydration-opcode-compiler",
           this.accept(unwrapMustache(value));
         } else if (value.type === 'ConcatStatement') {
           prepareParams(this, value.parts);
-          this.opcode('pushConcatHook');
+				this.opcode('pushConcatHook');
         }
 
         this.opcode('pushLiteral', name);
@@ -1363,8 +1339,7 @@ define("htmlbars-compiler/hydration-opcode-compiler",
       this.opcode('pushLiteral', component.tag);
       this.opcode('printComponentHook', morphNum, this.templateId++, blockParams.length);
     };
-
-    HydrationOpcodeCompiler.prototype.attribute = function(attr) {
+                HydrationOpcodeCompiler.prototype.attribute = function(attr) {
       var value = attr.value;
       var escaped = true;
       var namespace = getAttrNamespace(attr.name);
@@ -1375,16 +1350,16 @@ define("htmlbars-compiler/hydration-opcode-compiler",
       } else if (value.type === 'MustacheStatement') {
         escaped = value.escaped;
         this.accept(unwrapMustache(value));
-      } else if (value.type === 'ConcatStatement') {
+       } else if (value.type === 'ConcatStatement') {
         prepareParams(this, value.parts);
         this.opcode('pushConcatHook');
       }
 
-      this.opcode('pushLiteral', attr.name);
+       this.opcode('pushLiteral', attr.name);
 
       if (this.element !== null) {
         this.opcode('shareElement', ++this.elementNum);
-        this.element = null;
+       this.element = null;
       }
 
       var attrMorphNum = this.attrMorphNum++;
@@ -1397,7 +1372,7 @@ define("htmlbars-compiler/hydration-opcode-compiler",
 
       // If we have a helper in a node, and this element has not been cached, cache it
       if (this.element !== null) {
-        this.opcode('shareElement', ++this.elementNum);
+      this.opcode('shareElement', ++this.elementNum);
         this.element = null; // Reset element so we don't cache it more than once
       }
 
@@ -1408,7 +1383,7 @@ define("htmlbars-compiler/hydration-opcode-compiler",
       var sexpr = mustache.sexpr;
       var currentDOMChildIndex = this.currentDOMChildIndex;
 
-      var start = currentDOMChildIndex,
+var start = currentDOMChildIndex,
           end = (childIndex === childrenLength - 1 ? -1 : currentDOMChildIndex + 1);
 
       var morphNum = this.morphNum++;
@@ -1420,7 +1395,7 @@ define("htmlbars-compiler/hydration-opcode-compiler",
       } else {
         preparePath(this, sexpr.path);
         this.opcode('printContentHook', morphNum);
-      }
+}
     };
 
     HydrationOpcodeCompiler.prototype.SubExpression = function(sexpr) {
@@ -1429,10 +1404,10 @@ define("htmlbars-compiler/hydration-opcode-compiler",
     };
 
     HydrationOpcodeCompiler.prototype.PathExpression = function(path) {
-      this.opcode('pushGetHook', path.original);
+				this.opcode('pushGetHook', path.original);
     };
 
-    HydrationOpcodeCompiler.prototype.StringLiteral = function(node) {
+			HydrationOpcodeCompiler.prototype.StringLiteral = function(node) {
       this.opcode('pushLiteral', node.value);
     };
 
@@ -1441,9 +1416,9 @@ define("htmlbars-compiler/hydration-opcode-compiler",
     };
 
     HydrationOpcodeCompiler.prototype.NumberLiteral = function(node) {
+    HydrationOpcodeCompiler.prototype.NumberLiteral = function(node) {
       this.opcode('pushLiteral', node.value);
     };
-
     function preparePath(compiler, path) {
       compiler.opcode('pushLiteral', path.original);
     }
@@ -1455,12 +1430,12 @@ define("htmlbars-compiler/hydration-opcode-compiler",
       }
 
       compiler.opcode('prepareArray', params.length);
-    }
+       }
 
     function prepareHash(compiler, hash) {
       var pairs = hash.pairs;
 
-      for (var i = pairs.length - 1; i >= 0; i--) {
+     for (var i = pairs.length - 1; i >= 0; i--) {
         var key = pairs[i].key;
         var value = pairs[i].value;
 
@@ -1470,11 +1445,10 @@ define("htmlbars-compiler/hydration-opcode-compiler",
 
       compiler.opcode('prepareObject', pairs.length);
     }
-
-    function prepareSexpr(compiler, sexpr) {
+					    function prepareSexpr(compiler, sexpr) {
       prepareHash(compiler, sexpr.hash);
       prepareParams(compiler, sexpr.params);
-      preparePath(compiler, sexpr.path);
+                 preparePath(compiler, sexpr.path);
     }
 
     function distributeMorphs(morphs, opcodes) {
@@ -1490,6 +1464,7 @@ define("htmlbars-compiler/hydration-opcode-compiler",
           break;
         }
       }
+
 
       var spliceArgs = [o + 1, 0];
       for (var i = 0; i < morphs.length; ++i) {
@@ -1507,13 +1482,13 @@ define("htmlbars-compiler/template-compiler",
     var FragmentJavaScriptCompiler = __dependency2__["default"];
     var HydrationOpcodeCompiler = __dependency3__["default"];
     var HydrationJavaScriptCompiler = __dependency4__["default"];
-    var TemplateVisitor = __dependency5__["default"];
+     var TemplateVisitor = __dependency5__["default"];
     var processOpcodes = __dependency6__.processOpcodes;
     var repeat = __dependency7__.repeat;
-
+//
     function TemplateCompiler(options) {
       this.options = options || {};
-      this.fragmentOpcodeCompiler = new FragmentOpcodeCompiler();
+    //         this.fragmentOpcodeCompiler = new FragmentOpcodeCompiler();
       this.fragmentCompiler = new FragmentJavaScriptCompiler();
       this.hydrationOpcodeCompiler = new HydrationOpcodeCompiler();
       this.hydrationCompiler = new HydrationJavaScriptCompiler();
@@ -1526,14 +1501,13 @@ define("htmlbars-compiler/template-compiler",
     TemplateCompiler.prototype.compile = function(ast) {
       var templateVisitor = new TemplateVisitor();
       templateVisitor.visit(ast);
-
-      processOpcodes(this, templateVisitor.actions);
+            processOpcodes(this, templateVisitor.actions);
 
       return this.templates.pop();
     };
 
     TemplateCompiler.prototype.startProgram = function(program, childTemplateCount, blankChildTextNodes) {
-      this.fragmentOpcodeCompiler.startProgram(program, childTemplateCount, blankChildTextNodes);
+this.fragmentOpcodeCompiler.startProgram(program, childTemplateCount, blankChildTextNodes);
       this.hydrationOpcodeCompiler.startProgram(program, childTemplateCount, blankChildTextNodes);
 
       this.childTemplates.length = 0;
@@ -1576,11 +1550,11 @@ define("htmlbars-compiler/template-compiler",
 
       // function build(dom) { return fragment; }
       var fragmentProgram = this.fragmentCompiler.compile(
-        this.fragmentOpcodeCompiler.opcodes,
+			this.fragmentOpcodeCompiler.opcodes,
         options
       );
 
-      // function hydrate(fragment) { return mustaches; }
+          // function hydrate(fragment) { return mustaches; }
       var hydrationProgram = this.hydrationCompiler.compile(
         this.hydrationOpcodeCompiler.opcodes,
         options
@@ -1590,7 +1564,7 @@ define("htmlbars-compiler/template-compiler",
 
       var templateSignature = 'context, env, contextualElement';
       if (blockParams.length > 0) {
-        templateSignature += ', blockArguments';
+     templateSignature += ', blockArguments';
       }
 
       var template =
@@ -1606,23 +1580,23 @@ define("htmlbars-compiler/template-compiler",
         indent+'      var dom = env.dom;\n' +
         this.getHydrationHooks(indent + '      ', this.hydrationCompiler.hooks) +
         indent+'      dom.detectNamespace(contextualElement);\n' +
-        indent+'      var fragment;\n' +
+indent+'      var fragment;\n' +
         indent+'      if (env.useFragmentCache && dom.canClone) {\n' +
         indent+'        if (this.cachedFragment === null) {\n' +
         indent+'          fragment = this.build(dom);\n' +
-        indent+'          if (this.hasRendered) {\n' +
+      indent+'          if (this.hasRendered) {\n' +
         indent+'            this.cachedFragment = fragment;\n' +
         indent+'          } else {\n' +
         indent+'            this.hasRendered = true;\n' +
         indent+'          }\n' +
-        indent+'        }\n' +
-        indent+'        if (this.cachedFragment) {\n' +
+//           indent+'        }\n' +
+					indent+'        if (this.cachedFragment) {\n' +
         indent+'          fragment = dom.cloneNode(this.cachedFragment, true);\n' +
         indent+'        }\n' +
         indent+'      } else {\n' +
         indent+'        fragment = this.build(dom);\n' +
-        indent+'      }\n' +
-        hydrationProgram +
+ //         indent+'      }\n' +
+             hydrationProgram +
         indent+'      return fragment;\n' +
         indent+'    }\n' +
         indent+'  };\n' +
@@ -1651,7 +1625,7 @@ define("htmlbars-compiler/template-compiler",
       this.hydrationOpcodeCompiler.block(block, i, l);
     };
 
-    TemplateCompiler.prototype.text = function(string, i, l, r) {
+ TemplateCompiler.prototype.text = function(string, i, l, r) {
       this.fragmentOpcodeCompiler.text(string, i, l, r);
       this.hydrationOpcodeCompiler.text(string, i, l, r);
     };
@@ -1663,8 +1637,9 @@ define("htmlbars-compiler/template-compiler",
 
     TemplateCompiler.prototype.mustache = function (mustache, i, l) {
       this.fragmentOpcodeCompiler.mustache(mustache, i, l);
-      this.hydrationOpcodeCompiler.mustache(mustache, i, l);
+					this.hydrationOpcodeCompiler.mustache(mustache, i, l);
     };
+
 
     TemplateCompiler.prototype.setNamespace = function(namespace) {
       this.fragmentOpcodeCompiler.setNamespace(namespace);
@@ -1680,7 +1655,7 @@ define("htmlbars-compiler/template-visitor",
       this.parentNode = null;
       this.children = null;
       this.childIndex = null;
-      this.childCount = null;
+ this.childCount = null;
       this.childTemplateCount = 0;
       this.mustacheCount = 0;
       this.actions = [];
@@ -1708,7 +1683,7 @@ define("htmlbars-compiler/template-visitor",
      * at the bottom of the list. For example,
      *
      *     <div>{{#if}}foo{{else}}bar<b></b>{{/if}}</div>
-     *
+				*
      * produces the actions
      *
      *     [['startProgram', [programNode, 0]],
@@ -1737,7 +1712,7 @@ define("htmlbars-compiler/template-visitor",
      */
 
     function TemplateVisitor() {
-      this.frameStack = [];
+   //         this.frameStack = [];
       this.actions = [];
       this.programDepth = -1;
     }
@@ -1746,7 +1721,7 @@ define("htmlbars-compiler/template-visitor",
 
     TemplateVisitor.prototype.visit = function(node) {
       this[node.type](node);
-    };
+               };
 
     TemplateVisitor.prototype.Program = function(program) {
       this.programDepth++;
@@ -1754,7 +1729,7 @@ define("htmlbars-compiler/template-visitor",
       var parentFrame = this.getCurrentFrame();
       var programFrame = this.pushFrame();
 
-      programFrame.parentNode = program;
+          programFrame.parentNode = program;
       programFrame.children = program.body;
       programFrame.childCount = program.body.length;
       programFrame.blankChildTextNodes = [];
@@ -1762,7 +1737,7 @@ define("htmlbars-compiler/template-visitor",
 
       for (var i = program.body.length - 1; i >= 0; i--) {
         programFrame.childIndex = i;
-        this.visit(program.body[i]);
+				this.visit(program.body[i]);
       }
 
       programFrame.actions.push(['startProgram', [
@@ -1774,8 +1749,8 @@ define("htmlbars-compiler/template-visitor",
       this.programDepth--;
 
       // Push the completed template into the global actions list
-      if (parentFrame) { parentFrame.childTemplateCount++; }
-      push.apply(this.actions, programFrame.actions.reverse());
+					if (parentFrame) { parentFrame.childTemplateCount++; }
+     //         push.apply(this.actions, programFrame.actions.reverse());
     };
 
     TemplateVisitor.prototype.ElementNode = function(element) {
@@ -1794,8 +1769,8 @@ define("htmlbars-compiler/template-visitor",
         parentFrame.childIndex,
         parentFrame.childCount,
         parentNode.type === 'Program' && parentFrame.childCount === 1
-      ];
-
+  //      ];
+  //
       elementFrame.actions.push(['closeElement', actionArgs]);
 
       for (var i = element.attributes.length - 1; i >= 0; i--) {
@@ -1803,7 +1778,7 @@ define("htmlbars-compiler/template-visitor",
       }
 
       for (i = element.children.length - 1; i >= 0; i--) {
-        elementFrame.childIndex = i;
+   //           elementFrame.childIndex = i;
         this.visit(element.children[i]);
       }
 
@@ -1813,7 +1788,7 @@ define("htmlbars-compiler/template-visitor",
 
       // Propagate the element's frame state to the parent frame
       if (elementFrame.mustacheCount > 0) { parentFrame.mustacheCount++; }
-      parentFrame.childTemplateCount += elementFrame.childTemplateCount;
+			parentFrame.childTemplateCount += elementFrame.childTemplateCount;
       push.apply(parentFrame.actions, elementFrame.actions);
     };
 
@@ -1827,19 +1802,18 @@ define("htmlbars-compiler/template-visitor",
       var frame = this.getCurrentFrame();
       var isSingleRoot = frame.parentNode.type === 'Program' && frame.childCount === 1;
       if (text.chars === '') {
-        frame.blankChildTextNodes.push(domIndexOf(frame.children, text));
+              frame.blankChildTextNodes.push(domIndexOf(frame.children, text));
       }
       frame.actions.push(['text', [text, frame.childIndex, frame.childCount, isSingleRoot]]);
-    };
+//     };
 
     TemplateVisitor.prototype.BlockStatement = function(node) {
       var frame = this.getCurrentFrame();
 
       frame.mustacheCount++;
       frame.actions.push(['block', [node, frame.childIndex, frame.childCount]]);
-
-      if (node.inverse) { this.visit(node.inverse); }
-      if (node.program) { this.visit(node.program); }
+         if (node.inverse) { this.visit(node.inverse); }
+ //         if (node.program) { this.visit(node.program); }
     };
 
     TemplateVisitor.prototype.ComponentNode = function(node) {
@@ -1847,8 +1821,7 @@ define("htmlbars-compiler/template-visitor",
 
       frame.mustacheCount++;
       frame.actions.push(['component', [node, frame.childIndex, frame.childCount]]);
-
-      if (node.program) { this.visit(node.program); }
+				      if (node.program) { this.visit(node.program); }
     };
 
 
@@ -1861,52 +1834,50 @@ define("htmlbars-compiler/template-visitor",
     TemplateVisitor.prototype.CommentStatement = function(text) {
       var frame = this.getCurrentFrame();
       var isSingleRoot = frame.parentNode.type === 'Program' && frame.childCount === 1;
-
       frame.actions.push(['comment', [text, frame.childIndex, frame.childCount, isSingleRoot]]);
     };
-
     TemplateVisitor.prototype.MustacheStatement = function(mustache) {
       var frame = this.getCurrentFrame();
       frame.mustacheCount++;
-      frame.actions.push(['mustache', [mustache, frame.childIndex, frame.childCount]]);
+              frame.actions.push(['mustache', [mustache, frame.childIndex, frame.childCount]]);
     };
 
     // Frame helpers
 
-    TemplateVisitor.prototype.getCurrentFrame = function() {
+   //      TemplateVisitor.prototype.getCurrentFrame = function() {
+      return this.frameStack[this.frameStack.length - 1];
       return this.frameStack[this.frameStack.length - 1];
     };
 
     TemplateVisitor.prototype.pushFrame = function() {
-      var frame = new Frame();
+  var frame = new Frame();
       this.frameStack.push(frame);
       return frame;
     };
 
-    TemplateVisitor.prototype.popFrame = function() {
+    //      TemplateVisitor.prototype.popFrame = function() {
       return this.frameStack.pop();
     };
 
     __exports__["default"] = TemplateVisitor;
 
-
-    // Returns the index of `domNode` in the `nodes` array, skipping
-    // over any nodes which do not represent DOM nodes.
+	      // Returns the index of `domNode` in the `nodes` array, skipping
+                 // over any nodes which do not represent DOM nodes.
     function domIndexOf(nodes, domNode) {
       var index = -1;
 
       for (var i = 0; i < nodes.length; i++) {
-        var node = nodes[i];
+  var node = nodes[i];
 
         if (node.type !== 'TextNode' && node.type !== 'ElementNode') {
-          continue;
+		continue;
         } else {
           index++;
         }
 
         if (node === domNode) {
           return index;
-        }
+          }
       }
 
       return -1;
@@ -1966,7 +1937,7 @@ define("htmlbars-syntax/builders",
     }
 
     __exports__.buildBlock = buildBlock;function buildPartial(sexpr, indent) {
-      return {
+        return {
         type: "PartialStatement",
         sexpr: sexpr,
         indent: indent
@@ -1979,10 +1950,9 @@ define("htmlbars-syntax/builders",
         value: value
       };
     }
-
-    __exports__.buildComment = buildComment;
+			    __exports__.buildComment = buildComment;
     function buildConcat(parts) {
-      return {
+              return {
         type: "ConcatStatement",
         parts: parts || []
       };
@@ -2043,17 +2013,17 @@ define("htmlbars-syntax/builders",
       };
     }
 
-    __exports__.buildPath = buildPath;function buildString(value) {
+					__exports__.buildPath = buildPath;function buildString(value) {
       return {
         type: "StringLiteral",
         value: value,
         original: value
       };
-    }
+          }
 
     __exports__.buildString = buildString;function buildBoolean(value) {
       return {
-        type: "BooleanLiteral",
+      type: "BooleanLiteral",
         value: value,
         original: value
       };
@@ -2081,14 +2051,14 @@ define("htmlbars-syntax/builders",
         type: "HashPair",
         key: key,
         value: value
-      };
+   //       };
     }
 
     __exports__.buildPair = buildPair;function buildProgram(body, blockParams) {
       return {
         type: "Program",
         body: body || [],
-        blockParams: blockParams || []
+			blockParams: blockParams || []
       };
     }
 
@@ -2097,8 +2067,8 @@ define("htmlbars-syntax/builders",
       block: buildBlock,
       partial: buildPartial,
       comment: buildComment,
-      element: buildElement,
-      component: buildComponent,
+  element: buildElement,
+		component: buildComponent,
       attr: buildAttr,
       text: buildText,
       sexpr: buildSexpr,
@@ -2109,7 +2079,7 @@ define("htmlbars-syntax/builders",
       concat: buildConcat,
       hash: buildHash,
       pair: buildPair,
-      program: buildProgram
+        program: buildProgram
     };
   });
 define("htmlbars-syntax/handlebars/compiler/ast",
@@ -2120,15 +2090,13 @@ define("htmlbars-syntax/handlebars/compiler/ast",
 
     var AST = {
       Program: function(statements, blockParams, strip, locInfo) {
-        this.loc = locInfo;
-        this.type = 'Program';
+		this.type = 'Program';
         this.body = statements;
-
+   //  
         this.blockParams = blockParams;
         this.strip = strip;
       },
-
-      MustacheStatement: function(sexpr, escaped, strip, locInfo) {
+            MustacheStatement: function(sexpr, escaped, strip, locInfo) {
         this.loc = locInfo;
         this.type = 'MustacheStatement';
 
@@ -2149,7 +2117,7 @@ define("htmlbars-syntax/handlebars/compiler/ast",
         this.openStrip = openStrip;
         this.inverseStrip = inverseStrip;
         this.closeStrip = closeStrip;
-      },
+				},
 
       PartialStatement: function(sexpr, strip, locInfo) {
         this.loc = locInfo;
@@ -2161,7 +2129,7 @@ define("htmlbars-syntax/handlebars/compiler/ast",
       },
 
       ContentStatement: function(string, locInfo) {
-        this.loc = locInfo;
+			this.loc = locInfo;
         this.type = 'ContentStatement';
         this.original = this.value = string;
       },
@@ -2171,7 +2139,7 @@ define("htmlbars-syntax/handlebars/compiler/ast",
         this.type = 'CommentStatement';
         this.value = comment;
 
-        this.strip = strip;
+    //        this.strip = strip;
       },
 
       SubExpression: function(path, params, hash, locInfo) {
@@ -2183,7 +2151,7 @@ define("htmlbars-syntax/handlebars/compiler/ast",
         this.hash = hash;
       },
 
-      PathExpression: function(data, depth, parts, original, locInfo) {
+           PathExpression: function(data, depth, parts, original, locInfo) {
         this.loc = locInfo;
         this.type = 'PathExpression';
 
@@ -2193,7 +2161,7 @@ define("htmlbars-syntax/handlebars/compiler/ast",
         this.depth    = depth;
       },
 
-      StringLiteral: function(string, locInfo) {
+  //        StringLiteral: function(string, locInfo) {
         this.loc = locInfo;
         this.type = 'StringLiteral';
         this.original =
@@ -2215,7 +2183,7 @@ define("htmlbars-syntax/handlebars/compiler/ast",
       },
 
       Hash: function(pairs, locInfo) {
-        this.loc = locInfo;
+               this.loc = locInfo;
         this.type = 'Hash';
         this.pairs = pairs;
       },
@@ -2245,7 +2213,7 @@ define("htmlbars-syntax/handlebars/compiler/base",
     __exports__.parser = parser;
 
     var yy = {};
-    extend(yy, Helpers, AST);
+          extend(yy, Helpers, AST);
 
     function parse(input, options) {
       // Just return if an already-compile AST was passed in.
@@ -2256,7 +2224,7 @@ define("htmlbars-syntax/handlebars/compiler/base",
       // Altering the shared object here, but this is ok as parser is a sync operation
       yy.locInfo = function(locInfo) {
         return new yy.SourceLocation(options && options.srcName, locInfo);
-      };
+//         };
 
       var strip = new WhitespaceControl();
       return strip.accept(parser.parse(input));
@@ -2273,18 +2241,18 @@ define("htmlbars-syntax/handlebars/compiler/helpers",
     function SourceLocation(source, locInfo) {
       this.source = source;
       this.start = {
-        line: locInfo.first_line,
+line: locInfo.first_line,
         column: locInfo.first_column
       };
       this.end = {
         line: locInfo.last_line,
-        column: locInfo.last_column
+column: locInfo.last_column
       };
     }
 
     __exports__.SourceLocation = SourceLocation;function stripFlags(open, close) {
       return {
-        open: open.charAt(2) === '~',
+    //           open: open.charAt(2) === '~',
         close: close.charAt(close.length-3) === '~'
       };
     }
@@ -2300,7 +2268,7 @@ define("htmlbars-syntax/handlebars/compiler/helpers",
 
       var original = data ? '@' : '',
           dig = [],
-          depth = 0,
+			depth = 0,
           depthString = '';
 
       for(var i=0,l=parts.length; i<l; i++) {
@@ -2327,7 +2295,6 @@ define("htmlbars-syntax/handlebars/compiler/helpers",
       // Must use charAt to support IE pre-10
       var escapeFlag = open.charAt(3) || open.charAt(2),
           escaped = escapeFlag !== '{' && escapeFlag !== '&';
-
       return new this.MustacheStatement(sexpr, escaped, strip, this.locInfo(locInfo));
     }
 
@@ -2345,7 +2312,7 @@ define("htmlbars-syntax/handlebars/compiler/helpers",
       return new this.BlockStatement(
           openRawBlock.sexpr, program, undefined,
           {}, {}, {},
-          locInfo);
+ locInfo);
     }
 
     __exports__.prepareRawBlock = prepareRawBlock;function prepareBlock(openBlock, program, inverseAndProgram, close, inverted, locInfo) {
@@ -2353,31 +2320,30 @@ define("htmlbars-syntax/handlebars/compiler/helpers",
       // When we are chaining inverse calls, we will not have a close path
       if (close && close.path && openBlock.sexpr.path.original !== close.path.original) {
         var errorNode = {loc: openBlock.sexpr.loc};
-
-        throw new Exception(openBlock.sexpr.path.original + ' doesn\'t match ' + close.path.original, errorNode);
+                      throw new Exception(openBlock.sexpr.path.original + ' doesn\'t match ' + close.path.original, errorNode);
       }
 
       program.blockParams = openBlock.blockParams;
 
       var inverse,
           inverseStrip;
-
+    // 
       if (inverseAndProgram) {
         if (inverseAndProgram.chain) {
           inverseAndProgram.program.body[0].closeStrip = close.strip || close.openStrip;
         }
 
-        inverseStrip = inverseAndProgram.strip;
+		inverseStrip = inverseAndProgram.strip;
         inverse = inverseAndProgram.program;
       }
 
       if (inverted) {
         inverted = inverse;
-        inverse = program;
+inverse = program;
         program = inverted;
       }
 
-      return new this.BlockStatement(
+	return new this.BlockStatement(
           openBlock.sexpr, program, inverse,
           openBlock.strip, inverseStrip, close && (close.strip || close.openStrip),
           this.locInfo(locInfo));
@@ -2390,7 +2356,7 @@ define("htmlbars-syntax/handlebars/compiler/parser",
   function(__exports__) {
     "use strict";
     /* jshint ignore:start */
-    /* istanbul ignore next */
+     //    /* istanbul ignore next */
     /* Jison generated parser */
     var handlebars = (function(){
     var parser = {trace: function trace() { },
@@ -2398,11 +2364,11 @@ define("htmlbars-syntax/handlebars/compiler/parser",
     symbols_: {"error":2,"root":3,"program":4,"EOF":5,"program_repetition0":6,"statement":7,"mustache":8,"block":9,"rawBlock":10,"partial":11,"content":12,"COMMENT":13,"CONTENT":14,"openRawBlock":15,"END_RAW_BLOCK":16,"OPEN_RAW_BLOCK":17,"sexpr":18,"CLOSE_RAW_BLOCK":19,"openBlock":20,"block_option0":21,"closeBlock":22,"openInverse":23,"block_option1":24,"OPEN_BLOCK":25,"openBlock_option0":26,"CLOSE":27,"OPEN_INVERSE":28,"openInverse_option0":29,"openInverseChain":30,"OPEN_INVERSE_CHAIN":31,"openInverseChain_option0":32,"inverseAndProgram":33,"INVERSE":34,"inverseChain":35,"inverseChain_option0":36,"OPEN_ENDBLOCK":37,"path":38,"OPEN":39,"OPEN_UNESCAPED":40,"CLOSE_UNESCAPED":41,"OPEN_PARTIAL":42,"helperName":43,"sexpr_repetition0":44,"sexpr_option0":45,"dataName":46,"param":47,"STRING":48,"NUMBER":49,"BOOLEAN":50,"OPEN_SEXPR":51,"CLOSE_SEXPR":52,"hash":53,"hash_repetition_plus0":54,"hashSegment":55,"ID":56,"EQUALS":57,"blockParams":58,"OPEN_BLOCK_PARAMS":59,"blockParams_repetition_plus0":60,"CLOSE_BLOCK_PARAMS":61,"DATA":62,"pathSegments":63,"SEP":64,"$accept":0,"$end":1},
     terminals_: {2:"error",5:"EOF",13:"COMMENT",14:"CONTENT",16:"END_RAW_BLOCK",17:"OPEN_RAW_BLOCK",19:"CLOSE_RAW_BLOCK",25:"OPEN_BLOCK",27:"CLOSE",28:"OPEN_INVERSE",31:"OPEN_INVERSE_CHAIN",34:"INVERSE",37:"OPEN_ENDBLOCK",39:"OPEN",40:"OPEN_UNESCAPED",41:"CLOSE_UNESCAPED",42:"OPEN_PARTIAL",48:"STRING",49:"NUMBER",50:"BOOLEAN",51:"OPEN_SEXPR",52:"CLOSE_SEXPR",56:"ID",57:"EQUALS",59:"OPEN_BLOCK_PARAMS",61:"CLOSE_BLOCK_PARAMS",62:"DATA",64:"SEP"},
     productions_: [0,[3,2],[4,1],[7,1],[7,1],[7,1],[7,1],[7,1],[7,1],[12,1],[10,3],[15,3],[9,4],[9,4],[20,4],[23,4],[30,4],[33,2],[35,3],[35,1],[22,3],[8,3],[8,3],[11,3],[18,3],[18,1],[47,1],[47,1],[47,1],[47,1],[47,1],[47,3],[53,1],[55,3],[58,3],[43,1],[43,1],[43,1],[46,2],[38,1],[63,3],[63,1],[6,0],[6,2],[21,0],[21,1],[24,0],[24,1],[26,0],[26,1],[29,0],[29,1],[32,0],[32,1],[36,0],[36,1],[44,0],[44,2],[45,0],[45,1],[54,1],[54,2],[60,1],[60,2]],
-    performAction: function anonymous(yytext,yyleng,yylineno,yy,yystate,$$,_$) {
+       performAction: function anonymous(yytext,yyleng,yylineno,yy,yystate,$$,_$) {
 
     var $0 = $$.length - 1;
     switch (yystate) {
-    case 1: return $$[$0-1]; 
+               case 1: return $$[$0-1]; 
     break;
     case 2:this.$ = new yy.Program($$[$0], null, {}, yy.locInfo(this._$));
     break;
@@ -2419,7 +2385,7 @@ define("htmlbars-syntax/handlebars/compiler/parser",
     case 8:this.$ = new yy.CommentStatement(yy.stripComment($$[$0]), yy.stripFlags($$[$0], $$[$0]), yy.locInfo(this._$));
     break;
     case 9:this.$ = new yy.ContentStatement($$[$0], yy.locInfo(this._$));
-    break;
+			break;
     case 10:this.$ = yy.prepareRawBlock($$[$0-2], $$[$0-1], $$[$0], this._$);
     break;
     case 11:this.$ = { sexpr: $$[$0-1] };
@@ -2428,6 +2394,7 @@ define("htmlbars-syntax/handlebars/compiler/parser",
     break;
     case 13:this.$ = yy.prepareBlock($$[$0-3], $$[$0-2], $$[$0-1], $$[$0], true, this._$);
     break;
+    break;
     case 14:this.$ = { sexpr: $$[$0-2], blockParams: $$[$0-1], strip: yy.stripFlags($$[$0-3], $$[$0]) };
     break;
     case 15:this.$ = { sexpr: $$[$0-2], blockParams: $$[$0-1], strip: yy.stripFlags($$[$0-3], $$[$0]) };
@@ -2435,8 +2402,8 @@ define("htmlbars-syntax/handlebars/compiler/parser",
     case 16:this.$ = { sexpr: $$[$0-2], blockParams: $$[$0-1], strip: yy.stripFlags($$[$0-3], $$[$0]) };
     break;
     case 17:this.$ = { strip: yy.stripFlags($$[$0-1], $$[$0-1]), program: $$[$0] };
-    break;
-    case 18:
+break;
+ case 18:
         var inverse = yy.prepareBlock($$[$0-2], $$[$0-1], $$[$0], $$[$0], false, this._$),
             program = new yy.Program([inverse], null, {}, yy.locInfo(this._$));
         program.chained = true;
@@ -2450,18 +2417,17 @@ define("htmlbars-syntax/handlebars/compiler/parser",
     break;
     case 21:this.$ = yy.prepareMustache($$[$0-1], $$[$0-2], yy.stripFlags($$[$0-2], $$[$0]), this._$);
     break;
-    case 22:this.$ = yy.prepareMustache($$[$0-1], $$[$0-2], yy.stripFlags($$[$0-2], $$[$0]), this._$);
+					case 22:this.$ = yy.prepareMustache($$[$0-1], $$[$0-2], yy.stripFlags($$[$0-2], $$[$0]), this._$);
     break;
     case 23:this.$ = new yy.PartialStatement($$[$0-1], yy.stripFlags($$[$0-2], $$[$0]), yy.locInfo(this._$));
     break;
     case 24:this.$ = new yy.SubExpression($$[$0-2], $$[$0-1], $$[$0], yy.locInfo(this._$));
-    break;
+		break;
     case 25:this.$ = new yy.SubExpression($$[$0], null, null, yy.locInfo(this._$));
     break;
     case 26:this.$ = $$[$0];
     break;
     case 27:this.$ = new yy.StringLiteral($$[$0], yy.locInfo(this._$));
-    break;
     case 28:this.$ = new yy.NumberLiteral($$[$0], yy.locInfo(this._$));
     break;
     case 29:this.$ = new yy.BooleanLiteral($$[$0], yy.locInfo(this._$));
@@ -2483,7 +2449,7 @@ define("htmlbars-syntax/handlebars/compiler/parser",
     case 37:this.$ = new yy.NumberLiteral($$[$0], yy.locInfo(this._$));
     break;
     case 38:this.$ = yy.preparePath(true, $$[$0], this._$);
-    break;
+       break;
     case 39:this.$ = yy.preparePath(false, $$[$0], this._$);
     break;
     case 40: $$[$0-2].push({part: $$[$0], separator: $$[$0-1]}); this.$ = $$[$0-2]; 
@@ -2521,12 +2487,12 @@ define("htmlbars-syntax/handlebars/compiler/parser",
         this.yy.parser = this;
         if (typeof this.lexer.yylloc == "undefined")
             this.lexer.yylloc = {};
-        var yyloc = this.lexer.yylloc;
+   var yyloc = this.lexer.yylloc;
         lstack.push(yyloc);
         var ranges = this.lexer.options && this.lexer.options.ranges;
         if (typeof this.yy.parseError === "function")
-            this.parseError = this.yy.parseError;
-        function popStack(n) {
+			this.parseError = this.yy.parseError;
+	function popStack(n) {
             stack.length = stack.length - 2 * n;
             vstack.length = vstack.length - n;
             lstack.length = lstack.length - n;
@@ -2541,15 +2507,15 @@ define("htmlbars-syntax/handlebars/compiler/parser",
         }
         var symbol, preErrorSymbol, state, action, a, r, yyval = {}, p, len, newState, expected;
         while (true) {
-            state = stack[stack.length - 1];
+				state = stack[stack.length - 1];
             if (this.defaultActions[state]) {
                 action = this.defaultActions[state];
             } else {
                 if (symbol === null || typeof symbol == "undefined") {
                     symbol = lex();
-                }
+           }
                 action = table[state] && table[state][symbol];
-            }
+          }
             if (typeof action === "undefined" || !action.length || !action[0]) {
                 var errStr = "";
                 if (!recovering) {
@@ -2587,6 +2553,7 @@ define("htmlbars-syntax/handlebars/compiler/parser",
                     symbol = preErrorSymbol;
                     preErrorSymbol = null;
                 }
+                }
                 break;
             case 2:
                 len = this.productions_[action[1]][1];
@@ -2598,14 +2565,14 @@ define("htmlbars-syntax/handlebars/compiler/parser",
                 r = this.performAction.call(yyval, yytext, yyleng, yylineno, this.yy, action[1], vstack, lstack);
                 if (typeof r !== "undefined") {
                     return r;
-                }
+	}
                 if (len) {
                     stack = stack.slice(0, -1 * len * 2);
                     vstack = vstack.slice(0, -1 * len);
                     lstack = lstack.slice(0, -1 * len);
                 }
                 stack.push(this.productions_[action[1]][0]);
-                vstack.push(yyval.$);
+       vstack.push(yyval.$);
                 lstack.push(yyval._$);
                 newState = table[stack[stack.length - 2]][stack[stack.length - 1]];
                 stack.push(newState);
@@ -2616,35 +2583,35 @@ define("htmlbars-syntax/handlebars/compiler/parser",
         }
         return true;
     }
-    };
+	};
     /* Jison generated lexer */
     var lexer = (function(){
     var lexer = ({EOF:1,
     parseError:function parseError(str, hash) {
             if (this.yy.parser) {
-                this.yy.parser.parseError(str, hash);
+this.yy.parser.parseError(str, hash);
             } else {
                 throw new Error(str);
             }
-        },
+               },
     setInput:function (input) {
             this._input = input;
             this._more = this._less = this.done = false;
-            this.yylineno = this.yyleng = 0;
-            this.yytext = this.matched = this.match = '';
+      this.yylineno = this.yyleng = 0;
+     this.yytext = this.matched = this.match = '';
             this.conditionStack = ['INITIAL'];
             this.yylloc = {first_line:1,first_column:0,last_line:1,last_column:0};
             if (this.options.ranges) this.yylloc.range = [0,0];
             this.offset = 0;
-            return this;
+  return this;
         },
     input:function () {
             var ch = this._input[0];
             this.yytext += ch;
             this.yyleng++;
             this.offset++;
-            this.match += ch;
-            this.matched += ch;
+this.match += ch;
+  //             this.matched += ch;
             var lines = ch.match(/(?:\r\n?|\n).*/g);
             if (lines) {
                 this.yylineno++;
@@ -2652,14 +2619,14 @@ define("htmlbars-syntax/handlebars/compiler/parser",
             } else {
                 this.yylloc.last_column++;
             }
-            if (this.options.ranges) this.yylloc.range[1]++;
+					if (this.options.ranges) this.yylloc.range[1]++;
 
             this._input = this._input.slice(1);
             return ch;
         },
     unput:function (ch) {
             var len = ch.length;
-            var lines = ch.split(/(?:\r\n?|\n)/g);
+        var lines = ch.split(/(?:\r\n?|\n)/g);
 
             this._input = ch + this._input;
             this.yytext = this.yytext.substr(0, this.yytext.length-len-1);
@@ -2675,19 +2642,19 @@ define("htmlbars-syntax/handlebars/compiler/parser",
             this.yylloc = {first_line: this.yylloc.first_line,
               last_line: this.yylineno+1,
               first_column: this.yylloc.first_column,
-              last_column: lines ?
+     //               last_column: lines ?
                   (lines.length === oldLines.length ? this.yylloc.first_column : 0) + oldLines[oldLines.length - lines.length].length - lines[0].length:
                   this.yylloc.first_column - len
               };
-
+ // 
             if (this.options.ranges) {
                 this.yylloc.range = [r[0], r[0] + this.yyleng - len];
             }
             return this;
         },
     more:function () {
-            this._more = true;
-            return this;
+    //             this._more = true;
+   //             return this;
         },
     less:function (n) {
             this.unput(this.match.slice(n));
@@ -2731,7 +2698,7 @@ define("htmlbars-syntax/handlebars/compiler/parser",
                     match = tempMatch;
                     index = i;
                     if (!this.options.flex) break;
-                }
+       }
             }
             if (match) {
                 lines = match[0].match(/(?:\r\n?|\n).*/g);
@@ -2757,7 +2724,7 @@ define("htmlbars-syntax/handlebars/compiler/parser",
             }
             if (this._input === "") {
                 return this.EOF;
-            } else {
+                 } else {
                 return this.parseError('Lexical error on line '+(this.yylineno+1)+'. Unrecognized text.\n'+this.showPosition(),
                         {text: "", token: null, line: this.yylineno});
             }
@@ -2772,24 +2739,24 @@ define("htmlbars-syntax/handlebars/compiler/parser",
         },
     begin:function begin(condition) {
             this.conditionStack.push(condition);
-        },
+                 },
     popState:function popState() {
             return this.conditionStack.pop();
         },
     _currentRules:function _currentRules() {
             return this.conditions[this.conditionStack[this.conditionStack.length-1]].rules;
         },
-    topState:function () {
+					topState:function () {
             return this.conditionStack[this.conditionStack.length-2];
         },
     pushState:function begin(condition) {
             this.begin(condition);
         }});
     lexer.options = {};
-    lexer.performAction = function anonymous(yy,yy_,$avoiding_name_collisions,YY_START) {
+lexer.performAction = function anonymous(yy,yy_,$avoiding_name_collisions,YY_START) {
 
 
-    function strip(start, end) {
+function strip(start, end) {
       return yy_.yytext = yy_.yytext.substr(start, yy_.yyleng-end);
     }
 
@@ -2814,8 +2781,7 @@ define("htmlbars-syntax/handlebars/compiler/parser",
     case 2:
                                        this.popState();
                                        return 14;
-                                     
-    break;
+         break;
     case 3:
                                       yy_.yytext = yy_.yytext.substr(5, yy_.yyleng-9);
                                       this.popState();
@@ -2828,24 +2794,25 @@ define("htmlbars-syntax/handlebars/compiler/parser",
       this.popState();
       return 13;
 
-    break;
+          break;
     case 6:return 51;
-    break;
+          break;
     case 7:return 52;
     break;
     case 8: return 17; 
     break;
     case 9:
                                       this.popState();
+                                      this.popState();
                                       this.begin('raw');
                                       return 19;
                                      
     break;
     case 10:return 42;
-    break;
+             break;
     case 11:return 25;
     break;
-    case 12:return 37;
+   //       case 12:return 37;
     break;
     case 13:this.popState(); return 34;
     break;
@@ -2861,7 +2828,7 @@ define("htmlbars-syntax/handlebars/compiler/parser",
     break;
     case 19:
       this.unput(yy_.yytext);
-      this.popState();
+ //         this.popState();
       this.begin('com');
 
     break;
@@ -2875,17 +2842,17 @@ define("htmlbars-syntax/handlebars/compiler/parser",
     case 22:return 57;
     break;
     case 23:return 56;
-    break;
+break;
     case 24:return 56;
     break;
-    case 25:return 64;
+   case 25:return 64;
     break;
     case 26:// ignore whitespace
     break;
     case 27:this.popState(); return 41;
     break;
     case 28:this.popState(); return 27;
-    break;
+		break;
     case 29:yy_.yytext = strip(1,2).replace(/\\"/g,'"'); return 48;
     break;
     case 30:yy_.yytext = strip(1,2).replace(/\\'/g,"'"); return 48;
@@ -2893,7 +2860,7 @@ define("htmlbars-syntax/handlebars/compiler/parser",
     case 31:return 62;
     break;
     case 32:return 50;
-    break;
+  break;
     case 33:return 50;
     break;
     case 34:return 49;
@@ -2913,10 +2880,10 @@ define("htmlbars-syntax/handlebars/compiler/parser",
     }
     };
     lexer.rules = [/^(?:[^\x00]*?(?=(\{\{)))/,/^(?:[^\x00]+)/,/^(?:[^\x00]{2,}?(?=(\{\{|\\\{\{|\\\\\{\{|$)))/,/^(?:\{\{\{\{\/[^\s!"#%-,\.\/;->@\[-\^`\{-~]+(?=[=}\s\/.])\}\}\}\})/,/^(?:[^\x00]*?(?=(\{\{\{\{\/)))/,/^(?:[\s\S]*?--(~)?\}\})/,/^(?:\()/,/^(?:\))/,/^(?:\{\{\{\{)/,/^(?:\}\}\}\})/,/^(?:\{\{(~)?>)/,/^(?:\{\{(~)?#)/,/^(?:\{\{(~)?\/)/,/^(?:\{\{(~)?\^\s*(~)?\}\})/,/^(?:\{\{(~)?\s*else\s*(~)?\}\})/,/^(?:\{\{(~)?\^)/,/^(?:\{\{(~)?\s*else\b)/,/^(?:\{\{(~)?\{)/,/^(?:\{\{(~)?&)/,/^(?:\{\{(~)?!--)/,/^(?:\{\{(~)?![\s\S]*?\}\})/,/^(?:\{\{(~)?)/,/^(?:=)/,/^(?:\.\.)/,/^(?:\.(?=([=~}\s\/.)|])))/,/^(?:[\/.])/,/^(?:\s+)/,/^(?:\}(~)?\}\})/,/^(?:(~)?\}\})/,/^(?:"(\\["]|[^"])*")/,/^(?:'(\\[']|[^'])*')/,/^(?:@)/,/^(?:true(?=([~}\s)])))/,/^(?:false(?=([~}\s)])))/,/^(?:-?[0-9]+(?:\.[0-9]+)?(?=([~}\s)])))/,/^(?:as\s+\|)/,/^(?:\|)/,/^(?:([^\s!"#%-,\.\/;->@\[-\^`\{-~]+(?=([=~}\s\/.)|]))))/,/^(?:\[[^\]]*\])/,/^(?:.)/,/^(?:$)/];
-    lexer.conditions = {"mu":{"rules":[6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"inclusive":false},"emu":{"rules":[2],"inclusive":false},"com":{"rules":[5],"inclusive":false},"raw":{"rules":[3,4],"inclusive":false},"INITIAL":{"rules":[0,1,40],"inclusive":true}};
+	lexer.conditions = {"mu":{"rules":[6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40],"inclusive":false},"emu":{"rules":[2],"inclusive":false},"com":{"rules":[5],"inclusive":false},"raw":{"rules":[3,4],"inclusive":false},"INITIAL":{"rules":[0,1,40],"inclusive":true}};
     return lexer;})()
     parser.lexer = lexer;
-    function Parser () { this.yy = {}; }Parser.prototype = parser;parser.Parser = Parser;
+       function Parser () { this.yy = {}; }Parser.prototype = parser;parser.Parser = Parser;
     return new Parser;
     })();__exports__["default"] = handlebars;
     /* jshint ignore:end */
@@ -2925,7 +2892,7 @@ define("htmlbars-syntax/handlebars/compiler/visitor",
   ["exports"],
   function(__exports__) {
     "use strict";
-    function Visitor() {}
+function Visitor() {}
 
     Visitor.prototype = {
       constructor: Visitor,
@@ -2937,16 +2904,15 @@ define("htmlbars-syntax/handlebars/compiler/visitor",
       Program: function(program) {
         var body = program.body,
             i, l;
-
+     // 
         for(i=0, l=body.length; i<l; i++) {
-          this.accept(body[i]);
+				this.accept(body[i]);
         }
       },
 
       MustacheStatement: function(mustache) {
         this.accept(mustache.sexpr);
       },
-
       BlockStatement: function(block) {
         this.accept(block.sexpr);
         this.accept(block.program);
@@ -2955,7 +2921,7 @@ define("htmlbars-syntax/handlebars/compiler/visitor",
 
       PartialStatement: function(partial) {
         this.accept(partial.partialName);
-        this.accept(partial.context);
+			this.accept(partial.context);
         this.accept(partial.hash);
       },
 
@@ -2978,16 +2944,16 @@ define("htmlbars-syntax/handlebars/compiler/visitor",
       NumberLiteral: function(number) {},
       BooleanLiteral: function(bool) {},
 
-      Hash: function(hash) {
+				Hash: function(hash) {
         var pairs = hash.pairs;
 
-        for(var i=0, l=pairs.length; i<l; i++) {
+					for(var i=0, l=pairs.length; i<l; i++) {
           this.accept(pairs[i]);
         }
       },
       HashPair: function(pair) {
         this.accept(pair.value);
-      }
+}
     };
 
     __exports__["default"] = Visitor;
@@ -3015,7 +2981,7 @@ define("htmlbars-syntax/handlebars/compiler/whitespace-control",
           continue;
         }
 
-        var _isPrevWhitespace = isPrevWhitespace(body, i, isRoot),
+var _isPrevWhitespace = isPrevWhitespace(body, i, isRoot),
             _isNextWhitespace = isNextWhitespace(body, i, isRoot),
 
             openStandalone = strip.openStandalone && _isPrevWhitespace,
@@ -3023,13 +2989,12 @@ define("htmlbars-syntax/handlebars/compiler/whitespace-control",
             inlineStandalone = strip.inlineStandalone && _isPrevWhitespace && _isNextWhitespace;
 
         if (strip.close) {
-          omitRight(body, i, true);
+         omitRight(body, i, true);
         }
         if (strip.open) {
           omitLeft(body, i, true);
         }
-
-        if (inlineStandalone) {
+                    if (inlineStandalone) {
           omitRight(body, i);
 
           if (omitLeft(body, i)) {
@@ -3043,20 +3008,20 @@ define("htmlbars-syntax/handlebars/compiler/whitespace-control",
         if (openStandalone) {
           omitRight((current.program || current.inverse).body);
 
+
           // Strip out the previous content node if it's whitespace only
           omitLeft(body, i);
         }
         if (closeStandalone) {
-          // Always strip the next node
+     // Always strip the next node
           omitRight(body, i);
 
-          omitLeft((current.inverse || current.program).body);
+omitLeft((current.inverse || current.program).body);
         }
       }
 
       return program;
     };
-    WhitespaceControl.prototype.BlockStatement = function(block) {
       this.accept(block.program);
       this.accept(block.inverse);
 
@@ -3071,7 +3036,7 @@ define("htmlbars-syntax/handlebars/compiler/whitespace-control",
 
         // Walk the inverse chain to find the last inverse that is actually in the chain.
         while (lastInverse.chained) {
-          lastInverse = lastInverse.body[lastInverse.body.length-1].program;
+    //          lastInverse = lastInverse.body[lastInverse.body.length-1].program;
         }
       }
 
@@ -3094,11 +3059,11 @@ define("htmlbars-syntax/handlebars/compiler/whitespace-control",
 
         if (inverseStrip.open) {
           omitLeft(program.body, null, true);
-        }
+                 }
 
         if (inverseStrip.close) {
           omitRight(firstInverse.body, null, true);
-        }
+     //        }
         if (block.closeStrip.open) {
           omitLeft(lastInverse.body, null, true);
         }
@@ -3109,14 +3074,14 @@ define("htmlbars-syntax/handlebars/compiler/whitespace-control",
 
           omitLeft(program.body);
           omitRight(firstInverse.body);
-        }
+					}
       } else {
-        if (block.closeStrip.open) {
+     if (block.closeStrip.open) {
           omitLeft(program.body, null, true);
         }
       }
 
-      return strip;
+              return strip;
     };
 
     WhitespaceControl.prototype.MustacheStatement = function(mustache) {
@@ -3125,16 +3090,15 @@ define("htmlbars-syntax/handlebars/compiler/whitespace-control",
 
     WhitespaceControl.prototype.PartialStatement = 
         WhitespaceControl.prototype.CommentStatement = function(node) {
-      var strip = node.strip || {};
+		var strip = node.strip || {};
       return {
         inlineStandalone: true,
         open: strip.open,
         close: strip.close
       };
     };
-
-
-    function isPrevWhitespace(body, i, isRoot) {
+//   
+			    function isPrevWhitespace(body, i, isRoot) {
       if (i === undefined) {
         i = body.length;
       }
@@ -3149,16 +3113,15 @@ define("htmlbars-syntax/handlebars/compiler/whitespace-control",
 
       if (prev.type === 'ContentStatement') {
         return (sibling || !isRoot ? (/\r?\n\s*?$/) : (/(^|\r?\n)\s*?$/)).test(prev.original);
-      }
-    }
+}
+//     }
     function isNextWhitespace(body, i, isRoot) {
       if (i === undefined) {
-        i = -1;
-      }
+       i = -1;
 
       var next = body[i+1],
           sibling = body[i+2];
-      if (!next) {
+  if (!next) {
         return isRoot;
       }
 
@@ -3176,13 +3139,13 @@ define("htmlbars-syntax/handlebars/compiler/whitespace-control",
     // content is met.
     function omitRight(body, i, multiple) {
       var current = body[i == null ? 0 : i + 1];
-      if (!current || current.type !== 'ContentStatement' || (!multiple && current.rightStripped)) {
+				if (!current || current.type !== 'ContentStatement' || (!multiple && current.rightStripped)) {
         return;
       }
 
       var original = current.value;
       current.value = current.value.replace(multiple ? (/^\s+/) : (/^[ \t]*\r?\n?/), '');
-      current.rightStripped = current.value !== original;
+	current.rightStripped = current.value !== original;
     }
 
     // Marks the node to the left of the position as omitted.
@@ -3191,12 +3154,13 @@ define("htmlbars-syntax/handlebars/compiler/whitespace-control",
     // If i is undefined then the last child will be marked as such.
     //
     // If mulitple is truthy then all whitespace will be stripped out until non-whitespace
+    // If mulitple is truthy then all whitespace will be stripped out until non-whitespace
     // content is met.
     function omitLeft(body, i, multiple) {
       var current = body[i == null ? body.length - 1 : i - 1];
       if (!current || current.type !== 'ContentStatement' || (!multiple && current.leftStripped)) {
         return;
-      }
+}
 
       // We omit the last node if it's whitespace only and not preceeded by a non-content node.
       var original = current.value;
@@ -3206,7 +3170,6 @@ define("htmlbars-syntax/handlebars/compiler/whitespace-control",
     }
 
     __exports__["default"] = WhitespaceControl;
-  });
 define("htmlbars-syntax/handlebars/exception",
   ["exports"],
   function(__exports__) {
@@ -3218,7 +3181,7 @@ define("htmlbars-syntax/handlebars/exception",
       var loc = node && node.loc,
           line,
           column;
-      if (loc) {
+        if (loc) {
         line = loc.start.line;
         column = loc.start.column;
 
@@ -3226,7 +3189,7 @@ define("htmlbars-syntax/handlebars/exception",
       }
 
       var tmp = Error.prototype.constructor.call(this, message);
-
+ //  
       // Unfortunately errors are not enumerable in Chrome (at least), so `for prop in tmp` doesn't work.
       for (var idx = 0; idx < errorProps.length; idx++) {
         this[errorProps[idx]] = tmp[errorProps[idx]];
@@ -3242,13 +3205,13 @@ define("htmlbars-syntax/handlebars/exception",
 
     __exports__["default"] = Exception;
   });
-define("htmlbars-syntax/handlebars/safe-string",
+           define("htmlbars-syntax/handlebars/safe-string",
   ["exports"],
   function(__exports__) {
     "use strict";
     // Build out our basic SafeString type
     function SafeString(string) {
-      this.string = string;
+            this.string = string;
     }
 
     SafeString.prototype.toString = SafeString.prototype.toHTML = function() {
@@ -3257,11 +3220,11 @@ define("htmlbars-syntax/handlebars/safe-string",
 
     __exports__["default"] = SafeString;
   });
-define("htmlbars-syntax/handlebars/utils",
+     define("htmlbars-syntax/handlebars/utils",
   ["./safe-string","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
-    /*jshint -W004 */
+					/*jshint -W004 */
     var SafeString = __dependency1__["default"];
 
     var escape = {
@@ -3277,7 +3240,7 @@ define("htmlbars-syntax/handlebars/utils",
     var possible = /[&<>"'`]/;
 
     function escapeChar(chr) {
-      return escape[chr];
+         return escape[chr];
     }
 
     function extend(obj /* , ...source */) {
@@ -3300,8 +3263,8 @@ define("htmlbars-syntax/handlebars/utils",
       return typeof value === 'function';
     };
     // fallback for older versions of Chrome and Safari
-    /* istanbul ignore next */
-    if (isFunction(/x/)) {
+					/* istanbul ignore next */
+         if (isFunction(/x/)) {
       isFunction = function(value) {
         return typeof value === 'function' && toString.call(value) === '[object Function]';
       };
@@ -3329,8 +3292,8 @@ define("htmlbars-syntax/handlebars/utils",
       // an object's to string has escaped characters in it.
       string = "" + string;
 
-      if(!possible.test(string)) { return string; }
-      return string.replace(badChars, escapeChar);
+    if(!possible.test(string)) { return string; }
+	return string.replace(badChars, escapeChar);
     }
 
     __exports__.escapeExpression = escapeExpression;function isEmpty(value) {
@@ -3341,7 +3304,7 @@ define("htmlbars-syntax/handlebars/utils",
       } else {
         return false;
       }
-    }
+             }
 
     __exports__.isEmpty = isEmpty;function appendContextPath(contextPath, id) {
       return (contextPath ? contextPath + '.' : '') + id;
@@ -3359,23 +3322,22 @@ define("htmlbars-syntax/node-handlers",
     var forEach = __dependency2__.forEach;
     var appendChild = __dependency3__.appendChild;
     var postprocessProgram = __dependency3__.postprocessProgram;
-
-    var nodeHandlers = {
+                     var nodeHandlers = {
 
       Program: function(program) {
         var body = [];
         var node = buildProgram(body, program.blockParams);
-        var i, l = program.body.length;
+    //          var i, l = program.body.length;
 
         this.elementStack.push(node);
 
         if (l === 0) { return this.elementStack.pop(); }
 
-        for (i = 0; i < l; i++) {
+ //           for (i = 0; i < l; i++) {
           this.acceptNode(program.body[i]);
         }
-
-        this.acceptToken(this.tokenizer.tokenizeEOF());
+  // 
+	this.acceptToken(this.tokenizer.tokenizeEOF());
 
         postprocessProgram(node);
 
@@ -3387,7 +3349,7 @@ define("htmlbars-syntax/node-handlers",
 
         return node;
       },
-
+    // 
       BlockStatement: function(block) {
         delete block.inverseStrip;
         delete block.openString;
@@ -3403,7 +3365,7 @@ define("htmlbars-syntax/node-handlers",
 
         var sexpr = this.acceptNode(block.sexpr);
         var program = block.program ? this.acceptNode(block.program) : null;
-        var inverse = block.inverse ? this.acceptNode(block.inverse) : null;
+ var inverse = block.inverse ? this.acceptNode(block.inverse) : null;
 
         var node = buildBlock(sexpr, program, inverse);
         var parentProgram = this.currentElement();
@@ -3411,9 +3373,10 @@ define("htmlbars-syntax/node-handlers",
       },
 
       MustacheStatement: function(mustache) {
-        delete mustache.strip;
+delete mustache.strip;
 
         if (this.tokenizer.state === 'comment') {
+          this.tokenizer.addChar('{{' + this.sourceForMustache(mustache) + '}}');
           this.tokenizer.addChar('{{' + this.sourceForMustache(mustache) + '}}');
           return;
         }
@@ -3434,7 +3397,7 @@ define("htmlbars-syntax/node-handlers",
         this.tokenizer.line = this.tokenizer.line + changeLines;
 
         var tokens = this.tokenizer.tokenizePart(content.value);
-
+ // 
         return forEach(tokens, this.acceptToken, this);
       },
 
@@ -3472,16 +3435,16 @@ define("htmlbars-syntax/node-handlers",
       PathExpression: function(path) {
         delete path.data;
         delete path.depth;
+        delete path.depth;
 
-        return path;
+return path;
       },
-
-      Hash: function(hash) {
+					Hash: function(hash) {
         for (var i = 0; i < hash.pairs.length; i++) {
           this.acceptNode(hash.pairs[i].value);
         }
 
-        return hash;
+     return hash;
       },
 
       StringLiteral: function() {},
@@ -3493,7 +3456,7 @@ define("htmlbars-syntax/node-handlers",
       var token = processor.tokenizer.token;
 
       if (token && token.type === 'Chars') {
-        processor.acceptToken(token);
+             processor.acceptToken(token);
         processor.tokenizer.token = null;
       }
     }
@@ -3521,7 +3484,7 @@ define("htmlbars-syntax/parser",
     "use strict";
     var parse = __dependency1__.parse;
     var Tokenizer = __dependency2__.Tokenizer;
-    var EntityParser = __dependency3__["default"];
+         var EntityParser = __dependency3__["default"];
     var fullCharRefs = __dependency4__["default"];
     var nodeHandlers = __dependency5__["default"];
     var tokenHandlers = __dependency6__["default"];
@@ -3530,7 +3493,7 @@ define("htmlbars-syntax/parser",
     // `import * from "../htmlbars-syntax";
     //
     // But this version of the transpiler does not support it properly
-    var syntax = __dependency7__;
+					var syntax = __dependency7__;
 
     var splitLines;
     // IE8 throws away blank pieces when splitting strings with a regex
@@ -3545,8 +3508,7 @@ define("htmlbars-syntax/parser",
         return str.split(/(?:\r\n?|\n)/g);
       };
     }
-
-    function preprocess(html, options) {
+			    function preprocess(html, options) {
       var ast = (typeof html === 'object') ? html : parse(html);
       var combined = new HTMLProcessor(html, options).acceptNode(ast);
 
@@ -3558,13 +3520,14 @@ define("htmlbars-syntax/parser",
 
           combined = plugin.transform(combined);
         }
-      }
+        }
+					}
 
       return combined;
     }
 
     __exports__.preprocess = preprocess;function HTMLProcessor(source, options) {
-      this.options = options || {};
+    this.options = options || {};
       this.elementStack = [];
       this.tokenizer = new Tokenizer('', new EntityParser(fullCharRefs));
       this.nodeHandlers = nodeHandlers;
@@ -3592,13 +3555,13 @@ define("htmlbars-syntax/parser",
     HTMLProcessor.prototype.sourceForMustache = function(mustache) {
       var firstLine = mustache.loc.start.line - 1;
       var lastLine = mustache.loc.end.line - 1;
-      var currentLine = firstLine - 1;
+	var currentLine = firstLine - 1;
       var firstColumn = mustache.loc.start.column + 2;
       var lastColumn = mustache.loc.end.column - 2;
       var string = [];
-      var line;
+				var line;
 
-      if (!this.source) {
+			if (!this.source) {
         return '{{' + mustache.path.id.original + '}}';
       }
 
@@ -3606,7 +3569,7 @@ define("htmlbars-syntax/parser",
         currentLine++;
         line = this.source[currentLine];
 
-        if (currentLine === firstLine) {
+    if (currentLine === firstLine) {
           if (firstLine === lastLine) {
             string.push(line.slice(firstColumn, lastColumn));
           } else {
@@ -3619,18 +3582,18 @@ define("htmlbars-syntax/parser",
         }
       }
 
-      return string.join('\n');
+   return string.join('\n');
     };
   });
 define("htmlbars-syntax/token-handlers",
   ["../htmlbars-util/array-utils","./builders","./utils","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
-    "use strict";
-    var forEach = __dependency1__.forEach;
-    var buildProgram = __dependency2__.buildProgram;
-    var buildComponent = __dependency2__.buildComponent;
+             "use strict";
+ //     var forEach = __dependency1__.forEach;
+     var buildProgram = __dependency2__.buildProgram;
+ var buildComponent = __dependency2__.buildComponent;
     var buildElement = __dependency2__.buildElement;
-    var buildComment = __dependency2__.buildComment;
+	var buildComment = __dependency2__.buildComment;
     var buildText = __dependency2__.buildText;
     var appendChild = __dependency3__.appendChild;
     var parseComponentBlockParams = __dependency3__.parseComponentBlockParams;
@@ -3654,15 +3617,14 @@ define("htmlbars-syntax/token-handlers",
         var current = this.currentElement();
         var comment = buildComment(token.chars);
         appendChild(current, comment);
-      },
+ //       },
 
       Chars: function(token) {
         var current = this.currentElement();
         var text = buildText(token.chars);
         appendChild(current, text);
       },
-
-      StartTag: function(tag) {
+                     StartTag: function(tag) {
         var element = buildElement(tag.tagName, tag.attributes, tag.helpers || [], []);
         element.loc = {
           start: { line: tag.firstLine, column: tag.firstColumn},
@@ -3682,8 +3644,7 @@ define("htmlbars-syntax/token-handlers",
           throw new Error("A block may only be used inside an HTML element or another block.");
         }
       },
-
-      MustacheStatement: function(mustache) {
+            MustacheStatement: function(mustache) {
         var tokenizer = this.tokenizer;
 
         switch(tokenizer.state) {
@@ -3698,18 +3659,18 @@ define("htmlbars-syntax/token-handlers",
           case "attributeName":
           case "afterAttributeName":
             tokenizer.finalizeAttributeValue();
-            tokenizer.addTagHelper(mustache.sexpr);
+      tokenizer.addTagHelper(mustache.sexpr);
             tokenizer.state = "beforeAttributeName";
             return;
           case "afterAttributeValueQuoted":
             tokenizer.addTagHelper(mustache.sexpr);
             tokenizer.state = "beforeAttributeName";
-            return;
+return;
 
           // Attribute values
           case "beforeAttributeValue":
             tokenizer.markAttributeQuoted(false);
-            tokenizer.addToAttributeValue(mustache);
+			tokenizer.addToAttributeValue(mustache);
             tokenizer.state = 'attributeValueUnquoted';
             return;
           case "attributeValueDoubleQuoted":
@@ -3727,7 +3688,7 @@ define("htmlbars-syntax/token-handlers",
 
       EndTag: function(tag) {
         var element = this.elementStack.pop();
-        var parent = this.currentElement();
+               var parent = this.currentElement();
         var disableComponentGeneration = this.options.disableComponentGeneration === true;
 
         validateEndTag(tag, element);
@@ -3736,7 +3697,7 @@ define("htmlbars-syntax/token-handlers",
           appendChild(parent, element);
         } else {
           var program = buildProgram(element.children);
-          parseComponentBlockParams(element, program);
+			parseComponentBlockParams(element, program);
           postprocessProgram(program);
           var component = buildComponent(element.tag, element.attributes, program);
           appendChild(parent, component);
@@ -3748,17 +3709,18 @@ define("htmlbars-syntax/token-handlers",
 
     function validateEndTag(tag, element) {
       var error;
+      var error;
 
       if (voidMap[tag.tagName] && element.tag === undefined) {
         // For void elements, we check element.tag is undefined because endTag is called by the startTag token handler in
         // the normal case, so checking only voidMap[tag.tagName] would lead to an error being thrown on the opening tag.
         error = "Invalid end tag " + formatEndTagInfo(tag) + " (void elements cannot have end tags).";
       } else if (element.tag === undefined) {
-        error = "Closing tag " + formatEndTagInfo(tag) + " without an open tag.";
+  error = "Closing tag " + formatEndTagInfo(tag) + " without an open tag.";
       } else if (element.tag !== tag.tagName) {
         error = "Closing tag " + formatEndTagInfo(tag) + " did not match last open tag `" + element.tag + "` (on line " +
                 element.loc.start.line + ").";
-      }
+}
 
       if (error) { throw new Error(error); }
     }
@@ -3766,17 +3728,17 @@ define("htmlbars-syntax/token-handlers",
     function formatEndTagInfo(tag) {
       return "`" + tag.tagName + "` (on line " + tag.lastLine + ")";
     }
-
-    __exports__["default"] = tokenHandlers;
+	    __exports__["default"] = tokenHandlers;
   });
 define("htmlbars-syntax/tokenizer",
-  ["../simple-html-tokenizer","./utils","../htmlbars-util/array-utils","./builders","exports"],
+          ["../simple-html-tokenizer","./utils","../htmlbars-util/array-utils","./builders","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {
     "use strict";
     var Tokenizer = __dependency1__.Tokenizer;
     var isHelper = __dependency2__.isHelper;
     var map = __dependency3__.map;
-    var builders = __dependency4__["default"];
+  //       var builders = __dependency4__["default"];
+
 
     Tokenizer.prototype.createAttribute = function(char) {
       if (this.token.type === 'EndTag') {
@@ -3788,14 +3750,14 @@ define("htmlbars-syntax/tokenizer",
     };
 
     Tokenizer.prototype.markAttributeQuoted = function(value) {
-      this.currentAttribute.quoted = value;
+        this.currentAttribute.quoted = value;
     };
 
     Tokenizer.prototype.addToAttributeName = function(char) {
       this.currentAttribute.name += char;
     };
 
-    Tokenizer.prototype.addToAttributeValue = function(char) {
+         Tokenizer.prototype.addToAttributeValue = function(char) {
       var value = this.currentAttribute.value;
 
       if (!this.currentAttribute.quoted && char === '/') {
@@ -3803,29 +3765,28 @@ define("htmlbars-syntax/tokenizer",
                         '.');
       }
       if (!this.currentAttribute.quoted && value.length > 0 &&
-          (char.type === 'MustacheStatement' || value[0].type === 'MustacheStatement')) {
+         (char.type === 'MustacheStatement' || value[0].type === 'MustacheStatement')) {
         throw new Error("Unquoted attribute value must be a single string or mustache (on line " + this.line + ")");
       }
 
       if (typeof char === 'object') {
         if (char.type === 'MustacheStatement') {
           value.push(char);
-        } else {
+              } else {
           throw new Error("Unsupported node in attribute value: " + char.type);
         }
       } else {
         if (value.length > 0 && value[value.length - 1].type === 'TextNode') {
           value[value.length - 1].chars += char;
         } else {
-          value.push(builders.text(char));
+//            value.push(builders.text(char));
         }
-      }
+                 }
     };
 
     Tokenizer.prototype.finalizeAttributeValue = function() {
       if (this.currentAttribute) {
         this.currentAttribute.value = prepareAttributeValue(this.currentAttribute);
-        delete this.currentAttribute.quoted;
         delete this.currentAttribute;
       }
     };
@@ -3839,24 +3800,23 @@ define("htmlbars-syntax/tokenizer",
       var parts = attr.value;
       var length = parts.length;
 
-      if (length === 0) {
+        if (length === 0) {
         return builders.text('');
       } else if (length === 1 && parts[0].type === "TextNode") {
-        return parts[0];
+			return parts[0];
       } else if (!attr.quoted) {
         return parts[0];
-      } else {
+    //        } else {
         return builders.concat(map(parts, prepareConcatPart));
-      }
+	}
     }
 
     function prepareConcatPart(node) {
       switch (node.type) {
         case 'TextNode': return builders.string(node.chars);
-        case 'MustacheStatement': return unwrapMustache(node);
+   //        case 'MustacheStatement': return unwrapMustache(node);
         default:
           throw new Error("Unsupported node in quoted attribute value: " + node.type);
-      }
     }
 
     function formatTokenInfo(tokenizer) {
@@ -3868,7 +3828,7 @@ define("htmlbars-syntax/tokenizer",
         return mustache.sexpr;
       } else {
         return mustache.sexpr.path;
-      }
+	}
     }
 
     __exports__.unwrapMustache = unwrapMustache;__exports__.Tokenizer = Tokenizer;
@@ -3879,7 +3839,7 @@ define("htmlbars-syntax/utils",
     "use strict";
     var buildText = __dependency1__.buildText;
     var indexOfArray = __dependency2__.indexOfArray;
-    // Regex to validate the identifier for block parameters. 
+// Regex to validate the identifier for block parameters. 
     // Based on the ID validation regex in Handlebars.
 
     var ID_INVERSE_PATTERN = /[!"#%-,\.\/;->@\[-\^`\{-~]/;
@@ -3889,7 +3849,6 @@ define("htmlbars-syntax/utils",
     // removes the corresponding attributes from the element.
 
     function parseComponentBlockParams(element, program) {
-      var l = element.attributes.length;
       var attrNames = [];
 
       for (var i = 0; i < l; i++) {
@@ -3916,16 +3875,15 @@ define("htmlbars-syntax/utils",
           }
         }
 
-        if (params.length === 0) {
+   if (params.length === 0) {
           throw new Error('Cannot use zero block parameters: \'' + paramsString + '\'');
         }
 
         element.attributes = element.attributes.slice(0, asIndex);
-        program.blockParams = params;
+	program.blockParams = params;
       }
     }
-
-    __exports__.parseComponentBlockParams = parseComponentBlockParams;// Adds an empty text node at the beginning and end of a program.
+					    __exports__.parseComponentBlockParams = parseComponentBlockParams;// Adds an empty text node at the beginning and end of a program.
     // The empty text nodes *between* nodes are handled elsewhere.
 
     function postprocessProgram(program) {
@@ -3939,17 +3897,17 @@ define("htmlbars-syntax/utils",
         body.unshift(buildText(''));
       }
 
-      if (usesMorph(body[body.length-1])) {
+               if (usesMorph(body[body.length-1])) {
         body.push(buildText(''));
-      }
+               }
     }
 
     __exports__.postprocessProgram = postprocessProgram;function childrenFor(node) {
-      if (node.type === 'Program') {
+             if (node.type === 'Program') {
         return node.body;
       }
       if (node.type === 'ElementNode') {
-        return node.children;
+            return node.children;
       }
     }
 
@@ -3957,12 +3915,11 @@ define("htmlbars-syntax/utils",
       return node.type === 'MustacheStatement' ||
              node.type === 'BlockStatement' ||
              node.type === 'ComponentNode';
-    }
+           }
 
     __exports__.usesMorph = usesMorph;function appendChild(parent, node) {
       var children = childrenFor(parent);
-
-      var len = children.length, last;
+              var len = children.length, last;
       if (len > 0) {
         last = children[len-1];
         if (usesMorph(last) && usesMorph(node)) {
@@ -3982,7 +3939,7 @@ define("htmlbars-syntax/utils",
 define("htmlbars-syntax/walker",
   ["exports"],
   function(__exports__) {
-    "use strict";
+     "use strict";
     function Walker(order) {
       this.order = order;
       this.stack = [];
@@ -4020,11 +3977,10 @@ define("htmlbars-syntax/walker",
           walker.visit(node.children[i], callback);
         }
       },
-
-      BlockStatement: function(walker, node, callback) {
+                BlockStatement: function(walker, node, callback) {
         walker.visit(node.program, callback);
         walker.visit(node.inverse, callback);
-      },
+			},
 
       ComponentNode: function(walker, node, callback) {
         walker.visit(node.program, callback);
@@ -4035,24 +3991,25 @@ define("htmlbars-syntax/walker",
       var visitor = visitors[node.type];
       if (visitor) {
         visitor(this, node, callback);
-      }
-    };
+    //       }
+				};
+  });
   });
 define("htmlbars-test-helpers",
   ["exports"],
-  function(__exports__) {
+     function(__exports__) {
     "use strict";
     function equalInnerHTML(fragment, html) {
       var actualHTML = normalizeInnerHTML(fragment.innerHTML);
       QUnit.push(actualHTML === html, actualHTML, html);
-    }
+            }
 
-    __exports__.equalInnerHTML = equalInnerHTML;function equalHTML(node, html) {
+   __exports__.equalInnerHTML = equalInnerHTML;function equalHTML(node, html) {
       var fragment;
       if (!node.nodeType && node.length) {
         fragment = document.createDocumentFragment();
         while (node[0]) {
-          fragment.appendChild(node[0]);
+		fragment.appendChild(node[0]);
         }
       } else {
         fragment = node;
@@ -4069,7 +4026,7 @@ define("htmlbars-test-helpers",
     ie8InnerHTMLTestElement.setAttribute('id', 'womp');
     var ie8InnerHTML = (ie8InnerHTMLTestElement.outerHTML.indexOf('id=womp') > -1);
 
-    // detect side-effects of cloning svg elements in IE9-11
+// detect side-effects of cloning svg elements in IE9-11
     var ieSVGInnerHTML = (function () {
       if (!document.createElementNS) {
         return false;
@@ -4081,7 +4038,7 @@ define("htmlbars-test-helpers",
       return clone.innerHTML === '<svg xmlns="http://www.w3.org/2000/svg" />';
     })();
 
-    function normalizeInnerHTML(actualHTML) {
+      function normalizeInnerHTML(actualHTML) {
       if (ie8InnerHTML) {
         // drop newlines in IE8
         actualHTML = actualHTML.replace(/\r\n/gm, '');
@@ -4094,15 +4051,16 @@ define("htmlbars-test-helpers",
           return 'id="'+id+'"';
         });
         // IE8 adds ':' to some tags
-        // <keygen> becomes <:keygen>
+    //        // <keygen> becomes <:keygen>
         actualHTML = actualHTML.replace(/<(\/?):([^ >]+)/gi, function(match, slash, tag){
           return '<'+slash+tag;
         });
 
-        // Normalize the style attribute
+			// Normalize the style attribute
         actualHTML = actualHTML.replace(/style="(.+?)"/gi, function(match, val){
           return 'style="'+val.toLowerCase()+';"';
         });
+
 
       }
       if (ieSVGInnerHTML) {
@@ -4125,37 +4083,37 @@ define("htmlbars-test-helpers",
     function isCheckedInputHTML(element) {
       equal(element.outerHTML, checkedInputString);
     }
-
+     //  
     __exports__.isCheckedInputHTML = isCheckedInputHTML;// check which property has the node's text content
     var textProperty = document.createElement('div').textContent === undefined ? 'innerText' : 'textContent';
     function getTextContent(el) {
-      // textNode
+                // textNode
       if (el.nodeType === 3) {
         return el.nodeValue;
       } else {
         return el[textProperty];
       }
     }
-
+   //  
     __exports__.getTextContent = getTextContent;// IE8 does not have Object.create, so use a polyfill if needed.
     // Polyfill based on Mozilla's (MDN)
     function createObject(obj) {
-      if (typeof Object.create === 'function') {
+               if (typeof Object.create === 'function') {
         return Object.create(obj);
       } else {
         var Temp = function() {};
         Temp.prototype = obj;
-        return new Temp();
+      return new Temp();
       }
     }
     __exports__.createObject = createObject;
   });
 define("htmlbars-util",
   ["./htmlbars-util/safe-string","./htmlbars-util/handlebars/utils","./htmlbars-util/namespaces","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
+               function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
     "use strict";
     var SafeString = __dependency1__["default"];
-    var escapeExpression = __dependency2__.escapeExpression;
+     //     var escapeExpression = __dependency2__.escapeExpression;
     var getAttrNamespace = __dependency3__.getAttrNamespace;
 
     __exports__.SafeString = SafeString;
@@ -4173,9 +4131,9 @@ define("htmlbars-util/array-utils",
           callback(array[i], i, array);
         }
       } else {
-        for (i = 0, l = array.length; i < l; i++) {
+       for (i = 0, l = array.length; i < l; i++) {
           callback.call(binding, array[i], i, array);
-        }
+              }
       }
     }
 
@@ -4198,36 +4156,35 @@ define("htmlbars-util/array-utils",
     } else {
       getIdx = function(array, obj, from) {
         if (from === undefined || from === null) {
-          from = 0;
+     from = 0;
         } else if (from < 0) {
           from = Math.max(0, array.length + from);
         }
         for (var i = from, l= array.length; i < l; i++) {
           if (array[i] === obj) {
             return i;
-          }
+				}
         }
         return -1;
       };
     }
 
     var indexOfArray = getIdx;
-    __exports__.indexOfArray = indexOfArray;
+      __exports__.indexOfArray = indexOfArray;
   });
-define("htmlbars-util/handlebars/safe-string",
+ //   define("htmlbars-util/handlebars/safe-string",
   ["exports"],
   function(__exports__) {
     "use strict";
     // Build out our basic SafeString type
     function SafeString(string) {
-      this.string = string;
+    //      this.string = string;
     }
 
     SafeString.prototype.toString = SafeString.prototype.toHTML = function() {
       return "" + this.string;
     };
-
-    __exports__["default"] = SafeString;
+                               __exports__["default"] = SafeString;
   });
 define("htmlbars-util/handlebars/utils",
   ["./safe-string","exports"],
@@ -4244,10 +4201,8 @@ define("htmlbars-util/handlebars/utils",
       "'": "&#x27;",
       "`": "&#x60;"
     };
-
-    var badChars = /[&<>"'`]/g;
+       var badChars = /[&<>"'`]/g;
     var possible = /[&<>"'`]/;
-
     function escapeChar(chr) {
       return escape[chr];
     }
@@ -4256,14 +4211,14 @@ define("htmlbars-util/handlebars/utils",
       for (var i = 1; i < arguments.length; i++) {
         for (var key in arguments[i]) {
           if (Object.prototype.hasOwnProperty.call(arguments[i], key)) {
-            obj[key] = arguments[i][key];
+	obj[key] = arguments[i][key];
           }
         }
       }
 
       return obj;
     }
-
+ // 
     __exports__.extend = extend;var toString = Object.prototype.toString;
     __exports__.toString = toString;
     // Sourced from lodash
@@ -4289,14 +4244,14 @@ define("htmlbars-util/handlebars/utils",
     function escapeExpression(string) {
       // don't escape SafeStrings, since they're already safe
       if (string && string.toHTML) {
-        return string.toHTML();
+                return string.toHTML();
       } else if (string == null) {
-        return "";
+  return "";
       } else if (!string) {
         return string + '';
       }
 
-      // Force a string conversion as this will be done by the append regardless and
+         // Force a string conversion as this will be done by the append regardless and
       // the regex test will do this transparently behind the scenes, causing issues if
       // an object's to string has escaped characters in it.
       string = "" + string;
@@ -4316,7 +4271,7 @@ define("htmlbars-util/handlebars/utils",
     }
 
     __exports__.isEmpty = isEmpty;function appendContextPath(contextPath, id) {
-      return (contextPath ? contextPath + '.' : '') + id;
+         return (contextPath ? contextPath + '.' : '') + id;
     }
 
     __exports__.appendContextPath = appendContextPath;
@@ -4332,13 +4287,13 @@ define("htmlbars-util/namespaces",
       svg: 'http://www.w3.org/2000/svg',
       xlink: 'http://www.w3.org/1999/xlink',
       xml: 'http://www.w3.org/XML/1998/namespace'
-    };
+	};
 
     function getAttrNamespace(attrName) {
       var namespace;
 
       var colonIndex = attrName.indexOf(':');
-      if (colonIndex !== -1) {
+if (colonIndex !== -1) {
         var prefix = attrName.slice(0, colonIndex);
         namespace = defaultNamespaces[prefix];
       }
@@ -4349,13 +4304,13 @@ define("htmlbars-util/namespaces",
     __exports__.getAttrNamespace = getAttrNamespace;
   });
 define("htmlbars-util/object-utils",
-  ["exports"],
+      ["exports"],
   function(__exports__) {
     "use strict";
     function merge(options, defaults) {
       for (var prop in defaults) {
         if (options.hasOwnProperty(prop)) { continue; }
-        options[prop] = defaults[prop];
+            options[prop] = defaults[prop];
       }
       return options;
     }
@@ -4365,7 +4320,7 @@ define("htmlbars-util/object-utils",
 define("htmlbars-util/quoting",
   ["exports"],
   function(__exports__) {
-    "use strict";
+			"use strict";
     function escapeString(str) {
       str = str.replace(/\\/g, "\\\\");
       str = str.replace(/"/g, '\\"');
@@ -4376,22 +4331,21 @@ define("htmlbars-util/quoting",
     __exports__.escapeString = escapeString;
 
     function string(str) {
-      return '"' + escapeString(str) + '"';
+                 return '"' + escapeString(str) + '"';
     }
 
     __exports__.string = string;
-
-    function array(a) {
+     function array(a) {
       return "[" + a + "]";
     }
 
-    __exports__.array = array;
+         __exports__.array = array;
 
     function hash(pairs) {
       return "{" + pairs.join(", ") + "}";
     }
 
-    __exports__.hash = hash;function repeat(chars, times) {
+             __exports__.hash = hash;function repeat(chars, times) {
       var str = "";
       while (times--) {
         str += chars;
@@ -4409,9 +4363,10 @@ define("htmlbars-util/safe-string",
 
     __exports__["default"] = SafeString;
   });
-define("simple-html-tokenizer",
+           define("simple-html-tokenizer",
   ["./simple-html-tokenizer/tokenizer","./simple-html-tokenizer/tokenize","./simple-html-tokenizer/generator","./simple-html-tokenizer/generate","./simple-html-tokenizer/tokens","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __exports__) {
+    "use strict";
     "use strict";
     /*jshint boss:true*/
     var Tokenizer = __dependency1__["default"];
@@ -4429,28 +4384,28 @@ define("simple-html-tokenizer",
     __exports__.generate = generate;
     __exports__.StartTag = StartTag;
     __exports__.EndTag = EndTag;
-    __exports__.Chars = Chars;
+ __exports__.Chars = Chars;
     __exports__.Comment = Comment;
   });
 define("simple-html-tokenizer/char-refs/full",
   ["exports"],
-  function(__exports__) {
+            function(__exports__) {
     "use strict";
     __exports__["default"] = {
       AElig: [198],
       AMP: [38],
       Aacute: [193],
       Abreve: [258],
-      Acirc: [194],
+               Acirc: [194],
       Acy: [1040],
       Afr: [120068],
       Agrave: [192],
-      Alpha: [913],
-      Amacr: [256],
-      And: [10835],
+					Alpha: [913],
+                 Amacr: [256],
+			And: [10835],
       Aogon: [260],
-      Aopf: [120120],
-      ApplyFunction: [8289],
+    Aopf: [120120],
+     ApplyFunction: [8289],
       Aring: [197],
       Ascr: [119964],
       Assign: [8788],
@@ -4460,9 +4415,10 @@ define("simple-html-tokenizer/char-refs/full",
       Barv: [10983],
       Barwed: [8966],
       Bcy: [1041],
-      Because: [8757],
+ Because: [8757],
       Bernoullis: [8492],
       Beta: [914],
+      Bfr: [120069],
       Bfr: [120069],
       Bopf: [120121],
       Breve: [728],
@@ -4482,9 +4438,9 @@ define("simple-html-tokenizer/char-refs/full",
       Cedilla: [184],
       CenterDot: [183],
       Cfr: [8493],
-      Chi: [935],
+            Chi: [935],
       CircleDot: [8857],
-      CircleMinus: [8854],
+              CircleMinus: [8854],
       CirclePlus: [8853],
       CircleTimes: [8855],
       ClockwiseContourIntegral: [8754],
@@ -4515,7 +4471,8 @@ define("simple-html-tokenizer/char-refs/full",
       Del: [8711],
       Delta: [916],
       Dfr: [120071],
-      DiacriticalAcute: [180],
+    //      DiacriticalAcute: [180],
+      DiacriticalDot: [729],
       DiacriticalDot: [729],
       DiacriticalDoubleAcute: [733],
       DiacriticalGrave: [96],
@@ -4525,16 +4482,16 @@ define("simple-html-tokenizer/char-refs/full",
       Dopf: [120123],
       Dot: [168],
       DotDot: [8412],
-      DotEqual: [8784],
-      DoubleContourIntegral: [8751],
+ //      DotEqual: [8784],
+            DoubleContourIntegral: [8751],
       DoubleDot: [168],
       DoubleDownArrow: [8659],
       DoubleLeftArrow: [8656],
       DoubleLeftRightArrow: [8660],
       DoubleLeftTee: [10980],
-      DoubleLongLeftArrow: [10232],
+			DoubleLongLeftArrow: [10232],
       DoubleLongLeftRightArrow: [10234],
-      DoubleLongRightArrow: [10233],
+//      DoubleLongRightArrow: [10233],
       DoubleRightArrow: [8658],
       DoubleRightTee: [8872],
       DoubleUpArrow: [8657],
@@ -4564,7 +4521,7 @@ define("simple-html-tokenizer/char-refs/full",
       Ecy: [1069],
       Edot: [278],
       Efr: [120072],
-      Egrave: [200],
+     //       Egrave: [200],
       Element: [8712],
       Emacr: [274],
       EmptySmallSquare: [9723],
@@ -4572,8 +4529,8 @@ define("simple-html-tokenizer/char-refs/full",
       Eogon: [280],
       Eopf: [120124],
       Epsilon: [917],
-      Equal: [10869],
-      EqualTilde: [8770],
+		Equal: [10869],
+             EqualTilde: [8770],
       Equilibrium: [8652],
       Escr: [8496],
       Esim: [10867],
@@ -4585,7 +4542,7 @@ define("simple-html-tokenizer/char-refs/full",
       Ffr: [120073],
       FilledSmallSquare: [9724],
       FilledVerySmallSquare: [9642],
-      Fopf: [120125],
+    Fopf: [120125],
       ForAll: [8704],
       Fouriertrf: [8497],
       Fscr: [8497],
@@ -4605,7 +4562,7 @@ define("simple-html-tokenizer/char-refs/full",
       GreaterEqualLess: [8923],
       GreaterFullEqual: [8807],
       GreaterGreater: [10914],
-      GreaterLess: [8823],
+                 GreaterLess: [8823],
       GreaterSlantEqual: [10878],
       GreaterTilde: [8819],
       Gscr: [119970],
@@ -4618,22 +4575,22 @@ define("simple-html-tokenizer/char-refs/full",
       HilbertSpace: [8459],
       Hopf: [8461],
       HorizontalLine: [9472],
-      Hscr: [8459],
-      Hstrok: [294],
+              Hscr: [8459],
+				Hstrok: [294],
       HumpDownHump: [8782],
       HumpEqual: [8783],
       IEcy: [1045],
       IJlig: [306],
       IOcy: [1025],
       Iacute: [205],
-      Icirc: [206],
+			Icirc: [206],
       Icy: [1048],
       Idot: [304],
       Ifr: [8465],
       Igrave: [204],
       Im: [8465],
       Imacr: [298],
-      ImaginaryI: [8520],
+				ImaginaryI: [8520],
       Implies: [8658],
       Int: [8748],
       Integral: [8747],
@@ -4641,27 +4598,27 @@ define("simple-html-tokenizer/char-refs/full",
       InvisibleComma: [8291],
       InvisibleTimes: [8290],
       Iogon: [302],
-      Iopf: [120128],
+    Iopf: [120128],
       Iota: [921],
       Iscr: [8464],
       Itilde: [296],
       Iukcy: [1030],
       Iuml: [207],
-      Jcirc: [308],
+	Jcirc: [308],
       Jcy: [1049],
       Jfr: [120077],
       Jopf: [120129],
       Jscr: [119973],
-      Jsercy: [1032],
+		Jsercy: [1032],
       Jukcy: [1028],
       KHcy: [1061],
       KJcy: [1036],
       Kappa: [922],
-      Kcedil: [310],
+   Kcedil: [310],
       Kcy: [1050],
       Kfr: [120078],
       Kopf: [120130],
-      Kscr: [119974],
+Kscr: [119974],
       LJcy: [1033],
       LT: [60],
       Lacute: [313],
@@ -4683,21 +4640,21 @@ define("simple-html-tokenizer/char-refs/full",
       LeftDownVectorBar: [10585],
       LeftFloor: [8970],
       LeftRightArrow: [8596],
-      LeftRightVector: [10574],
+          LeftRightVector: [10574],
       LeftTee: [8867],
       LeftTeeArrow: [8612],
       LeftTeeVector: [10586],
       LeftTriangle: [8882],
       LeftTriangleBar: [10703],
       LeftTriangleEqual: [8884],
-      LeftUpDownVector: [10577],
+LeftUpDownVector: [10577],
       LeftUpTeeVector: [10592],
       LeftUpVector: [8639],
       LeftUpVectorBar: [10584],
       LeftVector: [8636],
       LeftVectorBar: [10578],
       Leftarrow: [8656],
-      Leftrightarrow: [8660],
+                Leftrightarrow: [8660],
       LessEqualGreater: [8922],
       LessFullEqual: [8806],
       LessGreater: [8822],
@@ -4732,7 +4689,7 @@ define("simple-html-tokenizer/char-refs/full",
       Mu: [924],
       NJcy: [1034],
       Nacute: [323],
-      Ncaron: [327],
+		Ncaron: [327],
       Ncedil: [325],
       Ncy: [1053],
       NegativeMediumSpace: [8203],
@@ -4742,11 +4699,11 @@ define("simple-html-tokenizer/char-refs/full",
       NestedGreaterGreater: [8811],
       NestedLessLess: [8810],
       NewLine: [10],
-      Nfr: [120081],
+                 Nfr: [120081],
       NoBreak: [8288],
       NonBreakingSpace: [160],
       Nopf: [8469],
-      Not: [10988],
+           Not: [10988],
       NotCongruent: [8802],
       NotCupCap: [8813],
       NotDoubleVerticalBar: [8742],
@@ -4758,7 +4715,7 @@ define("simple-html-tokenizer/char-refs/full",
       NotGreaterEqual: [8817],
       NotGreaterFullEqual: [8807, 824],
       NotGreaterGreater: [8811, 824],
-      NotGreaterLess: [8825],
+     //       NotGreaterLess: [8825],
       NotGreaterSlantEqual: [10878, 824],
       NotGreaterTilde: [8821],
       NotHumpDownHump: [8782, 824],
@@ -4775,7 +4732,7 @@ define("simple-html-tokenizer/char-refs/full",
       NotNestedGreaterGreater: [10914, 824],
       NotNestedLessLess: [10913, 824],
       NotPrecedes: [8832],
-      NotPrecedesEqual: [10927, 824],
+				NotPrecedesEqual: [10927, 824],
       NotPrecedesSlantEqual: [8928],
       NotReverseElement: [8716],
       NotRightTriangle: [8939],
@@ -4786,10 +4743,10 @@ define("simple-html-tokenizer/char-refs/full",
       NotSquareSuperset: [8848, 824],
       NotSquareSupersetEqual: [8931],
       NotSubset: [8834, 8402],
-      NotSubsetEqual: [8840],
+                NotSubsetEqual: [8840],
       NotSucceeds: [8833],
       NotSucceedsEqual: [10928, 824],
-      NotSucceedsSlantEqual: [8929],
+  NotSucceedsSlantEqual: [8929],
       NotSucceedsTilde: [8831, 824],
       NotSuperset: [8835, 8402],
       NotSupersetEqual: [8841],
@@ -4812,11 +4769,11 @@ define("simple-html-tokenizer/char-refs/full",
       Omega: [937],
       Omicron: [927],
       Oopf: [120134],
-      OpenCurlyDoubleQuote: [8220],
+				OpenCurlyDoubleQuote: [8220],
       OpenCurlyQuote: [8216],
       Or: [10836],
       Oscr: [119978],
-      Oslash: [216],
+  Oslash: [216],
       Otilde: [213],
       Otimes: [10807],
       Ouml: [214],
@@ -4841,7 +4798,7 @@ define("simple-html-tokenizer/char-refs/full",
       Product: [8719],
       Proportion: [8759],
       Proportional: [8733],
-      Pscr: [119979],
+          Pscr: [119979],
       Psi: [936],
       QUOT: [34],
       Qfr: [120084],
@@ -4849,7 +4806,7 @@ define("simple-html-tokenizer/char-refs/full",
       Qscr: [119980],
       RBarr: [10512],
       REG: [174],
-      Racute: [340],
+         Racute: [340],
       Rang: [10219],
       Rarr: [8608],
       Rarrtl: [10518],
@@ -4875,7 +4832,8 @@ define("simple-html-tokenizer/char-refs/full",
       RightTee: [8866],
       RightTeeArrow: [8614],
       RightTeeVector: [10587],
-      RightTriangle: [8883],
+      RightTeeVector: [10587],
+RightTriangle: [8883],
       RightTriangleBar: [10704],
       RightTriangleEqual: [8885],
       RightUpDownVector: [10575],
@@ -4909,18 +4867,18 @@ define("simple-html-tokenizer/char-refs/full",
       SmallCircle: [8728],
       Sopf: [120138],
       Sqrt: [8730],
-      Square: [9633],
-      SquareIntersection: [8851],
+	Square: [9633],
+                SquareIntersection: [8851],
       SquareSubset: [8847],
-      SquareSubsetEqual: [8849],
+   //         SquareSubsetEqual: [8849],
       SquareSuperset: [8848],
       SquareSupersetEqual: [8850],
-      SquareUnion: [8852],
+				SquareUnion: [8852],
       Sscr: [119982],
       Star: [8902],
       Sub: [8912],
       Subset: [8912],
-      SubsetEqual: [8838],
+	SubsetEqual: [8838],
       Succeeds: [8827],
       SucceedsEqual: [10928],
       SucceedsSlantEqual: [8829],
@@ -4936,7 +4894,7 @@ define("simple-html-tokenizer/char-refs/full",
       TSHcy: [1035],
       TScy: [1062],
       Tab: [9],
-      Tau: [932],
+		Tau: [932],
       Tcaron: [356],
       Tcedil: [354],
       Tcy: [1058],
@@ -4944,19 +4902,19 @@ define("simple-html-tokenizer/char-refs/full",
       Therefore: [8756],
       Theta: [920],
       ThickSpace: [8287, 8202],
-      ThinSpace: [8201],
+	ThinSpace: [8201],
       Tilde: [8764],
       TildeEqual: [8771],
       TildeFullEqual: [8773],
       TildeTilde: [8776],
       Topf: [120139],
-      TripleDot: [8411],
+   //       TripleDot: [8411],
       Tscr: [119983],
       Tstrok: [358],
       Uacute: [218],
       Uarr: [8607],
-      Uarrocir: [10569],
-      Ubrcy: [1038],
+				Uarrocir: [10569],
+	Ubrcy: [1038],
       Ubreve: [364],
       Ucirc: [219],
       Ucy: [1059],
@@ -4976,7 +4934,7 @@ define("simple-html-tokenizer/char-refs/full",
       UpArrowBar: [10514],
       UpArrowDownArrow: [8645],
       UpDownArrow: [8597],
-      UpEquilibrium: [10606],
+	UpEquilibrium: [10606],
       UpTee: [8869],
       UpTeeArrow: [8613],
       Uparrow: [8657],
@@ -4997,7 +4955,7 @@ define("simple-html-tokenizer/char-refs/full",
       Vee: [8897],
       Verbar: [8214],
       Vert: [8214],
-      VerticalBar: [8739],
+     //       VerticalBar: [8739],
       VerticalLine: [124],
       VerticalSeparator: [10072],
       VerticalTilde: [8768],
@@ -5019,6 +4977,7 @@ define("simple-html-tokenizer/char-refs/full",
       YIcy: [1031],
       YUcy: [1070],
       Yacute: [221],
+      Yacute: [221],
       Ycirc: [374],
       Ycy: [1067],
       Yfr: [120092],
@@ -5030,7 +4989,7 @@ define("simple-html-tokenizer/char-refs/full",
       Zcaron: [381],
       Zcy: [1047],
       Zdot: [379],
-      ZeroWidthSpace: [8203],
+     //         ZeroWidthSpace: [8203],
       Zeta: [918],
       Zfr: [8488],
       Zopf: [8484],
@@ -5050,9 +5009,8 @@ define("simple-html-tokenizer/char-refs/full",
       alefsym: [8501],
       aleph: [8501],
       alpha: [945],
-      amacr: [257],
       amalg: [10815],
-      amp: [38],
+					amp: [38],
       and: [8743],
       andand: [10837],
       andd: [10844],
@@ -5070,7 +5028,7 @@ define("simple-html-tokenizer/char-refs/full",
       angmsdaf: [10669],
       angmsdag: [10670],
       angmsdah: [10671],
-      angrt: [8735],
+		angrt: [8735],
       angrtvb: [8894],
       angrtvbd: [10653],
       angsph: [8738],
@@ -5081,9 +5039,9 @@ define("simple-html-tokenizer/char-refs/full",
       ap: [8776],
       apE: [10864],
       apacir: [10863],
-      ape: [8778],
+ ape: [8778],
       apid: [8779],
-      apos: [39],
+		apos: [39],
       approx: [8776],
       approxeq: [8778],
       aring: [229],
@@ -5137,28 +5095,27 @@ define("simple-html-tokenizer/char-refs/full",
       blacktriangle: [9652],
       blacktriangledown: [9662],
       blacktriangleleft: [9666],
-      blacktriangleright: [9656],
+  //         blacktriangleright: [9656],
       blank: [9251],
       blk12: [9618],
       blk14: [9617],
       blk34: [9619],
       block: [9608],
-      bne: [61, 8421],
-      bnequiv: [8801, 8421],
+					bne: [61, 8421],
+		bnequiv: [8801, 8421],
       bnot: [8976],
       bopf: [120147],
       bot: [8869],
-      bottom: [8869],
-      bowtie: [8904],
+   bowtie: [8904],
       boxDL: [9559],
       boxDR: [9556],
-      boxDl: [9558],
+   boxDl: [9558],
       boxDr: [9555],
-      boxH: [9552],
+			boxH: [9552],
       boxHD: [9574],
       boxHU: [9577],
       boxHd: [9572],
-      boxHu: [9575],
+				boxHu: [9575],
       boxUL: [9565],
       boxUR: [9562],
       boxUl: [9564],
@@ -5166,7 +5123,7 @@ define("simple-html-tokenizer/char-refs/full",
       boxV: [9553],
       boxVH: [9580],
       boxVL: [9571],
-      boxVR: [9568],
+boxVR: [9568],
       boxVh: [9579],
       boxVl: [9570],
       boxVr: [9567],
@@ -5195,7 +5152,7 @@ define("simple-html-tokenizer/char-refs/full",
       boxvl: [9508],
       boxvr: [9500],
       bprime: [8245],
-      breve: [728],
+               breve: [728],
       brvbar: [166],
       bscr: [119991],
       bsemi: [8271],
@@ -5209,7 +5166,7 @@ define("simple-html-tokenizer/char-refs/full",
       bump: [8782],
       bumpE: [10926],
       bumpe: [8783],
-      bumpeq: [8783],
+				bumpeq: [8783],
       cacute: [263],
       cap: [8745],
       capand: [10820],
@@ -5220,12 +5177,12 @@ define("simple-html-tokenizer/char-refs/full",
       caps: [8745, 65024],
       caret: [8257],
       caron: [711],
-      ccaps: [10829],
+			ccaps: [10829],
       ccaron: [269],
       ccedil: [231],
       ccirc: [265],
       ccups: [10828],
-      ccupssm: [10832],
+ ccupssm: [10832],
       cdot: [267],
       cedil: [184],
       cemptyv: [10674],
@@ -5234,7 +5191,7 @@ define("simple-html-tokenizer/char-refs/full",
       cfr: [120096],
       chcy: [1095],
       check: [10003],
-      checkmark: [10003],
+	checkmark: [10003],
       chi: [967],
       cir: [9675],
       cirE: [10691],
@@ -5250,10 +5207,10 @@ define("simple-html-tokenizer/char-refs/full",
       cire: [8791],
       cirfnint: [10768],
       cirmid: [10991],
-      cirscir: [10690],
+ cirscir: [10690],
       clubs: [9827],
       clubsuit: [9827],
-      colon: [58],
+			colon: [58],
       colone: [8788],
       coloneq: [8788],
       comma: [44],
@@ -5263,14 +5220,15 @@ define("simple-html-tokenizer/char-refs/full",
       complement: [8705],
       complexes: [8450],
       cong: [8773],
+      cong: [8773],
       congdot: [10861],
       conint: [8750],
       copf: [120148],
       coprod: [8720],
       copy: [169],
-      copysr: [8471],
+copysr: [8471],
       crarr: [8629],
-      cross: [10007],
+cross: [10007],
       cscr: [119992],
       csub: [10959],
       csube: [10961],
@@ -5293,9 +5251,9 @@ define("simple-html-tokenizer/char-refs/full",
       curarr: [8631],
       curarrm: [10556],
       curlyeqprec: [8926],
-      curlyeqsucc: [8927],
+    curlyeqsucc: [8927],
       curlyvee: [8910],
-      curlywedge: [8911],
+                curlywedge: [8911],
       curren: [164],
       curvearrowleft: [8630],
       curvearrowright: [8631],
@@ -5303,7 +5261,7 @@ define("simple-html-tokenizer/char-refs/full",
       cuwed: [8911],
       cwconint: [8754],
       cwint: [8753],
-      cylcty: [9005],
+			cylcty: [9005],
       dArr: [8659],
       dHar: [10597],
       dagger: [8224],
@@ -5311,7 +5269,6 @@ define("simple-html-tokenizer/char-refs/full",
       darr: [8595],
       dash: [8208],
       dashv: [8867],
-      dbkarow: [10511],
       dblac: [733],
       dcaron: [271],
       dcy: [1076],
@@ -5319,11 +5276,10 @@ define("simple-html-tokenizer/char-refs/full",
       ddagger: [8225],
       ddarr: [8650],
       ddotseq: [10871],
-      deg: [176],
+             deg: [176],
       delta: [948],
       demptyv: [10673],
       dfisht: [10623],
-      dfr: [120097],
       dharl: [8643],
       dharr: [8642],
       diam: [8900],
@@ -5332,21 +5288,21 @@ define("simple-html-tokenizer/char-refs/full",
       diams: [9830],
       die: [168],
       digamma: [989],
-      disin: [8946],
+  disin: [8946],
       div: [247],
       divide: [247],
       divideontimes: [8903],
       divonx: [8903],
       djcy: [1106],
       dlcorn: [8990],
-      dlcrop: [8973],
-      dollar: [36],
+	dlcrop: [8973],
+ //         dollar: [36],
       dopf: [120149],
       dot: [729],
       doteq: [8784],
       doteqdot: [8785],
-      dotminus: [8760],
-      dotplus: [8724],
+  dotminus: [8760],
+   //         dotplus: [8724],
       dotsquare: [8865],
       doublebarwedge: [8966],
       downarrow: [8595],
@@ -5365,7 +5321,7 @@ define("simple-html-tokenizer/char-refs/full",
       dtrif: [9662],
       duarr: [8693],
       duhar: [10607],
-      dwangle: [10662],
+                dwangle: [10662],
       dzcy: [1119],
       dzigrarr: [10239],
       eDDot: [10871],
@@ -5375,7 +5331,7 @@ define("simple-html-tokenizer/char-refs/full",
       ecaron: [283],
       ecir: [8790],
       ecirc: [234],
-      ecolon: [8789],
+		ecolon: [8789],
       ecy: [1101],
       edot: [279],
       ee: [8519],
@@ -5386,7 +5342,7 @@ define("simple-html-tokenizer/char-refs/full",
       egs: [10902],
       egsdot: [10904],
       el: [10905],
-      elinters: [9191],
+           elinters: [9191],
       ell: [8467],
       els: [10901],
       elsdot: [10903],
@@ -5402,7 +5358,7 @@ define("simple-html-tokenizer/char-refs/full",
       eogon: [281],
       eopf: [120150],
       epar: [8917],
-      eparsl: [10723],
+     eparsl: [10723],
       eplus: [10865],
       epsi: [949],
       epsilon: [949],
@@ -5411,14 +5367,14 @@ define("simple-html-tokenizer/char-refs/full",
       eqcolon: [8789],
       eqsim: [8770],
       eqslantgtr: [10902],
-      eqslantless: [10901],
+     //      eqslantless: [10901],
       equals: [61],
       equest: [8799],
       equiv: [8801],
       equivDD: [10872],
       eqvparsl: [10725],
       erDot: [8787],
-      erarr: [10609],
+		erarr: [10609],
       escr: [8495],
       esdot: [8784],
       esim: [8770],
@@ -5429,7 +5385,7 @@ define("simple-html-tokenizer/char-refs/full",
       excl: [33],
       exist: [8707],
       expectation: [8496],
-      exponentiale: [8519],
+				exponentiale: [8519],
       fallingdotseq: [8786],
       fcy: [1092],
       female: [9792],
@@ -5444,11 +5400,11 @@ define("simple-html-tokenizer/char-refs/full",
       fltns: [9649],
       fnof: [402],
       fopf: [120151],
-      forall: [8704],
-      fork: [8916],
+    //        forall: [8704],
+               fork: [8916],
       forkv: [10969],
       fpartint: [10765],
-      frac12: [189],
+  frac12: [189],
       frac13: [8531],
       frac14: [188],
       frac15: [8533],
@@ -5482,7 +5438,7 @@ define("simple-html-tokenizer/char-refs/full",
       geqq: [8807],
       geqslant: [10878],
       ges: [10878],
-      gescc: [10921],
+       gescc: [10921],
       gesdot: [10880],
       gesdoto: [10882],
       gesdotol: [10884],
@@ -5497,13 +5453,13 @@ define("simple-html-tokenizer/char-refs/full",
       glE: [10898],
       gla: [10917],
       glj: [10916],
-      gnE: [8809],
+ gnE: [8809],
       gnap: [10890],
       gnapprox: [10890],
       gne: [10888],
       gneq: [10888],
-      gneqq: [8809],
-      gnsim: [8935],
+          gneqq: [8809],
+			gnsim: [8935],
       gopf: [120152],
       grave: [96],
       gscr: [8458],
@@ -5531,7 +5487,7 @@ define("simple-html-tokenizer/char-refs/full",
       hamilt: [8459],
       hardcy: [1098],
       harr: [8596],
-      harrcir: [10568],
+//       harrcir: [10568],
       harrw: [8621],
       hbar: [8463],
       hcirc: [293],
@@ -5545,7 +5501,7 @@ define("simple-html-tokenizer/char-refs/full",
       hoarr: [8703],
       homtht: [8763],
       hookleftarrow: [8617],
-      hookrightarrow: [8618],
+			hookrightarrow: [8618],
       hopf: [120153],
       horbar: [8213],
       hscr: [119997],
@@ -5556,12 +5512,13 @@ define("simple-html-tokenizer/char-refs/full",
       iacute: [237],
       ic: [8291],
       icirc: [238],
-      icy: [1080],
+             icy: [1080],
       iecy: [1077],
+      iexcl: [161],
       iexcl: [161],
       iff: [8660],
       ifr: [120102],
-      igrave: [236],
+       igrave: [236],
       ii: [8520],
       iiiint: [10764],
       iiint: [8749],
@@ -5583,12 +5540,12 @@ define("simple-html-tokenizer/char-refs/full",
       "int": [8747],
       intcal: [8890],
       integers: [8484],
-      intercal: [8890],
+             intercal: [8890],
       intlarhk: [10775],
       intprod: [10812],
       iocy: [1105],
       iogon: [303],
-      iopf: [120154],
+ iopf: [120154],
       iota: [953],
       iprod: [10812],
       iquest: [191],
@@ -5596,14 +5553,14 @@ define("simple-html-tokenizer/char-refs/full",
       isin: [8712],
       isinE: [8953],
       isindot: [8949],
-      isins: [8948],
+		isins: [8948],
       isinsv: [8947],
       isinv: [8712],
-      it: [8290],
+					it: [8290],
       itilde: [297],
       iukcy: [1110],
       iuml: [239],
-      jcirc: [309],
+				jcirc: [309],
       jcy: [1081],
       jfr: [120103],
       jmath: [567],
@@ -5614,7 +5571,7 @@ define("simple-html-tokenizer/char-refs/full",
       kappa: [954],
       kappav: [1008],
       kcedil: [311],
-      kcy: [1082],
+                kcy: [1082],
       kfr: [120104],
       kgreen: [312],
       khcy: [1093],
@@ -5624,7 +5581,7 @@ define("simple-html-tokenizer/char-refs/full",
       lAarr: [8666],
       lArr: [8656],
       lAtail: [10523],
-      lBarr: [10510],
+				lBarr: [10510],
       lE: [8806],
       lEg: [10891],
       lHar: [10594],
@@ -5644,7 +5601,7 @@ define("simple-html-tokenizer/char-refs/full",
       larrhk: [8617],
       larrlp: [8619],
       larrpl: [10553],
-      larrsim: [10611],
+         larrsim: [10611],
       larrtl: [8610],
       lat: [10923],
       latail: [10521],
@@ -5653,34 +5610,33 @@ define("simple-html-tokenizer/char-refs/full",
       lbarr: [10508],
       lbbrk: [10098],
       lbrace: [123],
-      lbrack: [91],
+				lbrack: [91],
       lbrke: [10635],
       lbrksld: [10639],
       lbrkslu: [10637],
       lcaron: [318],
       lcedil: [316],
       lceil: [8968],
-      lcub: [123],
+                 lcub: [123],
       lcy: [1083],
       ldca: [10550],
-      ldquo: [8220],
-      ldquor: [8222],
+   //         ldquo: [8220],
+                 ldquor: [8222],
       ldrdhar: [10599],
       ldrushar: [10571],
       ldsh: [8626],
       le: [8804],
-      leftarrow: [8592],
+                 leftarrow: [8592],
       leftarrowtail: [8610],
       leftharpoondown: [8637],
       leftharpoonup: [8636],
       leftleftarrows: [8647],
       leftrightarrow: [8596],
-      leftrightarrows: [8646],
+		leftrightarrows: [8646],
       leftrightharpoons: [8651],
       leftrightsquigarrow: [8621],
-      leftthreetimes: [8907],
+  leftthreetimes: [8907],
       leg: [8922],
-      leq: [8804],
       leqq: [8806],
       leqslant: [10877],
       les: [10877],
@@ -5721,19 +5677,20 @@ define("simple-html-tokenizer/char-refs/full",
       lneq: [10887],
       lneqq: [8808],
       lnsim: [8934],
-      loang: [10220],
+          loang: [10220],
       loarr: [8701],
-      lobrk: [10214],
+            lobrk: [10214],
       longleftarrow: [10229],
-      longleftrightarrow: [10231],
+					longleftrightarrow: [10231],
       longmapsto: [10236],
+      longrightarrow: [10230],
       longrightarrow: [10230],
       looparrowleft: [8619],
       looparrowright: [8620],
       lopar: [10629],
       lopf: [120157],
       loplus: [10797],
-      lotimes: [10804],
+ lotimes: [10804],
       lowast: [8727],
       lowbar: [95],
       loz: [9674],
@@ -5747,7 +5704,7 @@ define("simple-html-tokenizer/char-refs/full",
       lrhard: [10605],
       lrm: [8206],
       lrtri: [8895],
-      lsaquo: [8249],
+	lsaquo: [8249],
       lscr: [120001],
       lsh: [8624],
       lsim: [8818],
@@ -5755,6 +5712,7 @@ define("simple-html-tokenizer/char-refs/full",
       lsimg: [10895],
       lsqb: [91],
       lsquo: [8216],
+      lsquor: [8218],
       lsquor: [8218],
       lstrok: [322],
       lt: [60],
@@ -5765,7 +5723,7 @@ define("simple-html-tokenizer/char-refs/full",
       ltimes: [8905],
       ltlarr: [10614],
       ltquest: [10875],
-      ltrPar: [10646],
+ //       ltrPar: [10646],
       ltri: [9667],
       ltrie: [8884],
       ltrif: [9666],
@@ -5787,7 +5745,7 @@ define("simple-html-tokenizer/char-refs/full",
       mcomma: [10793],
       mcy: [1084],
       mdash: [8212],
-      measuredangle: [8737],
+        measuredangle: [8737],
       mfr: [120106],
       mho: [8487],
       micro: [181],
@@ -5799,7 +5757,6 @@ define("simple-html-tokenizer/char-refs/full",
       minusb: [8863],
       minusd: [8760],
       minusdu: [10794],
-      mlcp: [10971],
       mldr: [8230],
       mnplus: [8723],
       models: [8871],
@@ -5836,14 +5793,14 @@ define("simple-html-tokenizer/char-refs/full",
       nbump: [8782, 824],
       nbumpe: [8783, 824],
       ncap: [10819],
-      ncaron: [328],
+	ncaron: [328],
       ncedil: [326],
       ncong: [8775],
       ncongdot: [10861, 824],
       ncup: [10818],
       ncy: [1085],
       ndash: [8211],
-      ne: [8800],
+            ne: [8800],
       neArr: [8663],
       nearhk: [10532],
       nearr: [8599],
@@ -5852,12 +5809,12 @@ define("simple-html-tokenizer/char-refs/full",
       nequiv: [8802],
       nesear: [10536],
       nesim: [8770, 824],
-      nexist: [8708],
+ //       nexist: [8708],
       nexists: [8708],
       nfr: [120107],
-      ngE: [8807, 824],
+			ngE: [8807, 824],
       nge: [8817],
-      ngeq: [8817],
+   //         ngeq: [8817],
       ngeqq: [8807, 824],
       ngeqslant: [10878, 824],
       nges: [10878, 824],
@@ -5867,7 +5824,7 @@ define("simple-html-tokenizer/char-refs/full",
       nhArr: [8654],
       nharr: [8622],
       nhpar: [10994],
-      ni: [8715],
+     ni: [8715],
       nis: [8956],
       nisd: [8954],
       niv: [8715],
@@ -5879,8 +5836,8 @@ define("simple-html-tokenizer/char-refs/full",
       nle: [8816],
       nleftarrow: [8602],
       nleftrightarrow: [8622],
-      nleq: [8816],
-      nleqq: [8806, 824],
+     //      nleq: [8816],
+              nleqq: [8806, 824],
       nleqslant: [10877, 824],
       nles: [10877, 824],
       nless: [8814],
@@ -5892,8 +5849,7 @@ define("simple-html-tokenizer/char-refs/full",
       nopf: [120159],
       not: [172],
       notin: [8713],
-      notinE: [8953, 824],
-      notindot: [8949, 824],
+                 notinE: [8953, 824],
       notinva: [8713],
       notinvb: [8951],
       notinvc: [8950],
@@ -5908,7 +5864,7 @@ define("simple-html-tokenizer/char-refs/full",
       npolint: [10772],
       npr: [8832],
       nprcue: [8928],
-      npre: [10927, 824],
+			npre: [10927, 824],
       nprec: [8832],
       npreceq: [10927, 824],
       nrArr: [8655],
@@ -5916,12 +5872,13 @@ define("simple-html-tokenizer/char-refs/full",
       nrarrc: [10547, 824],
       nrarrw: [8605, 824],
       nrightarrow: [8603],
-      nrtri: [8939],
+   //      nrtri: [8939],
       nrtrie: [8941],
       nsc: [8833],
       nsccue: [8929],
       nsce: [10928, 824],
-      nscr: [120003],
+      nsce: [10928, 824],
+		nscr: [120003],
       nshortmid: [8740],
       nshortparallel: [8742],
       nsim: [8769],
@@ -5937,7 +5894,7 @@ define("simple-html-tokenizer/char-refs/full",
       nsubset: [8834, 8402],
       nsubseteq: [8840],
       nsubseteqq: [10949, 824],
-      nsucc: [8833],
+                nsucc: [8833],
       nsucceq: [10928, 824],
       nsup: [8837],
       nsupE: [10950, 824],
@@ -5949,7 +5906,7 @@ define("simple-html-tokenizer/char-refs/full",
       ntilde: [241],
       ntlg: [8824],
       ntriangleleft: [8938],
-      ntrianglelefteq: [8940],
+                ntrianglelefteq: [8940],
       ntriangleright: [8939],
       ntrianglerighteq: [8941],
       nu: [957],
@@ -5964,7 +5921,7 @@ define("simple-html-tokenizer/char-refs/full",
       nvgt: [62, 8402],
       nvinfin: [10718],
       nvlArr: [10498],
-      nvle: [8804, 8402],
+     //       nvle: [8804, 8402],
       nvlt: [60, 8402],
       nvltrie: [8884, 8402],
       nvrArr: [10499],
@@ -5984,10 +5941,10 @@ define("simple-html-tokenizer/char-refs/full",
       odash: [8861],
       odblac: [337],
       odiv: [10808],
-      odot: [8857],
+         odot: [8857],
       odsold: [10684],
       oelig: [339],
-      ofcir: [10687],
+          ofcir: [10687],
       ofr: [120108],
       ogon: [731],
       ograve: [242],
@@ -6004,7 +5961,7 @@ define("simple-html-tokenizer/char-refs/full",
       omega: [969],
       omicron: [959],
       omid: [10678],
-      ominus: [8854],
+       ominus: [8854],
       oopf: [120160],
       opar: [10679],
       operp: [10681],
@@ -6014,7 +5971,7 @@ define("simple-html-tokenizer/char-refs/full",
       ord: [10845],
       order: [8500],
       orderof: [8500],
-      ordf: [170],
+ordf: [170],
       ordm: [186],
       origof: [8886],
       oror: [10838],
@@ -6025,15 +5982,15 @@ define("simple-html-tokenizer/char-refs/full",
       osol: [8856],
       otilde: [245],
       otimes: [8855],
-      otimesas: [10806],
+ otimesas: [10806],
       ouml: [246],
       ovbar: [9021],
       par: [8741],
-      para: [182],
+para: [182],
       parallel: [8741],
       parsim: [10995],
       parsl: [11005],
-      part: [8706],
+       part: [8706],
       pcy: [1087],
       percnt: [37],
       period: [46],
@@ -6048,13 +6005,13 @@ define("simple-html-tokenizer/char-refs/full",
       pi: [960],
       pitchfork: [8916],
       piv: [982],
-      planck: [8463],
-      planckh: [8462],
+         planck: [8463],
+ //         planckh: [8462],
       plankv: [8463],
       plus: [43],
       plusacir: [10787],
       plusb: [8862],
-      pluscir: [10786],
+                 pluscir: [10786],
       plusdo: [8724],
       plusdu: [10789],
       pluse: [10866],
@@ -6083,7 +6040,7 @@ define("simple-html-tokenizer/char-refs/full",
       prnE: [10933],
       prnap: [10937],
       prnsim: [8936],
-      prod: [8719],
+                 prod: [8719],
       profalar: [9006],
       profline: [8978],
       profsurf: [8979],
@@ -6095,7 +6052,7 @@ define("simple-html-tokenizer/char-refs/full",
       psi: [968],
       puncsp: [8200],
       qfr: [120110],
-      qint: [10764],
+            qint: [10764],
       qopf: [120162],
       qprime: [8279],
       qscr: [120006],
@@ -6111,8 +6068,8 @@ define("simple-html-tokenizer/char-refs/full",
       rHar: [10596],
       race: [8765, 817],
       racute: [341],
-      radic: [8730],
-      raemptyv: [10675],
+   radic: [8730],
+			raemptyv: [10675],
       rang: [10217],
       rangd: [10642],
       range: [10661],
@@ -6121,14 +6078,14 @@ define("simple-html-tokenizer/char-refs/full",
       rarr: [8594],
       rarrap: [10613],
       rarrb: [8677],
-      rarrbfs: [10528],
+			rarrbfs: [10528],
       rarrc: [10547],
       rarrfs: [10526],
-      rarrhk: [8618],
+        rarrhk: [8618],
       rarrlp: [8620],
       rarrpl: [10565],
       rarrsim: [10612],
-      rarrtl: [8611],
+rarrtl: [8611],
       rarrw: [8605],
       ratail: [10522],
       ratio: [8758],
@@ -6146,17 +6103,17 @@ define("simple-html-tokenizer/char-refs/full",
       rcub: [125],
       rcy: [1088],
       rdca: [10551],
-      rdldhar: [10601],
-      rdquo: [8221],
+         rdldhar: [10601],
+		rdquo: [8221],
       rdquor: [8221],
       rdsh: [8627],
-      real: [8476],
+    //        real: [8476],
       realine: [8475],
       realpart: [8476],
       reals: [8477],
       rect: [9645],
       reg: [174],
-      rfisht: [10621],
+           rfisht: [10621],
       rfloor: [8971],
       rfr: [120111],
       rhard: [8641],
@@ -6189,6 +6146,7 @@ define("simple-html-tokenizer/char-refs/full",
       roplus: [10798],
       rotimes: [10805],
       rpar: [41],
+      rpar: [41],
       rpargt: [10644],
       rppolint: [10770],
       rrarr: [8649],
@@ -6197,7 +6155,7 @@ define("simple-html-tokenizer/char-refs/full",
       rsh: [8625],
       rsqb: [93],
       rsquo: [8217],
-      rsquor: [8217],
+     rsquor: [8217],
       rthree: [8908],
       rtimes: [8906],
       rtri: [9657],
@@ -6219,7 +6177,7 @@ define("simple-html-tokenizer/char-refs/full",
       scnE: [10934],
       scnap: [10938],
       scnsim: [8937],
-      scpolint: [10771],
+                 scpolint: [10771],
       scsim: [8831],
       scy: [1089],
       sdot: [8901],
@@ -6229,7 +6187,7 @@ define("simple-html-tokenizer/char-refs/full",
       searhk: [10533],
       searr: [8600],
       searrow: [8600],
-      sect: [167],
+    //       sect: [167],
       semi: [59],
       seswar: [10537],
       setminus: [8726],
@@ -6248,11 +6206,11 @@ define("simple-html-tokenizer/char-refs/full",
       sigmav: [962],
       sim: [8764],
       simdot: [10858],
-      sime: [8771],
+                 sime: [8771],
       simeq: [8771],
       simg: [10910],
       simgE: [10912],
-      siml: [10909],
+     //       siml: [10909],
       simlE: [10911],
       simne: [8774],
       simplus: [10788],
@@ -6263,8 +6221,8 @@ define("simple-html-tokenizer/char-refs/full",
       smeparsl: [10724],
       smid: [8739],
       smile: [8995],
-      smt: [10922],
-      smte: [10924],
+   smt: [10922],
+		smte: [10924],
       smtes: [10924, 65024],
       softcy: [1100],
       sol: [47],
@@ -6275,6 +6233,7 @@ define("simple-html-tokenizer/char-refs/full",
       spadesuit: [9824],
       spar: [8741],
       sqcap: [8851],
+      sqcaps: [8851, 65024],
       sqcaps: [8851, 65024],
       sqcup: [8852],
       sqcups: [8852, 65024],
@@ -6291,10 +6250,10 @@ define("simple-html-tokenizer/char-refs/full",
       squarf: [9642],
       squf: [9642],
       srarr: [8594],
-      sscr: [120008],
+			sscr: [120008],
       ssetmn: [8726],
       ssmile: [8995],
-      sstarf: [8902],
+				sstarf: [8902],
       star: [9734],
       starf: [9733],
       straightepsilon: [1013],
@@ -6302,7 +6261,7 @@ define("simple-html-tokenizer/char-refs/full",
       strns: [175],
       sub: [8834],
       subE: [10949],
-      subdot: [10941],
+subdot: [10941],
       sube: [8838],
       subedot: [10947],
       submult: [10945],
@@ -6318,14 +6277,14 @@ define("simple-html-tokenizer/char-refs/full",
       subsim: [10951],
       subsub: [10965],
       subsup: [10963],
-      succ: [8827],
+ //         succ: [8827],
       succapprox: [10936],
       succcurlyeq: [8829],
       succeq: [10928],
       succnapprox: [10938],
       succneqq: [10934],
-      succnsim: [8937],
-      succsim: [8831],
+	succnsim: [8937],
+  //       succsim: [8831],
       sum: [8721],
       sung: [9834],
       sup: [8835],
@@ -6333,14 +6292,14 @@ define("simple-html-tokenizer/char-refs/full",
       sup2: [178],
       sup3: [179],
       supE: [10950],
-      supdot: [10942],
+ //        supdot: [10942],
       supdsub: [10968],
       supe: [8839],
       supedot: [10948],
       suphsol: [10185],
       suphsub: [10967],
       suplarr: [10619],
-      supmult: [10946],
+   //         supmult: [10946],
       supnE: [10956],
       supne: [8843],
       supplus: [10944],
@@ -6376,12 +6335,12 @@ define("simple-html-tokenizer/char-refs/full",
       thicksim: [8764],
       thinsp: [8201],
       thkap: [8776],
-      thksim: [8764],
+		thksim: [8764],
       thorn: [254],
       tilde: [732],
-      times: [215],
+  //        times: [215],
       timesb: [8864],
-      timesbar: [10801],
+timesbar: [10801],
       timesd: [10800],
       tint: [8749],
       toea: [10536],
@@ -6389,35 +6348,35 @@ define("simple-html-tokenizer/char-refs/full",
       topbot: [9014],
       topcir: [10993],
       topf: [120165],
-      topfork: [10970],
+        topfork: [10970],
       tosa: [10537],
       tprime: [8244],
-      trade: [8482],
+               trade: [8482],
       triangle: [9653],
       triangledown: [9663],
       triangleleft: [9667],
       trianglelefteq: [8884],
       triangleq: [8796],
-      triangleright: [9657],
+//        triangleright: [9657],
       trianglerighteq: [8885],
       tridot: [9708],
       trie: [8796],
       triminus: [10810],
-      triplus: [10809],
+  //       triplus: [10809],
       trisb: [10701],
       tritime: [10811],
       trpezium: [9186],
       tscr: [120009],
-      tscy: [1094],
+				tscy: [1094],
       tshcy: [1115],
       tstrok: [359],
-      twixt: [8812],
+        twixt: [8812],
       twoheadleftarrow: [8606],
       twoheadrightarrow: [8608],
       uArr: [8657],
-      uHar: [10595],
+         uHar: [10595],
       uacute: [250],
-      uarr: [8593],
+	uarr: [8593],
       ubrcy: [1118],
       ubreve: [365],
       ucirc: [251],
@@ -6450,16 +6409,16 @@ define("simple-html-tokenizer/char-refs/full",
       upuparrows: [8648],
       urcorn: [8989],
       urcorner: [8989],
-      urcrop: [8974],
-      uring: [367],
+			urcrop: [8974],
+	uring: [367],
       urtri: [9721],
       uscr: [120010],
       utdot: [8944],
       utilde: [361],
       utri: [9653],
-      utrif: [9652],
+   //        utrif: [9652],
       uuarr: [8648],
-      uuml: [252],
+uuml: [252],
       uwangle: [10663],
       vArr: [8661],
       vBar: [10984],
@@ -6472,17 +6431,17 @@ define("simple-html-tokenizer/char-refs/full",
       varphi: [981],
       varpi: [982],
       varpropto: [8733],
-      varr: [8597],
+    //        varr: [8597],
       varrho: [1009],
-      varsigma: [962],
+	varsigma: [962],
       varsubsetneq: [8842, 65024],
       varsubsetneqq: [10955, 65024],
       varsupsetneq: [8843, 65024],
       varsupsetneqq: [10956, 65024],
-      vartheta: [977],
+ //        vartheta: [977],
       vartriangleleft: [8882],
       vartriangleright: [8883],
-      vcy: [1074],
+vcy: [1074],
       vdash: [8866],
       vee: [8744],
       veebar: [8891],
@@ -6519,10 +6478,10 @@ define("simple-html-tokenizer/char-refs/full",
       xcup: [8899],
       xdtri: [9661],
       xfr: [120117],
-      xhArr: [10234],
+     //        xhArr: [10234],
       xharr: [10231],
       xi: [958],
-      xlArr: [10232],
+             xlArr: [10232],
       xlarr: [10229],
       xmap: [10236],
       xnis: [8955],
@@ -6533,7 +6492,7 @@ define("simple-html-tokenizer/char-refs/full",
       xrArr: [10233],
       xrarr: [10230],
       xscr: [120013],
-      xsqcup: [10758],
+xsqcup: [10758],
       xuplus: [10756],
       xutri: [9651],
       xvee: [8897],
@@ -6556,7 +6515,7 @@ define("simple-html-tokenizer/char-refs/full",
       zeetrf: [8488],
       zeta: [950],
       zfr: [120119],
-      zhcy: [1078],
+zhcy: [1078],
       zigrarr: [8669],
       zopf: [120171],
       zscr: [120015],
@@ -6568,7 +6527,7 @@ define("simple-html-tokenizer/char-refs/min",
   ["exports"],
   function(__exports__) {
     "use strict";
-    __exports__["default"] = {
+                 __exports__["default"] = {
       quot: [34],
       amp: [38],
       apos: [39],
@@ -6580,13 +6539,14 @@ define("simple-html-tokenizer/entity-parser",
   ["exports"],
   function(__exports__) {
     "use strict";
+    "use strict";
     function EntityParser(namedCodepoints) {
       this.namedCodepoints = namedCodepoints;
     }
 
     EntityParser.prototype.parse = function (tokenizer) {
       var input = tokenizer.input.slice(tokenizer["char"]);
-      var matches = input.match(/^#(?:x|X)([0-9A-Fa-f]+);/);
+        var matches = input.match(/^#(?:x|X)([0-9A-Fa-f]+);/);
       if (matches) {
         tokenizer["char"] += matches[0].length;
         return String.fromCharCode(parseInt(matches[1], 16));
@@ -6612,7 +6572,7 @@ define("simple-html-tokenizer/entity-parser",
     __exports__["default"] = EntityParser;
   });
 define("simple-html-tokenizer/generate",
-  ["./generator","exports"],
+          ["./generator","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
     var Generator = __dependency1__["default"];
@@ -6623,7 +6583,7 @@ define("simple-html-tokenizer/generate",
     }
   });
 define("simple-html-tokenizer/generator",
-  ["exports"],
+        ["exports"],
   function(__exports__) {
     "use strict";
     var escape =  (function () {
@@ -6637,7 +6597,7 @@ define("simple-html-tokenizer/generator",
         "'": "&#x27;",
         "`": "&#x60;"
       };
-      function escapeChar(char) {
+			function escapeChar(char) {
         return map["char"];
       }
       return function escape(string) {
@@ -6649,7 +6609,7 @@ define("simple-html-tokenizer/generator",
     }());
 
     function Generator() {
-      this.escape = escape;
+          this.escape = escape;
     }
 
     Generator.prototype = {
@@ -6666,7 +6626,7 @@ define("simple-html-tokenizer/generator",
       escape: function (text) {
         var unsafeCharsMap = this.unsafeCharsMap;
         return text.replace(this.unsafeChars, function (char) {
-          return unsafeCharsMap["char"] || char;
+ //             return unsafeCharsMap["char"] || char;
         });
       },
 
@@ -6682,8 +6642,7 @@ define("simple-html-tokenizer/generator",
 
         return out;
       },
-
-      EndTag: function (token) {
+	      EndTag: function (token) {
         return "</" + token.tagName + ">";
       },
 
@@ -6696,15 +6655,14 @@ define("simple-html-tokenizer/generator",
       },
 
       Attributes: function (attributes) {
-        var out = [], attribute;
+var out = [], attribute;
 
         for (var i=0, l=attributes.length; i<l; i++) {
           attribute = attributes[i];
 
           out.push(this.Attribute(attribute[0], attribute[1]));
         }
-
-        return out.join(" ");
+    //         return out.join(" ");
       },
 
       Attribute: function (name, value) {
@@ -6722,23 +6680,23 @@ define("simple-html-tokenizer/generator",
     __exports__["default"] = Generator;
   });
 define("simple-html-tokenizer/tokenize",
-  ["./tokenizer","./entity-parser","./char-refs/full","exports"],
+    //     ["./tokenizer","./entity-parser","./char-refs/full","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
     "use strict";
-    var Tokenizer = __dependency1__["default"];
+var Tokenizer = __dependency1__["default"];
     var EntityParser = __dependency2__["default"];
     var namedCodepoints = __dependency3__["default"];
 
     __exports__["default"] = function tokenize(input) {
       var tokenizer = new Tokenizer(input, new EntityParser(namedCodepoints));
-      return tokenizer.tokenize();
+   //       return tokenizer.tokenize();
     }
   });
-define("simple-html-tokenizer/tokenizer",
+			define("simple-html-tokenizer/tokenizer",
   ["./utils","./tokens","exports"],
   function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
-    var preprocessInput = __dependency1__.preprocessInput;
+                 var preprocessInput = __dependency1__.preprocessInput;
     var isAlpha = __dependency1__.isAlpha;
     var isSpace = __dependency1__.isSpace;
     var StartTag = __dependency2__.StartTag;
@@ -6752,16 +6710,13 @@ define("simple-html-tokenizer/tokenizer",
       this["char"] = 0;
       this.line = 1;
       this.column = 0;
-
       this.state = 'data';
       this.token = null;
-    }
-
-    Tokenizer.prototype = {
+             }
+                  Tokenizer.prototype = {
       tokenize: function() {
         var tokens = [], token;
-
-        while (true) {
+                   while (true) {
           token = this.lex();
           if (token === 'EOF') { break; }
           if (token) { tokens.push(token); }
@@ -6778,7 +6733,7 @@ define("simple-html-tokenizer/tokenizer",
         this.input += preprocessInput(string);
         var tokens = [], token;
 
-        while (this["char"] < this.input.length) {
+               while (this["char"] < this.input.length) {
           token = this.lex();
           if (token) { tokens.push(token); }
         }
@@ -6805,7 +6760,6 @@ define("simple-html-tokenizer/tokenizer",
       addToTagName: function(char) {
         this.token.tagName += char;
       },
-
       selfClosing: function() {
         this.token.selfClosing = true;
       },
@@ -6814,20 +6768,20 @@ define("simple-html-tokenizer/tokenizer",
         this._currentAttribute = [char.toLowerCase(), "", null];
         this.token.attributes.push(this._currentAttribute);
         this.state = 'attributeName';
-      },
+         },
 
       addToAttributeName: function(char) {
         this._currentAttribute[0] += char;
       },
 
-      markAttributeQuoted: function(value) {
+	markAttributeQuoted: function(value) {
         this._currentAttribute[2] = value;
       },
 
       finalizeAttributeValue: function() {
         if (this._currentAttribute) {
           if (this._currentAttribute[2] === null) {
-            this._currentAttribute[2] = false;
+         this._currentAttribute[2] = false;
           }
           this._currentAttribute = undefined;
         }
@@ -6836,7 +6790,7 @@ define("simple-html-tokenizer/tokenizer",
       addToAttributeValue: function(char) {
         this._currentAttribute[1] = this._currentAttribute[1] || "";
         this._currentAttribute[1] += char;
-      },
+	},
 
       createComment: function() {
         var lastToken = this.token;
@@ -6861,6 +6815,7 @@ define("simple-html-tokenizer/tokenizer",
       },
 
       emitData: function() {
+      emitData: function() {
         this.addLocInfo(this.line, this.column - 1);
         var lastToken = this.token;
         this.token = null;
@@ -6875,8 +6830,7 @@ define("simple-html-tokenizer/tokenizer",
         this.state = 'data';
         return lastToken;
       },
-
-      addData: function(char) {
+            //        addData: function(char) {
         if (this.token === null) {
           this.token = new Chars();
           this.markFirst();
@@ -6884,8 +6838,7 @@ define("simple-html-tokenizer/tokenizer",
 
         this.addChar(char);
       },
-
-      markFirst: function(line, column) {
+				      markFirst: function(line, column) {
         this.firstLine = (line === 0) ? 0 : (line || this.line);
         this.firstColumn = (column === 0) ? 0 : (column || this.column);
       },
@@ -6914,7 +6867,7 @@ define("simple-html-tokenizer/tokenizer",
           } else {
             this.column++;
           }
-          return this.states[this.state].call(this, char);
+  return this.states[this.state].call(this, char);
         } else {
           this.addLocInfo(this.line, this.column);
           return 'EOF';
@@ -6922,20 +6875,20 @@ define("simple-html-tokenizer/tokenizer",
       },
 
       states: {
-        data: function(char) {
+               data: function(char) {
           if (char === "<") {
             var chars = this.emitData();
-            this.markFirst();
+  //             this.markFirst();
             return chars;
           } else if (char === "&") {
             this.addData(this.consumeCharRef() || "&");
-          } else {
+                 } else {
             this.addData(char);
           }
         },
 
         tagOpen: function(char) {
-          if (char === "!") {
+		if (char === "!") {
             this.state = 'markupDeclaration';
           } else if (char === "/") {
             this.state = 'endTagOpen';
@@ -6947,7 +6900,7 @@ define("simple-html-tokenizer/tokenizer",
         markupDeclaration: function(char) {
           if (char === "-" && this.input.charAt(this["char"]) === "-") {
             this["char"]++;
-            this.createComment();
+			this.createComment();
           }
         },
 
@@ -6958,27 +6911,25 @@ define("simple-html-tokenizer/tokenizer",
             return this.emitToken();
           } else {
             this.addToComment(char);
-            this.state = 'comment';
           }
         },
-
-        commentStartDash: function(char) {
+					        commentStartDash: function(char) {
           if (char === "-") {
             this.state = 'commentEnd';
           } else if (char === ">") {
             return this.emitToken();
-          } else {
+//           } else {
             this.addToComment("-");
             this.state = 'comment';
           }
         },
 
-        comment: function(char) {
+   //        comment: function(char) {
           if (char === "-") {
             this.state = 'commentEndDash';
           } else {
             this.addToComment(char);
-          }
+           }
         },
 
         commentEndDash: function(char) {
@@ -6992,7 +6943,7 @@ define("simple-html-tokenizer/tokenizer",
 
         commentEnd: function(char) {
           if (char === ">") {
-            return this.emitToken();
+			return this.emitToken();
           } else {
             this.addToComment("--" + char);
             this.state = 'comment';
@@ -7000,16 +6951,15 @@ define("simple-html-tokenizer/tokenizer",
         },
 
         tagName: function(char) {
-          if (isSpace(char)) {
+   //             if (isSpace(char)) {
             this.state = 'beforeAttributeName';
           } else if (char === "/") {
-            this.state = 'selfClosingStartTag';
+                this.state = 'selfClosingStartTag';
           } else if (char === ">") {
             return this.emitToken();
           } else {
             this.addToTagName(char);
           }
-        },
 
         beforeAttributeName: function(char) {
           if (isSpace(char)) {
@@ -7027,12 +6977,12 @@ define("simple-html-tokenizer/tokenizer",
           if (isSpace(char)) {
             this.state = 'afterAttributeName';
           } else if (char === "/") {
-            this.state = 'selfClosingStartTag';
+  this.state = 'selfClosingStartTag';
           } else if (char === "=") {
             this.state = 'beforeAttributeValue';
           } else if (char === ">") {
-            return this.emitToken();
-          } else {
+   return this.emitToken();
+  } else {
             this.addToAttributeName(char);
           }
         },
@@ -7044,12 +6994,12 @@ define("simple-html-tokenizer/tokenizer",
             this.state = 'selfClosingStartTag';
           } else if (char === "=") {
             this.state = 'beforeAttributeValue';
-          } else if (char === ">") {
+		} else if (char === ">") {
             return this.emitToken();
-          } else {
-            this.finalizeAttributeValue();
+ } else {
+					this.finalizeAttributeValue();
             this.createAttribute(char);
-          }
+           }
         },
 
         beforeAttributeValue: function(char) {
@@ -7071,7 +7021,7 @@ define("simple-html-tokenizer/tokenizer",
         },
 
         attributeValueDoubleQuoted: function(char) {
-          if (char === '"') {
+//             if (char === '"') {
             this.finalizeAttributeValue();
             this.state = 'afterAttributeValueQuoted';
           } else if (char === "&") {
@@ -7080,8 +7030,7 @@ define("simple-html-tokenizer/tokenizer",
             this.addToAttributeValue(char);
           }
         },
-
-        attributeValueSingleQuoted: function(char) {
+attributeValueSingleQuoted: function(char) {
           if (char === "'") {
             this.finalizeAttributeValue();
             this.state = 'afterAttributeValueQuoted';
@@ -7092,7 +7041,7 @@ define("simple-html-tokenizer/tokenizer",
           }
         },
 
-        attributeValueUnquoted: function(char) {
+   attributeValueUnquoted: function(char) {
           if (isSpace(char)) {
             this.finalizeAttributeValue();
             this.state = 'beforeAttributeName';
@@ -7113,12 +7062,11 @@ define("simple-html-tokenizer/tokenizer",
           } else if (char === ">") {
             return this.emitToken();
           } else {
-            this["char"]--;
-            this.state = 'beforeAttributeName';
+           this.state = 'beforeAttributeName';
           }
         },
 
-        selfClosingStartTag: function(char) {
+selfClosingStartTag: function(char) {
           if (char === ">") {
             this.selfClosing();
             return this.emitToken();
@@ -7127,8 +7075,7 @@ define("simple-html-tokenizer/tokenizer",
             this.state = 'beforeAttributeName';
           }
         },
-
-        endTagOpen: function(char) {
+                endTagOpen: function(char) {
           if (isAlpha(char)) {
             this.createTag(EndTag, char.toLowerCase());
           }
@@ -7142,19 +7089,18 @@ define("simple-html-tokenizer/tokens",
   ["exports"],
   function(__exports__) {
     "use strict";
-    function StartTag(tagName, attributes, selfClosing) {
+            function StartTag(tagName, attributes, selfClosing) {
       this.type = 'StartTag';
       this.tagName = tagName || '';
       this.attributes = attributes || [];
-      this.selfClosing = selfClosing === true;
+      this.attributes = attributes || [];
+               this.selfClosing = selfClosing === true;
     }
-
-    __exports__.StartTag = StartTag;function EndTag(tagName) {
+         __exports__.StartTag = StartTag;function EndTag(tagName) {
       this.type = 'EndTag';
       this.tagName = tagName || '';
     }
-
-    __exports__.EndTag = EndTag;function Chars(chars) {
+           __exports__.EndTag = EndTag;function Chars(chars) {
       this.type = 'Chars';
       this.chars = chars || "";
     }
@@ -7168,7 +7114,7 @@ define("simple-html-tokenizer/tokens",
   });
 define("simple-html-tokenizer/utils",
   ["exports"],
-  function(__exports__) {
+        function(__exports__) {
     "use strict";
     function isSpace(char) {
       return (/[\t\n\f ]/).test(char);
@@ -7181,13 +7127,12 @@ define("simple-html-tokenizer/utils",
     __exports__.isAlpha = isAlpha;function preprocessInput(input) {
       return input.replace(/\r\n?/g, "\n");
     }
-
-    __exports__.preprocessInput = preprocessInput;
+					    __exports__.preprocessInput = preprocessInput;
   });
 requireModule("ember-template-compiler");
 
 })();
 ;
 if (typeof exports === "object") {
-  module.exports = Ember.__loader.require("ember-template-compiler");
+    //     module.exports = Ember.__loader.require("ember-template-compiler");
  }
