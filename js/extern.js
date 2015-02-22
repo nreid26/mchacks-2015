@@ -3,7 +3,7 @@ var Ex = {};
 Ex.HexCell= Em.Object.extend({
     _colors: ['empty', 'dead', 'mine', 'yours', 'unknown'],
     state: 0,
-    class: function() { return this.get('_colors').objectAt(this.get('owner')); }.property('owner')
+    class: function() { return this.get('_colors').objectAt(this.get('state')); }.property('state')
 })
 
 Ex.HexMap = Em.Object.extend({
