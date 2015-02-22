@@ -90,26 +90,29 @@ App.PlayerController = Em.ObjectController.extend({
     stopped: true,
     pauseContext: null,
 
-    gameCycle: function( a, teamA, scriptA, b, teamB, scriptB) {
+    gameCycle: function(teamA, teamB) {
         //Test if game should keep running
-        if(this.get('stopped')) { return; }
-        else if(this.get('paused')) { 
-            return this.set('pauseContext', [this, a, teamA, scriptA, b, teamB, scriptB]);
-        }
+        debugger;
+        if(teamA.players.length == 0) { return alert('Team ' + teamB.name + ' won!'); }
+        else if(teamB.players.length == 0) { return alert('Team ' + teamA.name + ' won!'); }
+        else if(this.get('stopped')) { return; }
+
+        if(this.get('paused')) { return this.set('pauseContext', [teamA, teamB]); }
             
         //Validate turn context and execute
-        a = (a < teamA.length) ? a : 0;
+        teamA.index = (teamA.index < teamA.players.length) ? teamA.index : 0;
         try { 
-            var command = scriptA.call(teamA[a], a, teamA.length);
-            Ex.executeCommand(command,a,teamA);
+            var command = teamA.script.call(teamA.players[teamA.index], teamA.index, teamA.players.length);
+            Ex.executeCommand(command, teamA);
         }
         catch(e) { 
             alert('An error was enconutered during this turn. The game has been terminated');
-            this.get('actions.stopGame')();
+            this.get('actions').stopGame();
         }
 
         //Prepare for next turn 
-        Em.run.later(this,this.get('gameCycle'), b, teamB, scriptB, ++a, teamA, scriptA, this.get('delay')); 
+        teamA.index++;
+        Em.run.later(this, this.get('gameCycle'), teamB, teamA, this.get('delay')); 
     },
 
 
@@ -129,7 +132,10 @@ App.PlayerController = Em.ObjectController.extend({
                 stopped: false
             });
 
-            Em.run.later( this, this.get('gameCycle'), 0, this.get('mine'), f, 0, this.get('yours'), Ex.aiScript, this.get('delay') ); 
+            Em.run.later( this, this.get('gameCycle'),
+                {index: 0, players: this.get('mine'), script: f, name: 'Mine'}, 
+                {index: 0, players: this.get('yours'), script: Ex.AIScript, name: 'Yours'},
+            this.get('delay') ); 
         },
 
         stopGame: function() {
@@ -146,8 +152,9 @@ App.PlayerController = Em.ObjectController.extend({
         },
 
         unpauseGame: function() {
+            this.set('paused', false); 
             var args = this.get('pauseContext');
-            this.get('playCycle')(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+            this.get('playCycle')(args[0], args[1]);
         },
 
         switchView: function(view) {

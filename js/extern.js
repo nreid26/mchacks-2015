@@ -1,9 +1,10 @@
-var Ex = {};
-    
+var Ex = {},
+    statesToNames = {0: 'empty', 1: 'dead', 3: 'mine', 4: 'yours', 5: 'unknown', 6: 'null'},
+    namesToStates = {'empty': 0, 'dead': 1, 'mine': 3, 'yours': 4, 'unknown': 5, 'null': 6};
+
 Ex.HexCell= Em.Object.extend({
-    _colors: ['empty', 'dead', 'mine', 'yours', 'unknown', 'null'],
     state: 0,
-    class: function() { return this.get('_colors').objectAt(this.get('state')); }.property('state')
+    class: function() { return cellStates.objectAt(this.get('state')); }.property('state')
 })
 Ex.HexCellMirror = Ex.HexCell.extend({
     base: null,
@@ -17,6 +18,8 @@ Ex.HexMap = Em.Object.extend({
     height: 11,
     defaultState: 0,
 
+    myTeamId: function() { statesToNames['mine']; },
+    yourTeamId: function() { statesToNames['yours']; },
     cellAt: function(x, y) { 
         return this.get('map').objectAt(
             x + this.get('width') * y
@@ -87,152 +90,91 @@ Ex.editor = Em.Object.create({data: 'return {task:"assimilate", param: 1};'});
 
 Ex.maps = {}
 
-Ex.updateTile = function(player,index,state,lastPos, task){
-    //wraparound logic
-    if(player[index].y<0){
-        player[index].y = Ex.maps.global.get('width') -1;
-    } else if ( player[index].y >= Ex.maps.global.get('width')){
-        player[index].y = 0;
-    } else if(player[index].x<0){
-        player[index].x = Ex.maps.global.get('height') -1;
-    } else if ( player[index].x >= Ex.maps.global.get('height')){
-        player[index].x = 0;
-    }
+Ex.updateTile = function(team,state,lastPos, task){
+    var player = team.players[team.index],
+        width = Ex.maps.global.get('width'),
+        height = Ex.maps.global.get('height');
 
+    //Wraparound logic
+    if(player.y < 0) { player.y = width - 1; } 
+    else if(player.y >= width) { player.y = 0; } 
+    else if(player.x < 0) { player.x = width - 1; }
+    else if(player.x >= width) { player.x = 0; }
 
-    //for (var map in Ex.maps){
-        var futureState = Ex.maps.global.cellAt(player[index].x,player[index].y).state;
+    //For (var map in Ex.maps){
+        var futureState = player.id;
         if(futureState == 0 && task == 'move'){
-            Ex.maps.global.cellAt(player[index].x,player[index].y).set('state',state);
+            Ex.maps.global.cellAt(player.x,player.y).set('state',state);
         } else if(futureState == 5){
-            player[index].x = lastPos.x;
-            player[index].y = lastPos.y;
+            player.x = lastPos.x;
+            player.y = lastPos.y;
             Ex.maps.global.cellAt(lastPos.x,lastPos.y).set('state',state);
         } else{
             if((futureState == 1 || futureState == 2 || futureState == 3) && task == 'attack'){
-                Ex.maps.global.cellAt(player[index].x,player[index].y).set('state',1);
+                Ex.maps.global.cellAt(player.x,player.y).set('state',1);
             } else if(futureState == 1 && task == 'assimilate'){
-                Ex.maps.global.cellAt(player[index].x,player[index].y).set('state',state);
-                player.push({x:player[index].x,y:player[index].y});
+                Ex.maps.global.cellAt(player.x,player.y).set('state',state);
+                player.push({x:player.x,y:player.y});
             } else if((futureState == 2 || futureState == 3) && futureState != state && task == 'assimilate'){
                 state = 1;
             }
-            player[index].x = lastPos.x;
-            player[index].y = lastPos.y;
+            player.x = lastPos.x;
+            player.y = lastPos.y;
             Ex.maps.global.cellAt(lastPos.x,lastPos.y).set('state',state);
             if( state == 1){
-                player.splice(index,1);
+                team.players.splice(index, 1);
             }
         }
 }
 
 Ex.Player = {
-    createMine: function(x, y) { return {x: x || 5, y: y || 3}; },
-    createYours: function(x, y) { return {x: x || 5, y: y || 7} }
+    createMine: function(x, y) { return {x: x || 5, y: y || 3, id: 2}; },
+    createYours: function(x, y) { return {x: x || 5, y: y || 7, id: 3}; }
 };
 
-Ex.aiScript = function() {
+Ex.AIScript = function() {
     function int(a) { return Math.round(Math.random() * a); }
     var moves = ['attack', 'assimilate', 'move'];
     return {task: moves[int(3)], param: int(5)}; 
 };
 
-Ex.executeCommand = function(command,a,teamA) {
-        lastPos = {x:teamA[a].x,y:teamA[a].y};
-        var team = this.maps.global.cellAt(lastPos.x,lastPos.y).state;
-            // move peice
-            if(typeof command.param == 'undefined'){
-                //invalid move command, do nothing.
-            } else {
-                Ex.updateTile(teamA,a,0,lastPos);
-                switch(command.param){
-                    case 1:
-                        //move NE
-                        if(lastPos.y % 2){
-                            teamA[a].y -= 1;
-                            teamA[a].x += 1;
-                            Ex.updateTile(teamA,a,team,lastPos,command.task);
-                        } else {
-                            teamA[a].y -= 1;
-                            Ex.updateTile(teamA,a,team,lastPos,command.task);    
-                        }
-                        break;
-                    case 2:
+Ex.executeCommand = function(team) {
+    var pos = team.players[team.index],
+        pos = {x: pos.x, y: pos.y},
 
-                        // move E
-                        teamA[a].x += 1;
-                        Ex.updateTile(teamA,a,team,lastPos,command.task);
-                        break;
-                    case 3:
-                        // move SE
-                        if(lastPos.y % 2){
-                            teamA[a].y += 1;
-                            teamA[a].x += 1;
-                            Ex.updateTile(teamA,a,team,lastPos,command.task);
-                        } else {
-                            teamA[a].y += 1;
-                            Ex.updateTile(teamA,a,team,lastPos,command.task);
-                        }
-                        break;
-                    case 4:
-                        //move SW
-                        if(lastPos.y % 2){
-                            teamA[a].y += 1;
-                            Ex.updateTile(teamA,a,team,lastPos,command.task);
-                        } else {
-                            teamA[a].y += 1;
-                            teamA[a].x -= 1;
-                            Ex.updateTile(teamA,a,team,lastPos,command.task);
-                        }
-                        break;
-                    case 5:
-                        //move W
-                        teamA[a].x -= 1;
-                        Ex.updateTile(teamA,a,team,lastPos,command.task);
-                        break;
-                    case 6:
-                        //move NW
-                        if(lastPos.y % 2){
-                            teamA[a].y -= 1;
-                            Ex.updateTile(teamA,a,team,lastPos,command.task);
-                            
-                        } else {
-                            teamA[a].y -= 1;
-                            teamA[a].x -= 1;
-                            Ex.updateTile(teamA,a,team,lastPos,command.task);    
-                        }
-                        break;
-                    default:
-                        Ex.updateTile(teamA,a,team,lastPos,'move');
-                        break;
-                }
-            }
-        }
-Ex.lookAbout = function(players){
-    var spots = [];
-    for(var current in players){
-        spots.push((players[current].x + 0) + 11 * (players[current].y + 0));
-        spots.push((players[current].x + 1) + 11 * (players[current].y + 0));
-        spots.push((players[current].x - 1) + 11 * (players[current].y + 0));
-        //get every spot
-        if(lastPos.y % 2){
-            spots.push((players[current].x +1) + 11 * (players[current].y -1));
-            spots.push((players[current].x +1) + 11 * (players[current].y +1));
-            spots.push((players[current].x) + 11 * (players[current].y +1));
-            spots.push((players[current].x) + 11 * (players[current].y -1));
-        } else {
-            spots.push((players[current].x) + 11 * (players[current].y -1));
-            spots.push((players[current].x) + 11 * (players[current].y +1));
-            spots.push((players[current].x-1 ) + 11 * (players[current].y +1));
-            spots.push((players[current].x-1 ) + 11 * (players[current].y -1));
-        }
+        player = team.players[team.index],
+        mod = pos.y % 2;
+
+    Ex.updateTile(team, 0, pos);
+
+    //Move peice
+    if(!command || !command.param || !command.task) { return; }
+    switch(command.param){
+        case 1: //NE
+            player.y -= 1;
+            player.x += mod;
+            break;
+        case 2: //E
+            player.x += 1;
+            break;
+        case 3: //SE
+            player.y += 1;
+            player.x += mod;
+            break;
+        case 4: //SW
+            player.y -= 1;
+            player.x += mod - 1;
+            break;
+        case 5: //W
+            team[a].x -= 1;
+            break;
+        case 6: //NW
+            team[a].y -= mod;
+            team[a].x -= 1;
+            break;
+        default:
+            command.task = 'move';
+            break;
     }
-    spots.sort();
-    jQuery.unique(spots);
-    var mappings;
-    for(var current in spots){
-        mappings.push({x:spots[current]%11,y:Math.floor(spots[current]/11)});   
-    }
-    console.log(mappings);
-    return mappings;
+    Ex.updateTile(team, team.id, pos, command.task);    
 }
