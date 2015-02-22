@@ -15,20 +15,26 @@ html, body {
   height: 160px;
 }
 
-/* Hexagon Formatter */
 #game{
-	x:1000px;
-	background: #000;
-	-webkit-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
-	-moz-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
-	-ms-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
-	-o-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
-	transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
+			display: table;
+    		margin: 20px auto;
+			background: #000;
+			/*-webkit-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
+			-moz-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
+			-ms-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
+			-o-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
+			transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);*/
+		}
+/* Hexagon Formatter */
+.hex {
+    float: left;
+    margin-right: -1.3vw;
+    margin-bottom: -2.5vw;
 }
 .hex .left {
     float: left;
     width: 0;
-    border-right: 1.5vw solid #333333;
+    border-right: 1.5vw solid #eee;
     border-top: 2.6vw solid transparent;
     border-bottom: 2.6vw solid transparent;
 }
@@ -36,12 +42,12 @@ html, body {
     float: left;
     width: 3.0vw;
     height: 5.2vw;
-    background: #333333;
+    background: #eee;
 }
 .hex .right {
     float: left;
     width: 0;
-    border-left: 1.5vw solid #333333;
+    border-left: 1.5vw solid #eee;
     border-top: 2.6vw solid transparent;
     border-bottom: 2.6vw solid transparent;
 }
@@ -70,15 +76,6 @@ html, body {
 .hex.yours .left {
 	border-right: 1.5vw solid #ff2897;
 }
-.hex.dead .right{
-	border-left: 1.5vw solid #ffcc33;
-}
-.hex.dead .middle{
-	background: #ffcc33;
-}
-.hex.dead .left {
-	border-right: 1.5vw solid #ffcc33;
-}
 .hex.empty .right{
 	border-left: 1.5vw solid #333333;
 }
@@ -88,14 +85,23 @@ html, body {
 .hex.empty .left {
 	border-right: 1.5vw solid #333333;
 }
+.hex.dead .right{
+	border-left: 1.5vw solid #ffcc33;
+}
+.hex.dead .middle{
+	background: #ffcc33;
+}
+.hex.dead .left {
+	border-right: 1.5vw solid #ffcc33;
+}
 .hex.unknown .right{
-	border-left: 1.5vw solid #000;
+	border-left: 1.5vw solid #000000;
 }
 .hex.unknown .middle{
-	background: #000;
+	background: #000000;
 }
 .hex.unknown .left {
-	border-right: 1.5vw solid #000;
+	border-right: 1.5vw solid #000000;
 }
 
 /*Nav bar*/
