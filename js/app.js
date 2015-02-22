@@ -24,7 +24,14 @@ App.EditView = Em.View.extend({
     }
 });
 App.EditController = Em.Controller.extend({
+    expand: Em.Object.create({a: true, b: false, c: false, d: false}),
+
     actions: {
+        resize: function(key) {
+            var e = this.get('expand');
+            e.setProperties({a: false, b: false, c: false, d: false});
+            e.set(key, true);
+        }
     }
 });
 
