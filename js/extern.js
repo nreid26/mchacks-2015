@@ -87,7 +87,6 @@ Ex.editor = Em.Object.create({data: 'return {task:"assimilate", param: 1};'});
 Ex.maps = {}
 
 Ex.updateTile = function(player,index,state,lastPos, task){
-    console.log(player[index]);
     //wraparound logic
     if(player[index].y<0){
         player[index].y = Ex.maps.global.get('width') -1;
@@ -105,8 +104,6 @@ Ex.updateTile = function(player,index,state,lastPos, task){
         if(futureState == 0 && task == 'move'){
             Ex.maps.global.cellAt(player[index].x,player[index].y).set('state',state);
         } else if(futureState == 5){
-            console.log('shit fucked up');
-            console.log('stopped');
             player[index].x = lastPos.x;
             player[index].y = lastPos.y;
             Ex.maps.global.cellAt(lastPos.x,lastPos.y).set('state',state);
@@ -119,12 +116,11 @@ Ex.updateTile = function(player,index,state,lastPos, task){
             } else if((futureState == 2 || futureState == 3) && futureState != state && task == 'assimilate'){
                 state = 1;
             }
-            console.log('stopped');
             player[index].x = lastPos.x;
             player[index].y = lastPos.y;
             Ex.maps.global.cellAt(lastPos.x,lastPos.y).set('state',state);
             if( state == 1){
-                delete player[index];
+                player.splice(index,1);
             }
         }
 }
@@ -207,7 +203,7 @@ Ex.executeCommand = function(command,a,teamA) {
                         break;
                     default:
                         console.log('INVALID DIRECTION');
-                        Ex.updateTile(lastPos,team);
+                        Ex.updateTile(teamA,a,team,lastPos,'move');
                         break;
                 }
             }
