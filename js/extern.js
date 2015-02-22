@@ -8,8 +8,8 @@ Ex.HexCell= Em.Object.extend({
 
 Ex.HexMap = Em.Object.extend({
     map: null,
-    width: 10,
-    height: 10,
+    width: 12,
+    height: 12,
     defaultState: 0,
 
     cellAt: function(x, y) { 

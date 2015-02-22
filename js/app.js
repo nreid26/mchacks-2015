@@ -40,15 +40,64 @@ App.PlayerRoute = Em.Route.extend({
         return Ex.maps.global;
     },
     setupController:function(controller, model){
-        //set up game
-        //alert(model);
-        //new ones for e
-        console.log(model.get('map'));
+        var w = model.get('width');
+        var h = model.get('height');
+        console.log(w);
+        console.log(h);
+        //percentage of the map that's dead
+        var numOthers = Math.round(w*h*0.15);
+        for(var i=0; i<numOthers;i++){
+            var x = Math.floor(Math.random()*(w-1));
+            var y = Math.floor(Math.random()*(h-1));
+            console.log('x:'+x+'y:'+y);
+            model.cellAt(x,y).set('state',1);
+        }
         controller.set('model',model);
-
-
     }
 });
+App.PlayerView = Em.View.extend({
+    didInsertElement:function(){
+        var view = this;
+        Em.run.schedule('afterRender', function() {
+            var v = document.getElementById('game');
+            var mousePos = {};
+            var mouseDown = false;
+            var rotation = {x:0,y:0};
+            $(v).on('mousedown', function(event) {
+                mousePos.x = event.pageX;
+                mousePos.y = event.pageY;
+               // mouseDown = true;
+            });
+            $(v).on('mousemove',function(evt){
+                if(mouseDown){
+                    var dx = event.pageX-mousePos.x;
+                    var dy = mousePos.y - event.pageY;
+                    mousePos.x = event.pageX;
+                    mousePos.y = event.pageY;
+                    rotation.x += dx;
+                    rotation.y += dy;
+                    var change = 'perspective(1600px) rotateX('+rotation.y/10+'deg) rotateY('+rotation.x/10+'deg)';
+                    $(v).css('transform',change);
+                    $(v).css('-webkit-transform',change);
+                }
+            });
+            $(v).on('mouseup',function(evt){
+                if('mouseDown'){
+                    var dx = event.pageX-mousePos.x;
+                    var dy = mousePos.y - event.pageY;
+                    mousePos.x = event.pageX;
+                    mousePos.y = event.pageY;
+                    rotation.x += dx;
+                    rotation.y += dy;
+                    var change = 'perspective(1600px) rotateX('+rotation.y/10+'deg) rotateY('+rotation.x/10+'deg)';
+                    $(v).css('transform',change);
+                    $(v).css('-webkit-transform',change);
+                    mouseDown = false;
+                }
+            });
+        });
+    }
+})
 App.PlayerController = Em.ObjectController.extend({
     actions:{startGame:function(){
         //start game
