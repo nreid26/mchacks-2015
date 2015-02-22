@@ -22,8 +22,9 @@ Ex.HexMap = Em.Object.extend({
         );
     },
     init: function() {
-        for(var x = this.get('width'); x >= 0; x--) {
-            for(var y = this.get('height'); y >= 0; y--) {
+        this.set('map',[]);
+        for(var x = this.get('width'); x >= 1; x--) {
+            for(var y = this.get('height'); y >= 1; y--) {
                 this.push(0);
             }
         }
@@ -32,8 +33,4 @@ Ex.HexMap = Em.Object.extend({
 
 Ex.editor = Em.Object.create({data: 'default entry'});
 
-Ex.maps = {
-    global: Ex.HexMap.create(),
-    ai: Ex.HexMap.create(),
-    player: Ex.HexMap.create()
-}
+Ex.maps = {}

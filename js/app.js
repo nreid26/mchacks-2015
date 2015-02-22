@@ -32,6 +32,37 @@ App.EditorController = Em.Controller.extend({
     }
 });
 
+App.PlayerRoute = Em.Route.extend({
+    model:function(){
+        Ex.maps.global = Ex.HexMap.create({defaultState:0});
+        Ex.maps.ai = Ex.HexMap.create({defaultState:5});
+        Ex.maps.player = Ex.HexMap.create({defaultState:5});
+        return Ex.maps.global;
+    },
+    setupController:function(controller, model){
+        //set up game
+        //alert(model);
+        //new ones for e
+        console.log(model.map);
+        controller.set('model',model);
+
+        
+    }
+});
+App.PlayerController = Em.ObjectController.extend({
+    actions:{startGame:function(){
+        //start game
+    },endGame:function(){
+        //end the game
+    },pauseGame:function(){
+        //pause the game
+    },unpauseGame:function(){
+        //unpause the game
+    },swichView:function(view){
+        //reset model
+    }}
+})
+
 
 App.AllRoute = Em.Route.extend({
     redirect: function() {
