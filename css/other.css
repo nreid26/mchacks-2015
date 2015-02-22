@@ -28,14 +28,22 @@
   height: 100%;
   width: 100%;
 }
+
 #info_pane {
-	width: 30%;
+	min-width: 300px;
 	vertical-align: top;
 	padding-right: 10px;
 }
 #info_pane div {
 	margin-bottom: 10px;
-	height: 20px;
 	border-radius: 5px;
 	background: #333333;
+	padding: 20px;
+}
+#info_pane div:last-of-type {
+	margin-bottom: 0;
+}
+#info_pane img {
+	margin: 0 auto;
+	height: 250px;
 }

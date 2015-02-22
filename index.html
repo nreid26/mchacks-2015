@@ -21,10 +21,47 @@
         <table id="editor_table">
             <tr>
                 <td id="info_pane">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
+                    <div {{action "resize" "a"}}>
+                        <h3>Tiles</h3>
+                        {{#if expand.a}}
+                        <img src="images/tiles.png" />
+                        <ol>
+                            <li>Good Tiles</li>
+                            <li>Unclaimed Tiles</li>
+                            <li>Bad Tiles</li>
+                            <li>Empty Cell</li>
+                        </ol> 
+                        {{/if}}
+                    </div>
+
+                    <div {{action "resize" "b" }}>
+                        <h3>Directions</h3>
+                        {{#if expand.b}}
+                        <img src="images/directions.png" />
+                        {{/if}}
+                    </div>
+
+                    <div {{action "resize" "c" }}>
+                        <h3>API</h3>
+                        {{#if expand.c}}
+                        <ol>
+                            <li>return this.move(direction): move the tile one cell</li>
+                            <li>return this.attack(direction): attack any enemy on one side </li>
+                            <li>return this.assimilate(direction): animate an unclaimed cell on one side</li>
+                        </ol>
+                        All API's must be returned and are bound to the this context.  To ensure only a single move, the return of the calls is what triggers the action.
+                        All good tiles share the same instructions but have distinct contexts.  Each good tile moves in sequence, interleaved with bad tiles. In adition to the context,
+                        the index and number of soliders are available in scope.
+                        {{/if}}
+                    </div>
+
+                    <div {{action "resize" "d" }}>
+                       <h3>Objectives</h3>
+                        {{#if expand.d}}
+                        The goal of Hexgame is to defeat the bad pink tiles.  You do this by teaching the good blue tiles to march, expand, and war on thier enemies.  This is done by programming them
+                        where and when to strike using the console to the right.  The basics are listed here, but it will take more than that to claim victory!  The rest is to be discovered.
+                        {{/if}}
+                    </div>
                 </td>
                 <td id="editor"></td>
             </tr>
