@@ -92,7 +92,6 @@ App.PlayerController = Em.ObjectController.extend({
 
     gameCycle: function(teamA, teamB) {
         //Test if game should keep running
-        debugger;
         if(teamA.players.length == 0) { return alert('Team ' + teamB.name + ' won!'); }
         else if(teamB.players.length == 0) { return alert('Team ' + teamA.name + ' won!'); }
         else if(this.get('stopped')) { return; }

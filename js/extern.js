@@ -1,10 +1,10 @@
 var Ex = {},
-    statesToNames = {0: 'empty', 1: 'dead', 3: 'mine', 4: 'yours', 5: 'unknown', 6: 'null'},
-    namesToStates = {'empty': 0, 'dead': 1, 'mine': 3, 'yours': 4, 'unknown': 5, 'null': 6};
+    statesToNames = {0: 'empty', 1: 'dead', 2: 'mine', 3: 'yours', 4: 'unknown', 5: 'null'},
+    namesToStates = {'empty': 0, 'dead': 1, 'mine': 2, 'yours': 3, 'unknown': 4, 'null': 5};
 
 Ex.HexCell= Em.Object.extend({
     state: 0,
-    class: function() { return cellStates.objectAt(this.get('state')); }.property('state')
+    class: function() { return statesToNames[this.get('state')]; }.property('state')
 })
 Ex.HexCellMirror = Ex.HexCell.extend({
     base: null,
@@ -90,7 +90,7 @@ Ex.editor = Em.Object.create({data: 'return {task:"assimilate", param: 1};'});
 
 Ex.maps = {}
 
-Ex.updateTile = function(team,state,lastPos, task){
+Ex.updateTile = function(team, state, lastPos, task) {
     var player = team.players[team.index],
         width = Ex.maps.global.get('width'),
         height = Ex.maps.global.get('height');
@@ -101,30 +101,33 @@ Ex.updateTile = function(team,state,lastPos, task){
     else if(player.x < 0) { player.x = width - 1; }
     else if(player.x >= width) { player.x = 0; }
 
-    //For (var map in Ex.maps){
-        var futureState = player.id;
-        if(futureState == 0 && task == 'move'){
+    var futureState = player.id;
+    if(futureState == 0 && task == 'move') {
+        Ex.maps.global.cellAt(player.x,player.y).set('state', state);
+    } 
+    else if(futureState == 5){
+        player.x = lastPos.x;
+        player.y = lastPos.y;
+        Ex.maps.global.cellAt(lastPos.x,lastPos.y).set('state',state);
+    } 
+    else {
+        if((futureState == 1 || futureState == 2 || futureState == 3) && task == 'attack'){
+            Ex.maps.global.cellAt(player.x,player.y).set('state',1);
+        } 
+        else if(futureState == 1 && task == 'assimilate'){
             Ex.maps.global.cellAt(player.x,player.y).set('state',state);
-        } else if(futureState == 5){
-            player.x = lastPos.x;
-            player.y = lastPos.y;
-            Ex.maps.global.cellAt(lastPos.x,lastPos.y).set('state',state);
-        } else{
-            if((futureState == 1 || futureState == 2 || futureState == 3) && task == 'attack'){
-                Ex.maps.global.cellAt(player.x,player.y).set('state',1);
-            } else if(futureState == 1 && task == 'assimilate'){
-                Ex.maps.global.cellAt(player.x,player.y).set('state',state);
-                player.push({x:player.x,y:player.y});
-            } else if((futureState == 2 || futureState == 3) && futureState != state && task == 'assimilate'){
-                state = 1;
-            }
-            player.x = lastPos.x;
-            player.y = lastPos.y;
-            Ex.maps.global.cellAt(lastPos.x,lastPos.y).set('state',state);
-            if( state == 1){
-                team.players.splice(index, 1);
-            }
+            player.push({x:player.x,y:player.y});
+        } 
+        else if((futureState == 2 || futureState == 3) && futureState != state && task == 'assimilate'){
+            state = 1;
         }
+
+        player.x = lastPos.x;
+        player.y = lastPos.y;
+        Ex.maps.global.cellAt(lastPos.x,lastPos.y).set('state',state);
+
+        if(state == 1) { team.players.splice(index, 1); }
+    }
 }
 
 Ex.Player = {
@@ -138,7 +141,8 @@ Ex.AIScript = function() {
     return {task: moves[int(3)], param: int(5)}; 
 };
 
-Ex.executeCommand = function(team) {
+Ex.executeCommand = function(command, team) {
+    debugger;
     var pos = team.players[team.index],
         pos = {x: pos.x, y: pos.y},
 
