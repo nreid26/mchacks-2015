@@ -18,6 +18,8 @@ html, body {
 }
 
 #game {
+    display: table;
+    margin: 20px auto;
     z-index: 0;
 	/*-webkit-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
 	-moz-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);

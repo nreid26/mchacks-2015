@@ -37,21 +37,29 @@ Ex.HexMap = Em.Object.extend({
     }
 });
 
-Ex.editor = Em.Object.create({data: 'return {task:"move", param: 2};'});
+Ex.editor = Em.Object.create({data: 'return {task:"move", param: 4};'});
 
 Ex.maps = {}
 
-Ex.updateTile = function(x,y,state){
-    if(y<0){
-        y = Ex.global.get('width') -1;
-    } else if ( y >= Ex.maps.global.get('width')){
-        y=0;
+Ex.updateTile = function(player,state,lastPos){
+    console.log(player);
+    if(player.y<0){
+        player.y = Ex.global.get('width') -1;
+    } else if ( player.y >= Ex.maps.global.get('width')){
+        player.y = 0;
+    } else if(player.x<0){
+        player.x = Ex.global.get('height') -1;
+    } else if ( player.x >= Ex.maps.global.get('height')){
+        player.x = 0;
     }
-    for (var map in Ex.maps){
-        if(Ex.maps[map].cellAt(x,y).state != 5){
-            Ex.maps[map].cellAt(x,y).set('state',state);
+
+    //for (var map in Ex.maps){
+        if(Ex.maps.global.cellAt(player.x,player.y).state != 5){
+            Ex.maps.global.cellAt(player.x,player.y).set('state',state);
+        } else {
+            updateTile(lastPos,state);
         }
-    }
+    //}
 }
 
 Ex.Player = {
@@ -64,9 +72,8 @@ Ex.aiScript = function() {
 };
 
 Ex.executeCommand = function(command,a,teamA) {
-        var x = teamA[a].x;
-        var y = teamA[a].y;
-        var team = this.maps.global.cellAt(x,y).state;
+        lastPos = teamA[a];
+        var team = this.maps.global.cellAt(lastPos.x,lastPos.y).state;
         switch(command.task){
             case 'move':
                 // move peice
@@ -74,57 +81,67 @@ Ex.executeCommand = function(command,a,teamA) {
                     //invalid move command, do nothing.
                     console.log('INVALID MOVE');
                 } else {
-                    Ex.updateTile(x,y,0);
+                    Ex.updateTile(teamA[a],0);
                     switch(command.param){
                         case 1:
                             //move NE
-                            if(x % 2){
-                                Ex.updateTile(x+1,y-1,team);
+                            if(lastPos.y % 2){
                                 teamA[a].y -= 1;
                                 teamA[a].x += 1;
+                                Ex.updateTile(teamA[a],team,lastPos);
                             } else {
-                                Ex.updateTile(x,y-1,team);
                                 teamA[a].y -= 1;
-
+                                Ex.updateTile(teamA[a],team,lastPos);    
                             }
                             break;
                         case 2:
 
                             // move E
-                            Ex.updateTile(x+1,y,team);
                             teamA[a].x += 1;
+                            Ex.updateTile(teamA[a],team,lastPos);
                             break;
                         case 3:
                             // move SE
-                            if(x % 2){
-                                Ex.updateTile(x,y+1,team);
+                            if(lastPos.y % 2){
+                                teamA[a].y += 1;
+                                teamA[a].x += 1;
+                                Ex.updateTile(teamA[a],team,lastPos);
                             } else {
-                                Ex.updateTile(x+1,y+1,team);
+                                teamA[a].y += 1;
+                                Ex.updateTile(teamA[a],team,lastPos);
                             }
                             break;
                         case 4:
                             //move SW
-                            if(x % 2){
-                                Ex.updateTile(x-1,y+1,team);
+                            if(lastPos.y % 2){
+                                teamA[a].y += 1;
+                                Ex.updateTile(teamA[a],team,lastPos);
                             } else {
-                                Ex.updateTile(x,y+1,team);
+                                teamA[a].y += 1;
+                                teamA[a].x -= 1;
+                                Ex.updateTile(teamA[a],team,lastPos);
                             }
                             break;
                         case 5:
                             //move W
-                            Ex.updateTile(x-1,y,team);
+                            teamA[a].x -= 1;
+                            Ex.updateTile(teamA[a],team,lastPos);
                             break;
                         case 6:
                             //move NW
-                            if(x % 2){
-                                Ex.updateTile(x-1,y-1,team);
+                            if(lastPos.y % 2){
+                                teamA[a].y -= 1;
+                                Ex.updateTile(teamA[a],team,lastPos);
+                                
                             } else {
-                                Ex.updateTile(x,y-1,team);
+                                teamA[a].y -= 1;
+                                teamA[a].x -= 1;
+                                Ex.updateTile(teamA[a],team,lastPos);    
                             }
                             break;
                         default:
                             console.log('INVALID MOVE DIRECTION');
-                            Ex.updateTile(x,y,team);
+                            Ex.updateTile(lastPos,team);
                             break;
                     }
                 }
