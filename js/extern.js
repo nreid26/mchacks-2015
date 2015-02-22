@@ -7,7 +7,7 @@ Ex.HexCell= Em.Object.extend({
 })
 
 Ex.HexMap = Em.Object.extend({
-    map: [],
+    map: null,
     width: 10,
     height: 10,
     defaultState: 0,
@@ -19,7 +19,7 @@ Ex.HexMap = Em.Object.extend({
     },
     push: function(type) {
         this.get('map').pushObject(
-            Ex.HexCell.create({activity: type})
+            Ex.HexCell.create({state: type})
         );
     },
     init: function() {

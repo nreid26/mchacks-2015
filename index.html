@@ -23,7 +23,7 @@
     <script type="text/x-handlebars" id="player">
     <div id='game'>
         {{#each cell in map}}
-            <div {{bind-attr class=":hex cell.state"}}>
+            <div {{bind-attr class=":hex cell.class"}}>
                 <div class='left'></div>
                 <div class='middle'></div>
                 <div class='right'></div>
