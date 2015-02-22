@@ -119,30 +119,31 @@ App.PlayerController = Em.ObjectController.extend({
     pauseContext: null,
 
 
-    gameCycle: function(controller, a, teamA, scriptA, b, teamB, scriptB) {
+    gameCycle: function( a, teamA, scriptA, b, teamB, scriptB) {
         //Test if game should keep running
-        if(controller.get('stopped')) { return; }
-        else if(controller.get('paused')) { 
-            return controller.set('pauseContext', [controller, a, teamA, scriptA, b, teamB, scriptB]);
+        if(this.get('stopped')) { return; }
+        else if(this.get('paused')) { 
+            return this.set('pauseContext', [this, a, teamA, scriptA, b, teamB, scriptB]);
         }
             
         //Validate turn context and execute
-        a = (a < teamA.length) ? a : teamA.length;
+        a = (a < teamA.length) ? a : 0;
         try { 
             var command = scriptA.call(teamA[a], a, teamA.length);
-            console.log(command);
+            //this.get('model').cellAt(teamA[a].x,teamA[a].y).set('state',0);
+            //alert('survived');
             Ex.executeCommand(command,a,teamA);
-            //controller.get('executeCommand')(command,a,teamA);
+            //this.get('executeCommand')(command,a,teamA);
         }
         catch(e) { 
             alert('An error was enconutered during this turn. The game has been terminated');
             console.log(e);
-            controller.get('actions.stopGame')();
+            this.get('actions.stopGame')();
             }
-        //controller.get('executeCommand')(command);
+        //this.get('executeCommand')(command);
 
         //Prepare for next turn 
-        setTimeout(controller.get('gameCycle'), controller.get('delay'), b, teamB, scriptB, a++, teamA, scriptA); 
+        Em.run.later(this,this.get('gameCycle'), b, teamB, scriptB, ++a, teamA, scriptA, this.get('delay')); 
     },
 
 
@@ -155,9 +156,8 @@ App.PlayerController = Em.ObjectController.extend({
                 paused: false,
                 stopped: false
             });
-
-            setTimeout(this.get('gameCycle'), this.get('delay'),
-                this, 0, this.get('mine'), f, 0, this.get('yours'), Ex.aiScript
+            var that = this;
+            Em.run.later(this,this.get('gameCycle'), 0, this.get('mine'), f, 0, this.get('yours'), Ex.aiScript,this.get('delay')
             ); 
         },
 

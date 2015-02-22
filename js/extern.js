@@ -42,16 +42,20 @@ Ex.editor = Em.Object.create({data: 'return {task:"move", param: 2};'});
 Ex.maps = {}
 
 Ex.updateTile = function(x,y,state){
+    if(y<0){
+        y = Ex.global.get('width') -1;
+    } else if ( y >= Ex.maps.global.get('width')){
+        y=0;
+    }
     for (var map in Ex.maps){
         if(Ex.maps[map].cellAt(x,y).state != 5){
-            console.log('THIS HAPPENED');
             Ex.maps[map].cellAt(x,y).set('state',state);
         }
     }
 }
 
 Ex.Player = {
-    createMine: function(x, y) { return {x: x || 5, y: y || 4}; },
+    createMine: function(x, y) { return {x: x || 5, y: y || 3}; },
     createYours: function(x, y) { return {x: x || 5, y: y || 7} }
 };
 
@@ -75,15 +79,20 @@ Ex.executeCommand = function(command,a,teamA) {
                         case 1:
                             //move NE
                             if(x % 2){
-                                Ex.updateTile(x,y-1,team);
-                            } else {
                                 Ex.updateTile(x+1,y-1,team);
+                                teamA[a].y -= 1;
+                                teamA[a].x += 1;
+                            } else {
+                                Ex.updateTile(x,y-1,team);
+                                teamA[a].y -= 1;
+
                             }
                             break;
                         case 2:
 
                             // move E
                             Ex.updateTile(x+1,y,team);
+                            teamA[a].x += 1;
                             break;
                         case 3:
                             // move SE
