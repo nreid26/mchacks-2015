@@ -5,6 +5,7 @@
     <title>Cool AI Game</title>
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/other.css">
 </head>
 <body>
     <script type="text/x-handlebars">
@@ -31,12 +32,22 @@
     </script>
 
     <script type="text/x-handlebars" id="player">
-    <div id='game'>
-        {{#each cell in map}}
-            <div {{bind-attr class=":hex cell.class"}}>
+        <div id="game_wrapper">
+            <div id="game">
+                {{#each cell in map}}
+                    <div {{bind-attr class=":hex cell.class"}}></div>
+                {{/each}}
             </div>
-        {{/each}}
-    </div>
+            <div>
+                <div id="controls">
+                    {{#if stopped}}<div {{action "startGame"}}>Play</div>
+                    {{else}}<div {{action "stopGame" }}>Stop</div>{{/if}}
+                    {{#if paused}}<div {{action "unpauseGame" }}>Unpause</div>{{else}}
+                    <div {{action "pauseGame" }}>Pause</div>{{/if}}
+                </div>
+                <div id="score"></div>
+            </div>
+        </div>
     </script>
 
 

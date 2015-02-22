@@ -15,17 +15,21 @@ html, body {
   height: 160px;
 }
 
-#game{
-			display: table;
-    		margin: 20px auto;
-			background: #000;
-			z-index: 0;
-			/*-webkit-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
-			-moz-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
-			-ms-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
-			-o-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
-			transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);*/
-		}
+#game_wrapper{
+	display: table;
+    margin: 20px auto;
+	background: #000;
+}
+
+#game {
+    z-index: 0;
+	/*-webkit-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
+	-moz-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
+	-ms-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
+	-o-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
+	transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);*/
+}
+
 /* Hexagon Formatter */
 .hex:before {
     content: " ";

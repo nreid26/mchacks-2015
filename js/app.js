@@ -110,8 +110,8 @@ App.PlayerView = Em.View.extend({
     }
 })
 App.PlayerController = Em.ObjectController.extend({
-    yours: null,
-    mine: null,
+    yours: [Ex.Player.createYours()],
+    mine: [Ex.Player.createMine()],
     delay: 2000,
     paused: false,
     stopped: true,
@@ -136,11 +136,12 @@ App.PlayerController = Em.ObjectController.extend({
             controller.get('actions.stopGame')();
             alert('An error was enconutered during this turn. The game has been terminated');
         }
-        //Do command... need API
+        controller.get('executeCommand')(command);
 
         //Prepare for next turn 
         setTimeout(controller.get('gameCycle'), controller.get('delay'), b, teamB, scriptB, a++, teamA, scriptA); 
     },
+
     executeCommand: function(command,a,teamA) {
         var x = teamA[a].x;
         var y = teamA[a].y;
@@ -277,8 +278,8 @@ App.PlayerController = Em.ObjectController.extend({
 
     actions:{
         startGame: function() {
-            try { var f = eval('return function(index, teamSize) { var window = null, document = null' + Ex.editor.data + '};'); }
-            catch(e) { return alert('Your AI contains errors.  Please correct them and try again'); }
+            try { var f = eval('( function(index, teamSize) { var window = null, document = null; ' + Ex.editor.data + '} )'); }
+            catch(e) { return alert('Your AI contains errors.  Please correct them and try again.'); }
             
             this.setProperties({
                 paused: false,
@@ -286,29 +287,32 @@ App.PlayerController = Em.ObjectController.extend({
             });
 
             setTimeout(this.get('gameCycle'), this.get('delay'),
-                this, 0, this.get('players'), f, 0, this.get('ais')
+                this, 0, this.get('mine'), f, 0, this.get('yours'), Ex.aiScript
             ); 
         },
 
-        stopGame:function() {
+        stopGame: function() {
             this.setProperties({
-                ais: [Ex.Player.createYours()],
-                players: [Ex.Player.createMine()],
+                yours: [Ex.Player.createYours()],
+                mine: [Ex.Player.createMine()],
                 stopped: true,
                 paused: false
             });
         },
 
-        pauseGame:function() {
+        pauseGame: function() {
             this.set('paused', true); 
         },
 
-        unpauseGame:function() {
-        //unpause the game
+        unpauseGame: function() {
+            var args = this.get('pauseContext');
+            this.get('playCycle')(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
         },
 
-        swichView:function(view) {
-        //reset model
+        switchView: function(view) {
+            var model = this.get('model'), models = [Ex.maps.global, Ex.maps.ai, Ex.maps.player];
+            for(var i = 0; models[i] != model; i++) { }
+            this.set('model', models[(i + 1) % 3]);
         }
     }
 })

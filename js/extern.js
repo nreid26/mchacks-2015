@@ -37,7 +37,7 @@ Ex.HexMap = Em.Object.extend({
     }
 });
 
-Ex.editor = Em.Object.create({data: 'default entry'});
+Ex.editor = Em.Object.create({data: 'return {task:"move", param: 2};'});
 
 Ex.maps = {}
 
@@ -48,3 +48,8 @@ Ex.updateTile = function(x,y,state){
         }
     }
 }
+
+Ex.Player = {
+    createMine: function() { return {x: 5, y: 4}; },
+    createYours: function() { return {x: 5, y: 7} }
+};
