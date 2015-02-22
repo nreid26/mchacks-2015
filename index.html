@@ -11,13 +11,23 @@
         <div class="nav_bar">
             <div class="visual_hex"><div style="background-color: #4accff;"></div></div><!--
             -->{{#link-to 'player' tagName="span"}}Player{{/link-to}}<!--
-            -->{{#link-to 'editor' tagName="span"}}Editor{{/link-to}}
+            -->{{#link-to 'edit' tagName="span"}}Editor{{/link-to}}
         </div>
         {{outlet}}
     </script>
 
-    <script type="text/x-handlebars" id="editor">
-        <div id="editor"></div>
+    <script type="text/x-handlebars" id="edit">
+        <table id="editor_table">
+            <tr>
+                <td id="info_pane">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </td>
+                <td id="editor"></td>
+            </tr>
+        </table>
     </script>
 
     <script type="text/x-handlebars" id="player">

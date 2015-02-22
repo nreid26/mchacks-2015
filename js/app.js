@@ -1,15 +1,15 @@
 App = Ember.Application.create();
 
 App.Router.map(function() {
-    this.route('editor');
+    this.route('edit', {path: '/editor'});
     this.route('player');
 
     this.route('all', {path: '*path'});
 });
 
 
-App.EditorRoute = Em.Route.extend({});
-App.EditorView = Em.View.extend({
+App.EditRoute = Em.Route.extend({});
+App.EditView = Em.View.extend({
     didInsertElement: function() {
         var view = this;
         Em.run.schedule('afterRender', function() {
@@ -23,7 +23,7 @@ App.EditorView = Em.View.extend({
         });
     }
 });
-App.EditorController = Em.Controller.extend({
+App.EditController = Em.Controller.extend({
     actions: {
         presentEditor: function() {
             var code = Ex.editor.getValue();
@@ -107,17 +107,73 @@ App.PlayerView = Em.View.extend({
     }
 })
 App.PlayerController = Em.ObjectController.extend({
-    actions:{startGame:function(){
-        //start game
-    },endGame:function(){
-        //end the game
-    },pauseGame:function(){
-        //pause the game
-    },unpauseGame:function(){
+    yours: null,
+    mine: null,
+    delay: 2000,
+    paused: false,
+    stopped: true,
+
+    pauseContext: null,
+
+
+    gameCycle: function(controller, a, teamA, scriptA, b, teamB, scriptB) {
+        //Test if game should keep running
+        if(controller.get('stopped')) { return; }
+        else if(controller.get('paused')) { 
+            return controller.set('pauseContext', [controller, a, teamA, scriptA, b, teamB, scriptB]);
+        }
+            
+        //Validate turn context and execute
+        a = (a < teamA.length) ? a : teamA.length;
+        try { var command = scriptA.call(teamA[a], a, teamA.length); }
+        catch(e) { 
+            controller.get('actions.stopGame')();
+            alert('An error was enconutered during this turn. The game has been terminated');
+        }
+        //Do command... need API
+
+        //Prepare for next turn 
+        setTimeout(controller.get('gameCycle'), controller.get('delay'), b, teamB, scriptB, a++, teamA, scriptA); 
+    },
+    executeCommand: function(command) { },
+
+
+    actions:{
+        startGame: function() {
+            try { var f = eval('return function(index, teamSize) { var window = null, document = null' + Ex.editor.data + '};'); }
+            catch(e) { return alert('Your AI contains errors.  Please correct them and try again'); }
+            
+            this.setProperties({
+                paused: false,
+                stopped: false
+            });
+
+            setTimeout(this.get('gameCycle'), this.get('delay'),
+                this, 0, this.get('players'), f, 0, this.get('ais')
+            ); 
+        },
+
+        stopGame:function() {
+            this.setProperties({
+                ais: [Ex.Player.createYours()],
+                players: [Ex.Player.createMine()],
+                stopped: true,
+                paused: false
+            });
+        },
+
+        pauseGame:function() {
+            this.set('paused', true); 
+        },
+
+        unpauseGame:function() {
         //unpause the game
-    },swichView:function(view){
+        },
+
+        swichView:function(view) {
         //reset model
-    }}
+        }
+    }
 })
 
 
