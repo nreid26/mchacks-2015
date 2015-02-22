@@ -69,6 +69,11 @@ App.PlayerView = Em.View.extend({
             var mousePos = {};
             var mouseDown = false;
             var rotation = {x:0,y:0};
+            /*$(window).resize(function(){
+                console.log('test');
+                $('#game').css('-webkit-transform','scale('+$(window).height()/$('#game').height()+','+$(window).height()/$('#game').height()+')');
+                $('#game').css('transform','scale('+$(window).height()/$('#game').height()+','+$(window).height()/$('#game').height()+')')
+            });*/
             $(v).on('mousedown', function(event) {
                 mousePos.x = event.pageX;
                 mousePos.y = event.pageY;
