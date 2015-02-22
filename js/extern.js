@@ -10,6 +10,7 @@ Ex.HexMap = Em.Object.extend({
     map: [],
     width: 10,
     height: 10,
+    defaultState: 0,
 
     cellAt: function(x, y) { 
         return this.get('map').objectAt(
@@ -23,9 +24,9 @@ Ex.HexMap = Em.Object.extend({
     },
     init: function() {
         this.set('map',[]);
-        for(var x = this.get('width'); x >= 1; x--) {
-            for(var y = this.get('height'); y >= 1; y--) {
-                this.push(0);
+        for(var x = this.get('width'); x > 0; x--) {
+            for(var y = this.get('height'); y > 0; y--) {
+                this.push(this.get('defaultState'));
             }
         }
     }
