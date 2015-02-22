@@ -1,41 +1,51 @@
 var Ex = {};
     
 Ex.HexCell= Em.Object.extend({
-    _colors: ['empty', 'dead', 'mine', 'yours', 'unknown','null'],
+    _colors: ['empty', 'dead', 'mine', 'yours', 'unknown', 'null'],
     state: 0,
     class: function() { return this.get('_colors').objectAt(this.get('state')); }.property('state')
 })
+Ex.HexCellMirror = Ex.HexCell.extend({
+    base: null,
+    enabled: false,
+    state: function() { return (this.get('enabled') && this.get('base.state')) ? this.get('base.state') : 5; }.property('base.state', 'enabled')
+});
 
 Ex.HexMap = Em.Object.extend({
     map: null,
     width: 11,
     height: 11,
     defaultState: 0,
-
     cellAt: function(x, y) { 
         return this.get('map').objectAt(
             x + this.get('width') * y
         );
     },
-    push: function(type) {
-        this.get('map').pushObject(
-            Ex.HexCell.create({state: type})
-        );
-    },
+
     init: function() {
-        this.set('map',[]);
-        var removal = [3,2,2,1,1,0,1,1,2,2,3];
-        for(var x = 0; x<this.get('height');x++) {
-            for(var y = 0; y<this.get('width');y++) {  
-                if(removal[x] > y || (x < 6 && x+5+removal[x] < y) || (x >= 6 && 15-x+removal[x] < y)){
-                    this.push(5);
-                } else {
-                   this.push(this.get('defaultState'));
-               }
+        var map = [], removal = [3,2,2,1,1,0,1,1,2,2,3];
+        for(var x = 0; x < this.get('height'); x++) {
+            for(var y = 0; y < this.get('width'); y++) {  
+                map.pushObject(Ex.HexCell.create({state: 
+                    (removal[x] > y || (x < 6 && x+5+removal[x] < y) || (x >= 6 && 15-x+removal[x] < y)) ? type : this.get('defaultState')
+                }));
             }
         }
+        this.set('map', map);
     }
 });
+Ex.HexMapMirror = Ex.HexMap.extend({
+    base: null,
+    width: function() { return this.get('base.width') || -1; }.property('base.width'),
+    height: function() { return this.get('base.width') || -1; }.property('base.height'),
+
+    init: function() {
+        var x = [], baseMap= this.get('base.map')
+        for(var i = 0; i < baseMap.length; i++) { x.push( Ex.HexCellMirror.create({base: baseMap[i]}) ); }
+        this.set('map',[]);
+    }
+});
+
 
 Ex.editor = Em.Object.create({data: 'return {task:"move", param: 1};'});
 
