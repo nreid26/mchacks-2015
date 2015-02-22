@@ -37,27 +37,37 @@ Ex.HexMap = Em.Object.extend({
     }
 });
 
-Ex.editor = Em.Object.create({data: 'return {task:"move", param: 4};'});
+Ex.editor = Em.Object.create({data: 'return {task:"move", param: 1};'});
 
 Ex.maps = {}
 
 Ex.updateTile = function(player,state,lastPos){
     console.log(player);
     if(player.y<0){
-        player.y = Ex.global.get('width') -1;
+        player.y = Ex.maps.global.get('width') -1;
     } else if ( player.y >= Ex.maps.global.get('width')){
         player.y = 0;
     } else if(player.x<0){
-        player.x = Ex.global.get('height') -1;
+        player.x = Ex.maps.global.get('height') -1;
     } else if ( player.x >= Ex.maps.global.get('height')){
         player.x = 0;
     }
 
     //for (var map in Ex.maps){
-        if(Ex.maps.global.cellAt(player.x,player.y).state != 5){
+        var futureState = Ex.maps.global.cellAt(player.x,player.y).state;
+        if(futureState == 0){
             Ex.maps.global.cellAt(player.x,player.y).set('state',state);
-        } else {
-            updateTile(lastPos,state);
+        } else if(futureState == 5){
+            console.log('shit fucked up');
+            console.log('stopped');
+            player.x = lastPos.x;
+            player.y = lastPos.y;
+            Ex.maps.global.cellAt(lastPos.x,lastPos.y).set('state',state);
+        } else{
+            console.log('stopped');
+            player.x = lastPos.x;
+            player.y = lastPos.y;
+            Ex.maps.global.cellAt(lastPos.x,lastPos.y).set('state',state);
         }
     //}
 }
@@ -72,7 +82,8 @@ Ex.aiScript = function() {
 };
 
 Ex.executeCommand = function(command,a,teamA) {
-        lastPos = teamA[a];
+        lastPos = {x:teamA[a].x,y:teamA[a].y};
+        console.log(lastPos);
         var team = this.maps.global.cellAt(lastPos.x,lastPos.y).state;
         switch(command.task){
             case 'move':
@@ -81,7 +92,7 @@ Ex.executeCommand = function(command,a,teamA) {
                     //invalid move command, do nothing.
                     console.log('INVALID MOVE');
                 } else {
-                    Ex.updateTile(teamA[a],0);
+                    Ex.updateTile(teamA[a],0,lastPos);
                     switch(command.param){
                         case 1:
                             //move NE
