@@ -39,22 +39,23 @@ Ex.HexMap = Em.Object.extend({
         }
     },
     prepare: function() {
-        var w = model.get('width'),
-            h = model.get('height'),
+        var w = this.get('width'),
+            h = this.get('height'),
             numOthers = Math.round(w * h * 0.15); //Percentage of the map that's dead
 
-        model.clear();
-        model.cellAt(5,3).set('state', 2); //Player 1
-        model.cellAt(5,7).set('state', 3); //Player 2
+        this.clear();
+        this.cellAt(5,3).set('state', 2); //Player 1
+        this.cellAt(5,7).set('state', 3); //Player 2
 
         for(var i = 0; i < numOthers; i++) {
             var x = Math.floor(Math.random() * (w - 1));
             var y = Math.floor(Math.random() * (h - 1));
 
             //check that cell is ok
-            if(model.cellAt(x,y).state == 0) { model.cellAt(x,y).set('state', 1); } 
+            if(this.cellAt(x,y).state == 0) { this.cellAt(x,y).set('state', 1); } 
             else { i--; }
         }
+    },
 
 
     init: function() {
@@ -131,17 +132,17 @@ Ex.Player = {
 };
 
 Ex.aiScript = function() {
-    return {task: 'move', param: 1};
+    function int(a) { return Math.round(Math.random() * a); }
+    var moves = ['attack', 'assimilate', 'move'];
+    return {task: moves[int(3)], param: int(5)}; 
 };
 
 Ex.executeCommand = function(command,a,teamA) {
         lastPos = {x:teamA[a].x,y:teamA[a].y};
-        console.log(lastPos);
         var team = this.maps.global.cellAt(lastPos.x,lastPos.y).state;
             // move peice
             if(typeof command.param == 'undefined'){
                 //invalid move command, do nothing.
-                console.log('INVALID MOVE');
             } else {
                 Ex.updateTile(teamA,a,0,lastPos);
                 switch(command.param){
@@ -202,7 +203,6 @@ Ex.executeCommand = function(command,a,teamA) {
                         }
                         break;
                     default:
-                        console.log('INVALID DIRECTION');
                         Ex.updateTile(teamA,a,team,lastPos,'move');
                         break;
                 }

@@ -42,21 +42,17 @@ App.PlayerView = Em.View.extend({
     didInsertElement:function(){
         var view = this;
         Em.run.schedule('afterRender', function() {
-            var v = document.getElementById('game');
+            var v = $('#game');
             var mousePos = {};
             var mouseDown = false;
             var rotation = {x:0,y:0};
-            /*$(window).resize(function(){
-                console.log('test');
-                $('#game').css('-webkit-transform','scale('+$(window).height()/$('#game').height()+','+$(window).height()/$('#game').height()+')');
-                $('#game').css('transform','scale('+$(window).height()/$('#game').height()+','+$(window).height()/$('#game').height()+')')
-            });*/
-            $(v).on('mousedown', function(event) {
+
+            v.on('mousedown', function(event) {
                 mousePos.x = event.pageX;
                 mousePos.y = event.pageY;
                 mouseDown = true;
             });
-            $(v).on('mousemove',function(evt){
+            v.on('mousemove',function(evt){
                 if(mouseDown){
                     var dx = event.pageX-mousePos.x;
                     var dy = mousePos.y - event.pageY;
@@ -65,11 +61,11 @@ App.PlayerView = Em.View.extend({
                     rotation.x += dx;
                     rotation.y += dy;
                     var change = 'perspective(1600px) rotateX('+rotation.y/10+'deg) rotateY('+rotation.x/10+'deg)';
-                    $(v).css('transform',change);
-                    $(v).css('-webkit-transform',change);
+                    v.css('transform',change);
+                    v.css('-webkit-transform',change);
                 }
             });
-            $(v).on('mouseup',function(evt){
+            v.on('mouseup',function(evt){
                 if('mouseDown'){
                     var dx = event.pageX-mousePos.x;
                     var dy = mousePos.y - event.pageY;
@@ -78,8 +74,8 @@ App.PlayerView = Em.View.extend({
                     rotation.x += dx;
                     rotation.y += dy;
                     var change = 'perspective(1600px) rotateX('+rotation.y/10+'deg) rotateY('+rotation.x/10+'deg)';
-                    $(v).css('transform',change);
-                    $(v).css('-webkit-transform',change);
+                    v.css('transform',change);
+                    v.css('-webkit-transform',change);
                     mouseDown = false;
                 }
             });
@@ -108,7 +104,6 @@ App.PlayerController = Em.ObjectController.extend({
             Ex.executeCommand(command,a,teamA);
         }
         catch(e) { 
-            console.log(e);
             alert('An error was enconutered during this turn. The game has been terminated');
             this.get('actions.stopGame')();
         }
@@ -134,7 +129,7 @@ App.PlayerController = Em.ObjectController.extend({
                 stopped: false
             });
 
-            Em.run.later( this, this.get('gameCycle'), 0, this.get('mine'), f, 0, this.get('yours'), Ex.aiScript,this.get('delay') ); 
+            Em.run.later( this, this.get('gameCycle'), 0, this.get('mine'), f, 0, this.get('yours'), Ex.aiScript, this.get('delay') ); 
         },
 
         stopGame: function() {
