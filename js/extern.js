@@ -211,7 +211,6 @@ Ex.executeCommand = function(command,a,teamA) {
 Ex.lookAbout = function(players){
     var spots = [];
     for(var current in players){
-        var player = ;
         spots.push((players[current].x + 0) + 11 * (players[current].y + 0));
         spots.push((players[current].x + 1) + 11 * (players[current].y + 0));
         spots.push((players[current].x - 1) + 11 * (players[current].y + 0));
