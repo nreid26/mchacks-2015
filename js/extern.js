@@ -164,10 +164,22 @@ Ex.updateTile = function(team, state, lastPos, task) {
     }
 }
 
-Ex.Player = {
-    createMine: function(x, y) { return {x: x || 5, y: y || 3, id: 2}; },
-    createYours: function(x, y) { return {x: x || 5, y: y || 7, id: 3}; }
-};
+m 5, 3
+y 5, 7
+Ex.Player = function(x, y) {
+    this.x = x;
+    this.y = y;
+    this.state = null;
+}
+Ex.Player.createYours = function() { return new this(5, 7); }
+Ex.Player.createMine = function() { return new this(5, 3); }
+Ex.Player.create = function(x, y) { return new this(x, y); }
+Ex.Player.prototype = {
+    move: function(i) { return {task: 'move', param: i}; },
+    attack: function(i) { return {task: 'attack', param: i}; },
+    assimilate: function(i) { return {task: 'assimilate', param: i}; }
+}
+
 
 Ex.AIScript = function() {
     function int(a) { return Math.round(Math.random() * a); }
