@@ -19,6 +19,7 @@ html, body {
 			display: table;
     		margin: 20px auto;
 			background: #000;
+			z-index: 0;
 			/*-webkit-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
 			-moz-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
 			-ms-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
@@ -57,63 +58,63 @@ html, body {
 }
 
 
-.hex:nth-child(12n+13){
+.hex:nth-child(11n+12){
     clear: left;
 }
-.hex:nth-child(24n+13){
+.hex:nth-child(22n+12){
     margin-left: 64px;
 }
 
-/*
-.hex:nth-child(even) {
-    margin-top: 136px;
+.hex.mine:after{
+	border-top: 30px solid #4accff;
 }
-.hex.mine .right{
-	border-left: 1.5vw solid #4accff;
-}
-.hex.mine .middle{
+.hex.mine{
 	background: #4accff;
 }
-.hex.mine .left {
-	border-right: 1.5vw solid #4accff;
+.hex.mine:before {
+	border-bottom: 30px solid #4accff;
 }
 
-.hex.yours .right{
-	border-left: 1.5vw solid #ff2897;
+.hex.yours:after{
+	border-top: 30px solid #ff2897;
 }
-.hex.yours .middle{
+.hex.yours{
 	background: #ff2897;
 }
-.hex.yours .left {
-	border-right: 1.5vw solid #ff2897;
+.hex.yours:before {
+	border-bottom: 30px solid #ff2897;
 }
-.hex.empty .right{
-	border-left: 1.5vw solid #333333;
+.hex.empty:after{
+	border-top: 30px solid #333333;
 }
-.hex.empty .middle{
+.hex.empty{
 	background: #333333;
 }
-.hex.empty .left {
-	border-right: 1.5vw solid #333333;
+.hex.empty:before {
+	border-bottom: 30px solid #333333;
 }
-.hex.dead .right{
-	border-left: 1.5vw solid #ffcc33;
+.hex.dead:after{
+	border-top: 30px solid #ffcc33;
 }
-.hex.dead .middle{
+.hex.dead{
 	background: #ffcc33;
 }
-.hex.dead .left {
-	border-right: 1.5vw solid #ffcc33;
+.hex.dead:before {
+	border-bottom: 30px solid #ffcc33;
 }
-.hex.unknown .right{
-	border-left: 1.5vw solid #000000;
+.hex.unknown:after{
+	border-top: 30px solid #000000;
 }
-.hex.unknown .middle{
+.hex.unknown{
 	background: #000000;
 }
-.hex.unknown .left {
-	border-right: 1.5vw solid #000000;
-}*/
+.hex.unknown:before {
+	border-bottom: 30px solid #000000;
+}
+.hex.null{
+    visibility: hidden;
+}
+
 
 /*Nav bar*/
 .nav_bar {
@@ -121,7 +122,8 @@ html, body {
     background: white;
     padding: 15px;
     vertical-align: baseline;
-
+    z-index: 1;
+    position: relative;
     color: black;
     font-size: 18px;
 }

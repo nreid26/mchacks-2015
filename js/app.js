@@ -44,13 +44,21 @@ App.PlayerRoute = Em.Route.extend({
         var h = model.get('height');
         console.log(w);
         console.log(h);
+        //add player 1
+        model.cellAt(5,3).set('state',2);
+        //add player 2
+        model.cellAt(5,7).set('state',3);
         //percentage of the map that's dead
         var numOthers = Math.round(w*h*0.15);
         for(var i=0; i<numOthers;i++){
             var x = Math.floor(Math.random()*(w-1));
             var y = Math.floor(Math.random()*(h-1));
-            console.log('x:'+x+'y:'+y);
-            model.cellAt(x,y).set('state',1);
+            //check that cell is ok
+            if(model.cellAt(x,y).state == 0){
+                model.cellAt(x,y).set('state',1);
+            } else {
+                i--;
+            }
         }
         controller.set('model',model);
     }
@@ -66,7 +74,7 @@ App.PlayerView = Em.View.extend({
             $(v).on('mousedown', function(event) {
                 mousePos.x = event.pageX;
                 mousePos.y = event.pageY;
-               // mouseDown = true;
+                mouseDown = true;
             });
             $(v).on('mousemove',function(evt){
                 if(mouseDown){
