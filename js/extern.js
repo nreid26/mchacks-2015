@@ -44,7 +44,7 @@ Ex.HexMap = Em.Object.extend({
     prepare: function() {
         var w = this.get('width'),
             h = this.get('height'),
-            numOthers = Math.round(w * h * 0.15); //Percentage of the map that's dead
+            numOthers = Math.round(w * h * 0); //Percentage of the map that's dead
 
         this.clear();
         this.cellAt(5,3).set('state', 2); //Player 1
@@ -121,19 +121,17 @@ Ex.updateTile = function(team, state, lastPos, task) {
     {x:3,y:0,dx:7,dy:9},
     {x:5,y:-1,dx:5,dy:10},
     {x:5,y:11,dx:5,dy:0}];
-    if(player.y < 0) { player.y = width - 1; } 
-    else if(player.y > width) { player.y = 0; } 
-    else if(player.x < 0) { player.x = width - 1; }
-    else if(player.x >= width) { player.x = 0; }
-    else {
-        for(var i = 0; i<wraparound.length;i++){
+    for(var i = 0; i<wraparound.length;i++){
             if(wraparound[i].y == player.x && wraparound[i].x == player.y){
                 player.y = wraparound[i].dx;
                 player.x = wraparound[i].dy;
                 break;
             }
         }
-    }
+    if(player.y < 0) { player.y = width - 1; } 
+    else if(player.y >= width) { player.y = 0; } 
+    else if(player.x < 0) { player.x = width - 1; }
+    else if(player.x >= width) { player.x = 0; }
     if(player.x >= height || player.y >=width){
         Ex.maps.global.cellAt(lastPos.x,lastPos.y).set('state',state);
         return;
@@ -198,7 +196,9 @@ Ex.executeCommand = function(command, team) {
         mod = pos.y % 2,
         state  = Ex.maps.global.cellAt(pos.x,pos.y).get('state');
         if(state != 2 && state != 3){
-            //something fucked up
+            if(state == 1){
+                team.players.splice(team.index,1);
+            }
             console.log(player);
             return;
         }

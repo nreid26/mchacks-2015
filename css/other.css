@@ -1,5 +1,31 @@
+#game_wrapper {
+	margin: 0px auto;
+	border-spacing: 20px;
+	border-collapse: separate;
+}
 #score {
-
+	height: 100%;
+	width: 30px;
+	background: orange;
+	position: relative;
+	border-radius: 5px;
+	vertical-align: bottom;
+}
+#score_bottom {
+	height: 0.5%;
+	background: red;
+	position: absolute;
+	z-index: 5;
+}
+#score_filler {
+	position: absolute;
+	height: 100%;
+}
+#score_top {
+	height: 0.5%;
+	background: blue;
+	position: absolute;
+	z-index: 5;
 }
 
 #controls {

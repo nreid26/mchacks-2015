@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Cool AI Game</title>
+    <title>Hexgame</title>
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/other.css">
@@ -69,22 +69,27 @@
     </script>
 
     <script type="text/x-handlebars" id="player">
-        <div id="game_wrapper">
-            <div id="game">
-                {{#each cell in map}}
+        <table id="game_wrapper">
+            <tr>
+                <td id="game" rowspan="2">
+                    {{#each cell in map}}
                     <div {{bind-attr class=":hex cell.class"}}></div>
-                {{/each}}
-            </div>
-            <div>
-                <div id="controls">
+                    {{/each}}
+                </td>
+                <td id="controls">
                     {{#if stopped}}<div {{action "startGame"}}>Play</div>
                     {{else}}<div {{action "stopGame" }}>Stop</div>{{/if}}
-                    {{#if paused}}<div {{action "unpauseGame" }}>Unpause</div>{{else}}
-                    <div {{action "pauseGame" }}>Pause</div>{{/if}}
-                </div>
-                <div id="score"></div>
-            </div>
-        </div>
+                    {{#if paused}}<div {{action "unpauseGame" }}>Unpause</div>
+                    {{else}}<div {{action "pauseGame" }}>Pause</div>{{/if}}
+                </td>
+            </tr>
+            <tr>
+                <td id="score">
+                    <div id="score_bottom"></div>
+                    <div id="score_filler"><div id="score_top"></div></div>
+                </td>
+            </tr>
+        </table>
     </script>
 
 

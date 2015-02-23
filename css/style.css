@@ -12,15 +12,14 @@ html, body {
 }
 
 #game_wrapper{
-	display: table;
     margin: 20px auto;
 	background: #000;
 }
 
 #game {
-    display: table;
     margin: 20px auto;
     z-index: 0;
+    padding-right: 40px;
 	/*-webkit-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
 	-moz-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
 	-ms-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
