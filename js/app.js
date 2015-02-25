@@ -37,8 +37,8 @@ App.EditController = Em.Controller.extend({
 
 App.PlayerRoute = Em.Route.extend({
     model: function() {
-        if(!Ex.maps.global) { Ex.maps.global = Ex.HexMap.create(); }
-        return Ex.maps.global;
+        if(!Ex.map) { Ex.map = Ex.HexMap.create(); }
+        return Ex.map;
     }
 });
 App.PlayerController = Em.ObjectController.extend({
@@ -49,12 +49,9 @@ App.PlayerController = Em.ObjectController.extend({
 
     gameCycle: function(teams) {
         //Test if game should keep running
-        if(teams[0].get('tiles').length == 0) {
-            alert('Team ' + team[1] + ' won!');
-            this.set('stopped', true);
-        }
-        else if(teams[1].get('tiles').length == 0) {
-            alert('Team ' + team[0] + ' won!');
+        var fil = teams.filter( function(team) { return team.length > 0; } );
+        if(fil.length == 1) {
+            alert(fil[0].get('name') + ' won!');
             this.set('stopped', true);
         }
 
@@ -85,10 +82,17 @@ App.PlayerController = Em.ObjectController.extend({
                 stopped: false
             });
 
-            Em.run.later(this, this.get('gameCycle'),
-                Ex.Team.create({name: 'Blue', script: f}),
-                Ex.Team.create({name: 'Red',  script: Ex.AIScript}),
-            this.get('delay') ); 
+            var map = this.get('model'),
+                roots = map.prepare(2),
+                group = Ex.TeamGroup.create({
+                    hexMap: map,
+                    teams: [
+                        Ex.Team.create({first: roots[0], name: 'Blue', type: Ex.tileTypes.FRIENDLY, script: f}),
+                        Ex.Team.create({first: roots[1], name: 'Red',  type: Ex.tileTypes.HOSTILE,  script: Ex.AIScript})
+                    ]
+                });
+
+            Em.run.later(this, this.get('gameCycle'), group, this.get('delay')); 
         },
 
         stopGame: function() {

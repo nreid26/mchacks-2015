@@ -1,6 +1,6 @@
 var Ex = {};
 
-Ex.tileTypes = Object.freeze({EMPTY: 'empty', DEAD: 'dead', ENEMY: 'enemy', FRIENDLY: 'friendly'});
+Ex.tileTypes = Object.freeze({EMPTY: 'empty', DEAD: 'dead', HOSTILE: 'hostile', FRIENDLY: 'friendly'});
 Ex.tasks = Object.freeze({MOVE: 'move', ATTACK: 'attack', ASSIMILATE: 'assimilate'});
 
 Ex.HexCell= Em.Object.extend({
@@ -21,26 +21,32 @@ Ex.HexMap = Em.Object.extend({
     edge: 6,
 
     clear: function() { this.get('all').each( function() { this.set('tile', null); } ); },
-    prepare: function() {
+    prepare: function(players) {
         var all = this.get('all'),
             org = this.get('organized'),
             start = Math.floor(all.length / 4),
-            dead = Math.floor(all.length * 0.2);
+            dead = Math.floor(all.length * 0.2),
+            ret = [];
 
         this.clear();
-        this.all[start].set('tile', Ex.Tile.create({type: Ex.tileTypes.FRIENDLY}) );
-        this.org[all.length - 1 - start].set('tile', Ex.Tile.create({type: Ex.tileTypes.ENEMY}) );
+        this.all[start].set('tile', ret[0]);
+        this.all[all.length - 1 - start].set('tile', ret[1]);
 
         while(dead > 0) { //Populate rnadom cells with the dead
             var cell = all[ Math.floor(Math.random() * all.length) ]; //A random cell
+
             if(cell.get('tile') == null) {
-                cell.set('tile', Ex.Tile.create({type: Ex.tileTypes.DEAD}) );
+                cell.set('tile', Ex.Tile.create({cell: cell}) );
                 dead--;
+
+                if(players-- > 0) { ret.pushObject(cell); }
             }
         }
+        
+        if(players >= 0) { throw Error('Unable to return requested number of players'); }
+        return ret;
     },
     init: function() {
-        debugger;
         var all = this.get('all'),
             org = this.get('organized'),
             edge = this.get('edge') - 1;
@@ -65,16 +71,16 @@ Ex.HexMap = Em.Object.extend({
         exp.push( last(org).slice() );
 
         for(i = 0; i <= edge; i++) { 
-            exp[i].splice(0, 0, last(org[edge + i]) );
-            exp[edge + 1 + i].splice(0, 0, last(org[i]) );
-            exp[i + 1].push(org[edge + i][0]);
-            exp[edge + i + 2].push(0, org[i][0]);
+            exp[i].unshift(last(org[edge + i]) ); //Bottom right -> top left
+            exp[i + 1].push(org[edge + i][0]); //Bottpm left -> top right
+            exp[edge + i + 1].unshift(last(org[i]) ); //Top right -> bottom left
+            exp[edge + i + 2].push(org[i][0]); //Top left -> bottom right
         }
 
         //Link up adjacencies
         for(i = 1; i <= org.length; i++) {
             row = exp[i];
-            for(k = 1; k < row.length - 1; i++) {
+            for(k = 1; k < row.length - 1; k++) {
                 cell = row[k];
 
                 try { cell.adjacent[0] = exp[i - 1][k + (i <= edge) ? 0 : 1]; } catch(e) { }
@@ -84,7 +90,7 @@ Ex.HexMap = Em.Object.extend({
                 try { cell.adjacent[4] = exp[i]    [k - 1];                   } catch(e) { }
                 try { cell.adjacent[5] = exp[i - 1][k - (i <= edge) ? 1 : 0]; } catch(e) { }
             }
-        }        
+        }      
     }
 });
 
@@ -104,15 +110,21 @@ Ex.TeamGroup = Em.Object.extend({
     teams: [],
 
     team: function() { return this.get('teams').objectAt(this.get('index')); }.property('index'),
-    nextTeam: function() { this.set('index', ++this.get('index') % this.get('length')); }
+    nextTeam: function() { this.set('index', ++this.get('index') % this.get('length')); },
+
+    init: function() {
+        this.get('teams').forEach( function(team) { team.set('group', this); }, this);
+    }
 });
 
 Ex.Team = Em.Object.extend({
     index: 0,
     script: null,
-    tiles: [],
+    tiles: [], //The set of all tiles
+    first: null, //The first tile to exist when the team is instantiated
     group: null,
-    type: null,
+    type: '',
+    name: '',
 
     run: function() {
         var map = this.get('group.hexMap.all'),
@@ -128,17 +140,21 @@ Ex.Team = Em.Object.extend({
             function(i) { return {task: Ex.tasks.ASSIMILATE, param: i}; }
         );
     },
-
-    tile: function() { return this.get('tiles').objectAt(this.get('index')); }.property('index', 'tiless'),
-
+    tile: function() { return this.get('tiles').objectAt(this.get('index')); }.property('index', 'tiles'),
     nextTile: function() {
         var i = this.get('index'), p = this.get('tiles');
         this.set('index', (i >= p.length) ? 0 : i);
     },
-
     remove: function(tile) {
         var i = this.indexOf(tile);
         this.splice(i, 1);
+    },
+
+    init: function() {
+        var tile = this.get('first');
+
+        tile.set('team', this);
+        this.get('tiles').pushObject(tile);
     }
 });
 
