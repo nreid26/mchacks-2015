@@ -1,182 +1,150 @@
-var Ex = {},
-    statesToNames = {0: 'empty', 1: 'dead', 2: 'mine', 3: 'yours', 4: 'unknown', 5: 'null'},
-    namesToStates = {'empty': 0, 'dead': 1, 'mine': 2, 'yours': 3, 'unknown': 4, 'null': 5};
+var Ex = {};
+
+Ex.tileTypes = Object.freeze({EMPTY: 'empty', DEAD: 'dead', ENEMY: 'enemy', FRIENDLY: 'friendly'});
+Ex.tasks = Object.freeze({MOVE: 'move', ATTACK: 'attack', ASSIMILATE: 'assimilate'});
 
 Ex.HexCell= Em.Object.extend({
-    state: 0,
-    class: function() { return statesToNames[this.get('state')]; }.property('state')
-})
-Ex.HexCellMirror = Ex.HexCell.extend({
-    base: null,
-    enabled: false,
-    state: function() { return (this.get('enabled') && this.get('base.state')) ? this.get('base.state') : 5; }.property('base.state', 'enabled')
+    position: 0,
+    tile: null,
+    adjacent: new Array(6),
+
+    css: function() {
+        if(this.get('tile.team.type')) { return this.get('tile.team.type') }
+        else if(this.get('tile'))      { return Ex.tileTypes.DEAD; }
+        else                           { return Ex.tileTypes.EMPTY; } 
+    }.property('tile.team.type')
 });
 
 Ex.HexMap = Em.Object.extend({
-    map: null,
-    width: 11,
-    height: 11,
-    defaultState: 0,
+    all: [],
+    organized: [],
+    edge: 6,
 
-    myTeamId: function() { statesToNames['mine']; },
-    yourTeamId: function() { statesToNames['yours']; },
-    cellAt: function(x, y) { 
-        return this.get('map').objectAt(
-            x + this.get('width') * y
-        );
-    },
-    arround: function arround(x, y) {
-        var arround = [];
-        arround.push( map.cellAt(x + (y % 2), y - 1) );
-        arround.push( map.cellAt(x + 1, y) );
-        arround.push( map.cellAt(x + (y % 2), y + 1) );
-        arround.push( map.cellAt(x + (y % 2) - 1, y - 1) );
-        arround.push( map.cellAt(x - 1, y) );
-        arround.push( map.cellAt(x, y - (y % 2)) );
-        return arround;
-    },
-    clear: function() {
-        var map = this.get('map'), def = this.get('defaultState');
-        for(var i = 0; i < map.length; i++) { 
-            if(map[i].get('state') != 5) { map[i].set('state', def); }
-        }
-    },
+    clear: function() { this.get('all').each( function() { this.set('tile', null); } ); },
     prepare: function() {
-        var w = this.get('width'),
-            h = this.get('height'),
-            numOthers = Math.round(w * h * 0); //Percentage of the map that's dead
+        var all = this.get('all'),
+            org = this.get('organized'),
+            start = Math.floor(all.length / 4),
+            dead = Math.floor(all.length * 0.2);
 
         this.clear();
-        this.cellAt(5,3).set('state', 2); //Player 1
-        this.cellAt(5,7).set('state', 3); //Player 2
+        this.all[start].set('tile', Ex.Tile.create({type: Ex.tileTypes.FRIENDLY}) );
+        this.org[all.length - 1 - start].set('tile', Ex.Tile.create({type: Ex.tileTypes.ENEMY}) );
 
-        for(var i = 0; i < numOthers; i++) {
-            var x = Math.floor(Math.random() * (w - 1));
-            var y = Math.floor(Math.random() * (h - 1));
-
-            //check that cell is ok
-            if(this.cellAt(x,y).state == 0) { this.cellAt(x,y).set('state', 1); } 
-            else { i--; }
+        while(dead > 0) { //Populate rnadom cells with the dead
+            var cell = all[ Math.floor(Math.random() * all.length) ]; //A random cell
+            if(cell.get('tile') == null) {
+                cell.set('tile', Ex.Tile.create({type: Ex.tileTypes.DEAD}) );
+                dead--;
+            }
         }
     },
-
-
     init: function() {
-        var map = [], removal = [3,2,2,1,1,0,1,1,2,2,3];
-        for(var x = 0; x < this.get('height'); x++) {
-            for(var y = 0; y < this.get('width'); y++) {  
-                map.pushObject(Ex.HexCell.create({state: 
-                    (removal[x] > y || (x < 6 && x+5+removal[x] < y) || (x >= 6 && 15-x+removal[x] < y)) ? 5 : this.get('defaultState')
-                }));
+        debugger;
+        var all = this.get('all'),
+            org = this.get('organized'),
+            edge = this.get('edge') - 1;
+
+        var i, k, row, cell, len;
+        function last(arr) { return arr[arr.length - 1]; }
+
+        //Construct and organize cells
+        for(i = -edge; Math.abs(i) <= edge; i++) {
+            row = [];
+            for(k = 2 * edge - Math.abs(i); k >= 0; k--) {
+                cell = Ex.HexCell.create({position: all.legnth});
+                row.pushObject(cell);
+                all.pushObject(cell);
             }
+            org.pushObject(row);
         }
-        this.set('map', map);
+        
+        //Create expansion map for linking adjacencies
+        var exp = [org[0].slice()];
+        for(i = 0; i < org.length; i++) { exp.push(org[i].slice()); }
+        exp.push( last(org).slice() );
+
+        for(i = 0; i <= edge; i++) { 
+            exp[i].splice(0, 0, last(org[edge + i]) );
+            exp[edge + 1 + i].splice(0, 0, last(org[i]) );
+            exp[i + 1].push(org[edge + i][0]);
+            exp[edge + i + 2].push(0, org[i][0]);
+        }
+
+        //Link up adjacencies
+        for(i = 1; i <= org.length; i++) {
+            row = exp[i];
+            for(k = 1; k < row.length - 1; i++) {
+                cell = row[k];
+
+                try { cell.adjacent[0] = exp[i - 1][k + (i <= edge) ? 0 : 1]; } catch(e) { }
+                try { cell.adjacent[1] = exp[i]    [k + 1];                   } catch(e) { }
+                try { cell.adjacent[2] = exp[i + 1][k + (i >= edge) ? 0 : 1]; } catch(e) { }
+                try { cell.adjacent[3] = exp[i + 1][k - (i >= edge) ? 1 : 0]; } catch(e) { }
+                try { cell.adjacent[4] = exp[i]    [k - 1];                   } catch(e) { }
+                try { cell.adjacent[5] = exp[i - 1][k - (i <= edge) ? 1 : 0]; } catch(e) { }
+            }
+        }        
     }
 });
-Ex.HexMapMirror = Ex.HexMap.extend({
-    base: null,
-    width: function() { return this.get('base.width') || -1; }.property('base.width'),
-    height: function() { return this.get('base.width') || -1; }.property('base.height'),
 
-    init: function() {
-        var x = [], baseMap= this.get('base.map')
-        for(var i = 0; i < baseMap.length; i++) { x.push( Ex.HexCellMirror.create({base: baseMap[i]}) ); }
-        this.set('map',[]);
+Ex.Tile = Em.Object.extend({
+    team: null,
+    cell: null,
+    proxy: {},
+
+    position: function() { return this.get('cell.position'); }.property('cell.position'),
+    adjacentCells: function() { return this.get('cell.adjacent'); }.property('cell.adjacent'),
+    adjacentTypes: function() { return this.get('adjacentCells').map( function(cell) { return cell.get('css'); } ); }.property('adjacentCells.@each.css')
+});
+
+Ex.TeamGroup = Em.Object.extend({
+    index: 0,
+    hexMap: null,
+    teams: [],
+
+    team: function() { return this.get('teams').objectAt(this.get('index')); }.property('index'),
+    nextTeam: function() { this.set('index', ++this.get('index') % this.get('length')); }
+});
+
+Ex.Team = Em.Object.extend({
+    index: 0,
+    script: null,
+    tiles: [],
+    group: null,
+    type: null,
+
+    run: function() {
+        var map = this.get('group.hexMap.all'),
+            tile = this.get('tile');
+
+        return this.get('script').call(
+            tile.get('proxy'),
+            this.get('tiles.length'),
+            tile.get('position'),
+            tile.get('cell.adjacentTypes'),
+            function(i) { return {task: Ex.tasks.MOVE,       param: i}; },
+            function(i) { return {task: Ex.tasks.ATTACK,     param: i}; },
+            function(i) { return {task: Ex.tasks.ASSIMILATE, param: i}; }
+        );
+    },
+
+    tile: function() { return this.get('tiles').objectAt(this.get('index')); }.property('index', 'tiless'),
+
+    nextTile: function() {
+        var i = this.get('index'), p = this.get('tiles');
+        this.set('index', (i >= p.length) ? 0 : i);
+    },
+
+    remove: function(tile) {
+        var i = this.indexOf(tile);
+        this.splice(i, 1);
     }
 });
 
+Ex.editor = Em.Object.create({data: "function randInt(a) { return Math.floor(Math.random() * a); }\n\nif(!this.init) {\n\tthis.init = true;\n\tthis.dir = 0;\n\tthis.tasks = ['move', 'attack', 'assimilate'];\n}\n\nthis.dir = (this.dir + 1) % 6;\nthis[this.tasks[randInt(3)]](this.dir);"});
 
-Ex.editor = Em.Object.create({data: 'return {task:"move", param: 1};'});
-
-Ex.maps = {}
-
-Ex.updateTile = function(team, state, lastPos, task) {
-    var player = team.players[team.index],
-        width = Ex.maps.global.get('width'),
-        height = Ex.maps.global.get('height');
-        console.log(player);
-
-    //Wraparound logic
-    //wraparound logic
-    var wraparound = [
-    {x:0,y:9,dx:10,dy:3},
-    {x:10,y:2,dx:0,dy:7},
-    {x:10,y:9,dx:0,dy:3},
-    {x:0,y:2,dx:10,dy:8},
-    {x:1,y:9,dx:9,dy:2},
-    {x:9,y:1,dx:1,dy:8},
-    {x:9,y:9,dx:1,dy:2},
-    {x:1,y:1,dx:9,dy:8},
-    {x:2,y:10,dx:8,dy:2},
-    {x:8,y:1,dx:2,dy:9},
-    {x:8,y:10,dx:2,dy:2},
-    {x:2,y:1,dx:8,dy:9},
-    {x:4,y:11,dx:6,dy:1},
-    {x:6,y:0,dx:4,dy:10},
-    {x:6,y:11,dx:4,dy:1},
-    {x:4,y:0,dx:6,dy:10},
-    {x:3,y:10,dx:7,dy:1},
-    {x:7,y:0,dx:3,dy:9},
-    {x:7,y:10,dx:3,dy:1},
-    {x:3,y:0,dx:7,dy:9},
-    {x:5,y:-1,dx:5,dy:10},
-    {x:5,y:11,dx:5,dy:0}];
-    for(var i = 0; i<wraparound.length;i++){
-            if(wraparound[i].y == player.x && wraparound[i].x == player.y){
-                player.y = wraparound[i].dx;
-                player.x = wraparound[i].dy;
-                break;
-            }
-        }
-    if(player.y < 0) { player.y = width - 1; } 
-    else if(player.y >= width) { player.y = 0; } 
-    else if(player.x < 0) { player.x = width - 1; }
-    else if(player.x >= width) { player.x = 0; }
-    if(player.x >= height || player.y >=width){
-        Ex.maps.global.cellAt(lastPos.x,lastPos.y).set('state',state);
-        return;
-    }
-    var futureState = Ex.maps.global.cellAt(player.x,player.y).get('state');
-    if(task == 'move' && futureState == 0){
-        Ex.maps.global.cellAt(player.x,player.y).set('state',state);
-    }
-    else if(futureState == 5){
-        player.x = lastPos.x;
-        player.y = lastPos.y;
-        Ex.maps.global.cellAt(lastPos.x,lastPos.y).set('state',state);
-    } 
-    else {
-        if((futureState == 1 || futureState == 2 || futureState == 3) && task == 'attack'){
-            Ex.maps.global.cellAt(player.x,player.y).set('state',1);
-        } 
-        else if(futureState == 1 && task == 'assimilate'){
-            Ex.maps.global.cellAt(player.x,player.y).set('state',state);
-            team.players.push(Ex.Player.create(player.x,player.y));
-        } 
-        else if((futureState == 2 || futureState == 3) && futureState != state && task == 'assimilate'){
-            state = 1;
-        }
-        if(state != 0){
-            player.x = lastPos.x;
-            player.y = lastPos.y;
-        }
-        Ex.maps.global.cellAt(lastPos.x,lastPos.y).set('state',state);
-        if(state == 1) { team.players.splice(team.index, 1); }
-    }
-}
-Ex.Player = function(x, y) {
-    this.x = x;
-    this.y = y;
-}
-Ex.Player.createYours = function() { return new this(5, 7); }
-Ex.Player.createMine = function() { return new this(5, 3); }
-Ex.Player.create = function(x, y) { return new this(x, y); }
-Ex.Player.prototype = {
-    move: function(i) { return {task: 'move', param: i}; },
-    attack: function(i) { return {task: 'attack', param: i}; },
-    assimilate: function(i) { return {task: 'assimilate', param: i}; }
-}
-
+Ex.map = Ex.HexMap.create();
 
 Ex.AIScript = function() {
     function int(a) { return Math.round(Math.random() * a); }
@@ -184,55 +152,36 @@ Ex.AIScript = function() {
     return {task: moves[int(2)], param: int(5)+1}; 
 };
 
-Ex.executeCommand = function(command, team) {
-    console.log(command);
-    if(typeof Ex.maps.global.cellAt(team.players[team.index].x,team.players[team.index].y) == 'undefined'){
-        team.players.splice(team.index,1);
-        return;
+Ex.executeAction = function(teams) {
+    var command = teams.get('team').run();
+        command.param = command.param % 6;
+
+    var aTeam = teams.get('team'),
+        aTile = aTeam.get('tile'),
+        nextCell = aTile.get('adjacentCells')[command.param];
+
+    //Do the thing
+    if(command.task == Ex.tasks.MOVE && nextCell.get('tile') == null) {
+        aTile.set('cell.tile', null);
+        aTile.set('cell', nextCell);
+        nextCell.set('tile', aTile);
     }
-    var pos = team.players[team.index],
-        pos = {x: pos.x, y: pos.y},
-        player = team.players[team.index],
-        mod = pos.y % 2,
-        state  = Ex.maps.global.cellAt(pos.x,pos.y).get('state');
-        if(state != 2 && state != 3){
-            if(state == 1){
-                team.players.splice(team.index,1);
-            }
-            console.log(player);
-            return;
+    else if(command.task == Ex.tasks.ATTACK && nextCell.get('tile') != null) {
+        var bTile = nextCell.get('tile');
+        teams.forEach( function(team) { team.remove(bTile); } );
+        bTile.set('team', null);
+    }
+    else if(command.task == Ex.tasks.ASSIMILATE && nextCell.get('tile') != null) {
+        var bTile = nextCell.get('tile'),
+            bTeam = bTile.get('team');
+
+        if(bTeam == null) {
+            bTile.set('team', aTeam);
+            aTeam.pushObject(bTile);
         }
-        Ex.maps.global.cellAt(pos.x,pos.y).set('state',0);
-    //Move peice
-    if(!command || !command.param || !command.task) { 
-        return; }
-    switch(command.param){
-        case 1: //NE
-            player.y -= 1;
-            player.x += mod;
-            break;
-        case 2: //E
-            player.x += 1;
-            break;
-        case 3: //SE
-            player.y += 1;
-            player.x += mod;
-            break;
-        case 4: //SW
-            player.y -= 1;
-            player.x += mod - 1;
-            break;
-        case 5: //W
-            player.x -= 1;
-            break;
-        case 6: //NW
-            player.y -= mod;
-            player.x -= 1;
-            break;
-        default:
-            command.task = 'move';
-            break;
+        else if(bTeam != aTeam) {
+            aTeam.remove(aTile);
+            aTile.set('team', null);
+        }
     }
-    console.log(state);
-    Ex.updateTile(team, state, pos, command.task);    
 }

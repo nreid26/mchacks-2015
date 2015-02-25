@@ -72,10 +72,15 @@
         <table id="game_wrapper">
             <tr>
                 <td id="game" rowspan="2">
-                    {{#each cell in map}}
-                    <div {{bind-attr class=":hex cell.class"}}></div>
+                    {{#each row in organized}}
+                    <div class="board_row">
+                        {{each cell in row}}
+                        <div {{bind-attr class=":hex cell.css"}}></div>
+                        {{/each}}
+                    </div>
                     {{/each}}
                 </td>
+
                 <td id="controls">
                     {{#if stopped}}<div {{action "startGame"}}>Play</div>
                     {{else}}<div {{action "stopGame" }}>Stop</div>{{/if}}

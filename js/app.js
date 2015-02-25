@@ -37,120 +37,62 @@ App.EditController = Em.Controller.extend({
 
 App.PlayerRoute = Em.Route.extend({
     model: function() {
-        if(!Ex.maps.global) {
-            Ex.maps.global = Ex.HexMap.create();
-            Ex.maps.yours = Ex.HexMapMirror.create({base: Ex.maps.global});
-            Ex.maps.mine = Ex.HexMapMirror.create({base: Ex.maps.global});
-        }
+        if(!Ex.maps.global) { Ex.maps.global = Ex.HexMap.create(); }
         return Ex.maps.global;
     }
 });
-App.PlayerView = Em.View.extend({
-    didInsertElement:function(){
-        var view = this;
-        Em.run.schedule('afterRender', function() {
-            var v = $('#game');
-            var mousePos = {};
-            var mouseDown = false;
-            var rotation = {x:0,y:0};
-
-            v.on('mousedown', function(event) {
-                mousePos.x = event.pageX;
-                mousePos.y = event.pageY;
-                mouseDown = true;
-            });
-            v.on('mousemove',function(evt){
-                if(mouseDown){
-                    var dx = event.pageX-mousePos.x;
-                    var dy = mousePos.y - event.pageY;
-                    mousePos.x = event.pageX;
-                    mousePos.y = event.pageY;
-                    rotation.x += dx;
-                    rotation.y += dy;
-                    var change = 'perspective(1600px) rotateX('+rotation.y/10+'deg) rotateY('+rotation.x/10+'deg)';
-                    v.css('transform',change);
-                    v.css('-webkit-transform',change);
-                }
-            });
-            v.on('mouseup',function(evt){
-                if('mouseDown'){
-                    var dx = event.pageX-mousePos.x;
-                    var dy = mousePos.y - event.pageY;
-                    mousePos.x = event.pageX;
-                    mousePos.y = event.pageY;
-                    rotation.x += dx;
-                    rotation.y += dy;
-                    var change = 'perspective(1600px) rotateX('+rotation.y/10+'deg) rotateY('+rotation.x/10+'deg)';
-                    v.css('transform',change);
-                    v.css('-webkit-transform',change);
-                    mouseDown = false;
-                }
-            });
-        });
-    }
-});
 App.PlayerController = Em.ObjectController.extend({
-    yours: [Ex.Player.createYours()],
-    mine: [Ex.Player.createMine()],
     delay: 80,
     paused: false,
     stopped: true,
     pauseContext: null,
 
-    gameCycle: function(teamA, teamB) {
+    gameCycle: function(teams) {
         //Test if game should keep running
-        if(teamA.players.length == 0) { return alert('Team ' + teamB.name + ' won!'); }
-        else if(teamB.players.length == 0) { return alert('Team ' + teamA.name + ' won!'); }
-        else if(this.get('stopped')) { return; }
+        if(teams[0].get('tiles').length == 0) {
+            alert('Team ' + team[1] + ' won!');
+            this.set('stopped', true);
+        }
+        else if(teams[1].get('tiles').length == 0) {
+            alert('Team ' + team[0] + ' won!');
+            this.set('stopped', true);
+        }
 
-        if(this.get('paused')) { return this.set('pauseContext', [teamA, teamB]); }
+        if(this.get('stopped')) { return this.send('stopGame'); }
+        else if(this.get('paused')) { return this.set('pauseContext', teams); }
             
         //Validate turn context and execute
-        teamA.index = (teamA.index < teamA.players.length) ? teamA.index : 0;
-        try { 
-            var command = teamA.script.call(teamA.players[teamA.index], teamA.index, teamA.players.length);
-            Ex.executeCommand(command, teamA);
-        }
+        try { Ex.executeAction(teams); }
         catch(e) { 
-            //ASDHFLKSDAHGLKAFXGHLKSCXHGLQK DFHVJGLKSDFJ L:GKaj df:GKlj adf
-            //FUUUUUUUUUCK YOU NICK
-            console.log(e);
-            alert('An error was enconutered during this turn. The game has been terminated');
-            this.send('stopGame');
+            alert('An error was enconutered during this turn. ' + e + '; the game has been terminated.');
+            return this.send('stopGame');
         }
 
         //Prepare for next turn 
-        teamA.index++;
-        Em.run.later(this, this.get('gameCycle'), teamB, teamA, this.get('delay')); 
+        teams.getTeam().nextTile();
+        teams.nextTeam();
+        Em.run.later(this, this.get('gameCycle'), teams, this.get('delay')); 
     },
 
 
     actions:{
         startGame: function() {
-            try { var f = eval('( function(index, teamSize) { var window = null, document = null; ' + Ex.editor.data + '} )'); }
+            try { var f = eval('( function(team, index, position, move, attack, assimilate) { var console = null, document = null, alert = null; ' + Ex.editor.data + '} )'); }
             catch(e) { return alert('Your AI contains errors.  Please correct them and try again.'); }
-
-            var model = Ex.maps.global;
-            model.prepare();
-            this.set('model', model);
             
             this.setProperties({
-                yours: [Ex.Player.createYours()],
-                mine: [Ex.Player.createMine()],
                 paused: false,
                 stopped: false
             });
 
-            Em.run.later( this, this.get('gameCycle'),
-                {index: 0, players: this.get('mine'), script: f, name: 'Mine'}, 
-                {index: 0, players: this.get('yours'), script: Ex.AIScript, name: 'Yours'},
+            Em.run.later(this, this.get('gameCycle'),
+                Ex.Team.create({name: 'Blue', script: f}),
+                Ex.Team.create({name: 'Red',  script: Ex.AIScript}),
             this.get('delay') ); 
         },
 
         stopGame: function() {
             this.setProperties({
-                yours: [Ex.Player.createYours()],
-                mine: [Ex.Player.createMine()],
                 stopped: true,
                 paused: false
             });
@@ -162,17 +104,10 @@ App.PlayerController = Em.ObjectController.extend({
 
         unpauseGame: function() {
             this.set('paused', false); 
-            var args = this.get('pauseContext');
-            this.get('playCycle')(args[0], args[1]);
-        },
-
-        switchView: function(view) {
-            var model = this.get('model'), models = [Ex.maps.global, Ex.maps.ai, Ex.maps.player];
-            for(var i = 0; models[i] != model; i++) { }
-            this.set('model', models[(i + 1) % 3]);
+            this.get('playCycle')(this.get('pauseContext'));
         }
     }
-})
+});
 
 
 App.AllRoute = Em.Route.extend({
