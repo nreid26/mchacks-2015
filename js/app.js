@@ -61,13 +61,13 @@ App.PlayerController = Em.ObjectController.extend({
         //Validate turn context and execute
         try { Ex.executeAction(teams); }
         catch(e) { 
-            alert('An error was enconutered during this turn. ' + e + '; the game has been terminated.');
+            alert('An error was enconutered during this turn; the game has been terminated.\n\n' + e);
             return this.send('stopGame');
         }
 
         //Prepare for next turn 
-        teams.getTeam().nextTile();
-        teams.nextTeam();
+        teams.get('active').advance();
+        teams.advance();
         Em.run.later(this, this.get('gameCycle'), teams, this.get('delay')); 
     },
 
@@ -86,7 +86,7 @@ App.PlayerController = Em.ObjectController.extend({
                 roots = map.prepare(2),
                 group = Ex.TeamGroup.create({
                     hexMap: map,
-                    teams: [
+                    list: [
                         Ex.Team.create({first: roots[0], name: 'Blue', type: Ex.tileTypes.FRIENDLY, script: f}),
                         Ex.Team.create({first: roots[1], name: 'Red',  type: Ex.tileTypes.HOSTILE,  script: Ex.AIScript})
                     ]

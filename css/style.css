@@ -17,15 +17,13 @@ html, body {
 }
 
 #game {
-    margin: 20px auto;
     z-index: 0;
-    padding-right: 40px;
     width: 900px;
-	/*-webkit-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
-	-moz-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
-	-ms-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
-	-o-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
-	transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);*/
+
+    margin: 20px auto;
+    padding-right: 40px;
+
+    font-size: 0px;
 }
 
 /*  Hexagon Formatter 
@@ -44,9 +42,9 @@ html, body {
 .hex div {
     box-sizing: border-box;
     position: relative;
-    margin: calc(100% * (1 - 0.866 * 0.57735) / 2) calc(100% * (1 - 0.866) / 2);
-    width: calc(100% *  0.866);
-    padding-top: calc(100% *  0.866 * 0.57735);
+    width: 100%;
+    margin: calc(50% * 0.57735) 0;
+    padding-top: calc(100% * 0.57735);
     display: inline-block;
 }
 .hex div:before,
@@ -66,13 +64,13 @@ html, body {
 .hex div:after { transform: rotateZ(60deg); }
 .hex div:before { transform: rotateZ(-60deg); }
 
-.hex_c div { 
+.hex_collapse div { 
     margin-top: 0;
     margin-bottom: 0;
 }
-.hex_i div {
-    margin-top: calc(100% * (1 - 0.866 * 0.57735) / 4);
-    margin-bottom: calc(100% * (1 - 0.866 * 0.57735) / 4);
+.hex_inter div {
+    margin-top: calc(25% * 0.57735);
+    margin-bottom: calc(25% * 0.57735);
 }
 
 /* Cell Colors */
@@ -83,10 +81,11 @@ html, body {
 
 .cell_row {
     text-align: center;
+    margin-bottom: 5px;
 }
 .cell {
     width: 8%;
-    margin-top: 0;
+    margin-right: 5px;
 }
 
 /* Nav bar */

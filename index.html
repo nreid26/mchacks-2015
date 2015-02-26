@@ -10,7 +10,7 @@
 <body>
     <script type="text/x-handlebars">
         <div class="nav_bar">
-            <div class="hex_c hex" style="width: 125px"><div class="friendly"></div></div>
+            <div class="hex_collapse hex" style="width: 125px"><div class="friendly"></div></div>
             {{#link-to 'player' tagName="span"}}Player{{/link-to}}
             {{#link-to 'edit' tagName="span"}}Editor{{/link-to}}
         </div>
@@ -75,7 +75,7 @@
                     {{#each row in organized}}
                     <div class="cell_row">
                         {{#each cell in row}}
-                        <div class="cell hex_i hex"><div {{bind-attr class="cell.css" }}></div></div>
+                        <div class="cell hex_inter hex"><div {{bind-attr class="cell.css" }}></div></div>
                         {{/each}}
                     </div>
                     {{/each}}

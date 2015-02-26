@@ -20,7 +20,7 @@ Ex.HexMap = Em.Object.extend({
     organized: [],
     edge: 6,
 
-    clear: function() { this.get('all').forEach( function() { this.set('tile', null); } ); },
+    clear: function() { this.get('all').forEach( function(cell) { cell.set('tile', null); } ); },
     prepare: function(players) {
         var all = this.get('all'),
             org = this.get('organized'),
@@ -36,10 +36,11 @@ Ex.HexMap = Em.Object.extend({
             var cell = all[ Math.floor(Math.random() * all.length) ]; //A random cell
 
             if(cell.get('tile') == null) {
-                cell.set('tile', Ex.Tile.create({cell: cell}) );
+                var tile = Ex.Tile.create({cell: cell});
+                cell.set('tile', tile);
                 dead--;
 
-                if(players-- > 0) { ret.pushObject(cell); }
+                if(players-- > 0) { ret.pushObject(tile); }
             }
         }
         
@@ -83,12 +84,12 @@ Ex.HexMap = Em.Object.extend({
             for(k = 1; k < row.length - 1; k++) {
                 cell = row[k];
 
-                try { cell.adjacent[0] = exp[i - 1][k + (i <= edge) ? 0 : 1]; } catch(e) { }
-                try { cell.adjacent[1] = exp[i]    [k + 1];                   } catch(e) { }
-                try { cell.adjacent[2] = exp[i + 1][k + (i >= edge) ? 0 : 1]; } catch(e) { }
-                try { cell.adjacent[3] = exp[i + 1][k - (i >= edge) ? 1 : 0]; } catch(e) { }
-                try { cell.adjacent[4] = exp[i]    [k - 1];                   } catch(e) { }
-                try { cell.adjacent[5] = exp[i - 1][k - (i <= edge) ? 1 : 0]; } catch(e) { }
+                cell.adjacent[0] = exp[i - 1][k + (i <= edge) ? 0 : 1]; 
+                cell.adjacent[1] = exp[i]    [k + 1];                   
+                cell.adjacent[2] = exp[i + 1][k + (i >= edge) ? 0 : 1]; 
+                cell.adjacent[3] = exp[i + 1][k - (i >= edge) ? 1 : 0]; 
+                cell.adjacent[4] = exp[i]    [k - 1];                   
+                cell.adjacent[5] = exp[i - 1][k - (i <= edge) ? 1 : 0]; 
             }
         }      
     }
@@ -104,23 +105,27 @@ Ex.Tile = Em.Object.extend({
     adjacentTypes: function() { return this.get('adjacentCells').map( function(cell) { return cell.get('css'); } ); }.property('adjacentCells.@each.css')
 });
 
-Ex.TeamGroup = Em.Object.extend({
+Ex.CyclicList = Em.Object.extend({
+    list: [],
     index: 0,
-    hexMap: null,
-    teams: [],
 
-    team: function() { return this.get('teams').objectAt(this.get('index')); }.property('index'),
-    nextTeam: function() { this.set('index', ++this.get('index') % this.get('length')); },
+    active: function() { return this.get('list').objectAt(this.get('index')); }.property('index', 'list'),
+    advance: function() { this.set('index', (this.get('index') + 1) % this.get('list.length')); },
+});
+
+Ex.TeamGroup = Ex.CyclicList.extend({
+    hexMap: null,
+
+    filter: function(predicate) { return this.get('list').filter(predicate); },
+    forEach: function(callback, target) { return this.get('list').forEach(callback, target); },
 
     init: function() {
-        this.get('teams').forEach( function(team) { team.set('group', this); }, this);
+        this.get('list').forEach( function(team) { team.set('group', this); }, this);
     }
 });
 
-Ex.Team = Em.Object.extend({
-    index: 0,
+Ex.Team = Ex.CyclicList.extend({
     script: null,
-    tiles: [], //The set of all tiles
     first: null, //The first tile to exist when the team is instantiated
     group: null,
     type: '',
@@ -128,7 +133,7 @@ Ex.Team = Em.Object.extend({
 
     run: function() {
         var map = this.get('group.hexMap.all'),
-            tile = this.get('tile');
+            tile = this.get('active');
 
         return this.get('script').call(
             tile.get('proxy'),
@@ -140,10 +145,9 @@ Ex.Team = Em.Object.extend({
             function(i) { return {task: Ex.tasks.ASSIMILATE, param: i}; }
         );
     },
-    tile: function() { return this.get('tiles').objectAt(this.get('index')); }.property('index', 'tiles'),
-    nextTile: function() {
-        var i = this.get('index'), p = this.get('tiles');
-        this.set('index', (i >= p.length) ? 0 : i);
+    advance: function() {
+        var i = this.get('index');
+        this.set('index', (i >= this.get('list.length')) ? 0 : i);
     },
     remove: function(tile) {
         var i = this.indexOf(tile);
@@ -154,11 +158,11 @@ Ex.Team = Em.Object.extend({
         var tile = this.get('first');
 
         tile.set('team', this);
-        this.get('tiles').pushObject(tile);
+        this.get('list').pushObject(tile);
     }
 });
 
-Ex.editor = Em.Object.create({data: "function randInt(a) { return Math.floor(Math.random() * a); }\n\nif(!this.init) {\n\tthis.init = true;\n\tthis.dir = 0;\n\tthis.tasks = ['move', 'attack', 'assimilate'];\n}\n\nthis.dir = (this.dir + 1) % 6;\nthis[this.tasks[randInt(3)]](this.dir);"});
+Ex.editor = Em.Object.create({data: "function randInt(a) { return Math.floor(Math.random() * a); }\n\nif(!this.init) {\n\tthis.init = true;\n\tthis.dir = 0;\n\tthis.tasks = [move, attack, assimilate];\n}\n\nthis.dir = (this.dir + 1) % 6;\nreturn this.tasks[randInt(3)](this.dir);"});
 
 Ex.map = Ex.HexMap.create();
 
@@ -169,29 +173,33 @@ Ex.AIScript = function() {
 };
 
 Ex.executeAction = function(teams) {
-    var command = teams.get('team').run();
-        command.param = command.param % 6;
-
-    var aTeam = teams.get('team'),
-        aTile = aTeam.get('tile'),
+    var aTeam = teams.get('active'),
+        command = aTeam.run(),
+        aTile = aTeam.get('active'),
         nextCell = aTile.get('adjacentCells')[command.param];
 
+    //Sanity check
+    if(!command || !command.task || !command.param) { return; }
+    command.param = command.param % 6;
+
+debugger;
+
     //Do the thing
-    if(command.task == Ex.tasks.MOVE && nextCell.get('tile') == null) {
+    if(command.task == Ex.tasks.MOVE && !nextCell.get('tile')) {
         aTile.set('cell.tile', null);
         aTile.set('cell', nextCell);
         nextCell.set('tile', aTile);
     }
-    else if(command.task == Ex.tasks.ATTACK && nextCell.get('tile') != null) {
+    else if(command.task == Ex.tasks.ATTACK && nextCell.get('tile')) {
         var bTile = nextCell.get('tile');
         teams.forEach( function(team) { team.remove(bTile); } );
         bTile.set('team', null);
     }
-    else if(command.task == Ex.tasks.ASSIMILATE && nextCell.get('tile') != null) {
+    else if(command.task == Ex.tasks.ASSIMILATE && nextCell.get('tile')) {
         var bTile = nextCell.get('tile'),
             bTeam = bTile.get('team');
 
-        if(bTeam == null) {
+        if(!bTeam) {
             bTile.set('team', aTeam);
             aTeam.pushObject(bTile);
         }
