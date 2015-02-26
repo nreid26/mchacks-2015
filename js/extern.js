@@ -20,7 +20,7 @@ Ex.HexMap = Em.Object.extend({
     organized: [],
     edge: 6,
 
-    clear: function() { this.get('all').each( function() { this.set('tile', null); } ); },
+    clear: function() { this.get('all').forEach( function() { this.set('tile', null); } ); },
     prepare: function(players) {
         var all = this.get('all'),
             org = this.get('organized'),

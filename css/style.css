@@ -20,6 +20,7 @@ html, body {
     margin: 20px auto;
     z-index: 0;
     padding-right: 40px;
+    width: 900px;
 	/*-webkit-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
 	-moz-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
 	-ms-transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);
@@ -27,97 +28,68 @@ html, body {
 	transform: perspective(1600px) rotateX(10deg) rotateY(-10deg);*/
 }
 
-/* Hexagon Formatter */
-.hex:before {
-    content: " ";
-    width: 0; height: 0;
-    border-bottom: 30px solid #6C6;
-    border-left: 52px solid transparent;
-    border-right: 52px solid transparent;
-    position: absolute;
-    top: -30px;
-}
+/*  Hexagon Formatter 
 
+    Set width on outer and background-color on inner
+
+    Outer box is a square of side T
+    W and H are for inner
+    T = 1.1547W
+    W = 0.57735H
+*/
 .hex {
-    float: left;
-    margin-top: 37px;
-    margin-left: 8px;
-    width: 104px;
-    height: 60px;
-    background-color: #6C6;
+    text-align: center;
+    display: inline-block;
+}
+.hex div {
+    box-sizing: border-box;
     position: relative;
+    margin: calc(100% * (1 - 0.866 * 0.57735) / 2) calc(100% * (1 - 0.866) / 2);
+    width: calc(100% *  0.866);
+    padding-top: calc(100% *  0.866 * 0.57735);
+    display: inline-block;
 }
+.hex div:before,
+.hex div:after {
+    box-sizing: border-box;
+    transform-origin: center;
 
-.hex:after {
-    content: "";
-    width: 0;
     position: absolute;
-    bottom: -30px;
-    border-top: 30px solid #6C6;
-    border-left: 52px solid transparent;
-    border-right: 52px solid transparent;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+
+    background-color: inherit;
+    content: '';
+}
+.hex div:after { transform: rotateZ(60deg); }
+.hex div:before { transform: rotateZ(-60deg); }
+
+.hex_c div { 
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.hex_i div {
+    margin-top: calc(100% * (1 - 0.866 * 0.57735) / 4);
+    margin-bottom: calc(100% * (1 - 0.866 * 0.57735) / 4);
 }
 
+/* Cell Colors */
+.empty { background-color: #333333; }
+.dead { background-color: orange; }
+.hostile { background-color: #FA3296; }
+.friendly { background-color: #39C8FF; }
 
-.hex:nth-child(11n+12){
-    clear: left;
+.cell_row {
+    text-align: center;
 }
-.hex:nth-child(22n+12){
-    margin-left: 64px;
-}
-
-.hex.mine:after{
-	border-top: 30px solid #4accff;
-}
-.hex.mine{
-	background: #4accff;
-}
-.hex.mine:before {
-	border-bottom: 30px solid #4accff;
+.cell {
+    width: 8%;
+    margin-top: 0;
 }
 
-.hex.yours:after{
-	border-top: 30px solid #ff2897;
-}
-.hex.yours{
-	background: #ff2897;
-}
-.hex.yours:before {
-	border-bottom: 30px solid #ff2897;
-}
-.hex.empty:after{
-	border-top: 30px solid #333333;
-}
-.hex.empty{
-	background: #333333;
-}
-.hex.empty:before {
-	border-bottom: 30px solid #333333;
-}
-.hex.dead:after{
-	border-top: 30px solid #ffcc33;
-}
-.hex.dead{
-	background: #ffcc33;
-}
-.hex.dead:before {
-	border-bottom: 30px solid #ffcc33;
-}
-.hex.unknown:after{
-	border-top: 30px solid #000000;
-}
-.hex.unknown{
-	background: #000000;
-}
-.hex.unknown:before {
-	border-bottom: 30px solid #000000;
-}
-.hex.null{
-    visibility: hidden;
-}
-
-
-/*Nav bar*/
+/* Nav bar */
 .nav_bar {
     border-radius: 5px;
     background: white;
@@ -126,51 +98,23 @@ html, body {
     z-index: 1;
     position: relative;
     color: black;
-    font-size: 18px;
+    font-size: 0px;
     margin-bottom: 20px;
 }
-.nav_bar span {
-    border-right: solid 2px black;
-    padding-right: 15px;
-    margin-right: 15px;
+.nav_bar span { 
     display: inline-block;
+    vertical-align: bottom;
+    font-size: 18px;
 }
-.nav_bar span:last-of-type {
-    border-right: none;
-    padding-right: 0;
-    margin-right: 0;
+.nav_bar span:after {
+    content: "|";
+    margin: 0 15px;
 }
-
-.visual_hex {
-    text-align: center;
-    margin: 10px;
-    position: relative;
-    display: inline-block;
-    width: 100px;
-    height: 100px;
+.nav_bar span:last-of-type:after {
+    content: "";
+    margin: 0;
 }
-.visual_hex div {
-    height: 100%;
-    width: calc(100% * 0.57735);
-    display: inline-block;
-}
-.visual_hex div:before {
-    position: absolute;
-    top: 0;
-    right: calc((100% / 2) - ((100% * 0.57735) / 2));
-    background-color: inherit;
-    height: inherit;
-    width: inherit;
-    content: '';
-    transform: rotateZ(60deg);
-}
-.visual_hex div:after {
-    position: absolute;
-    top: 0;
-    right: calc((100% / 2) - ((100% * 0.57735) / 2));
-    background-color: inherit;
-    height: inherit;
-    width: inherit;
-    content: '';
-    transform: rotateZ(-60deg);
+.nav_bar span:first-of-type:before { 
+    content: "";
+    margin-left: 15px;
 }
