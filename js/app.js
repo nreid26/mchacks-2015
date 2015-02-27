@@ -120,3 +120,18 @@ App.AllRoute = Em.Route.extend({
     }
 });
 App.IndexRoute = App.AllRoute;
+
+
+App.CellView = Em.View.extend({
+    tagname: 'div',
+    classNames: ['cell', 'hex_inter', 'hex'],
+    object: null,
+
+    mouseEnter: function() {
+        this.get('object.adjacent').forEach( function(cell) { cell.set('touch', true); });
+    },
+    mouseLeave: function() {
+        this.get('object.adjacent').forEach( function(cell) { cell.set('touch', false); });
+    },
+
+});

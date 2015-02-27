@@ -26,6 +26,10 @@ html, body {
     font-size: 0px;
 }
 
+.touch {
+    border: solid white 3px;
+}
+
 /*  Hexagon Formatter 
 
     Set width on outer and background-color on inner

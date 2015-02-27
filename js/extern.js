@@ -6,18 +6,24 @@ Ex.tasks = Object.freeze({MOVE: 'move', ATTACK: 'attack', ASSIMILATE: 'assimilat
 Ex.HexCell= Em.Object.extend({
     position: 0,
     tile: null,
-    adjacent: new Array(6),
+    adjacent: null,
+    touch: false,
 
     css: function() {
         if(this.get('tile.team.type')) { return this.get('tile.team.type') }
         else if(this.get('tile'))      { return Ex.tileTypes.DEAD; }
         else                           { return Ex.tileTypes.EMPTY; } 
-    }.property('tile.team.type')
+    }.property('tile.team.type'),
+
+    init: function() {
+        this._super();
+        this.set('adjacent', []);
+    }
 });
 
 Ex.HexMap = Em.Object.extend({
-    all: [],
-    organized: [],
+    all: null,
+    organized: null,
     edge: 6,
 
     clear: function() { this.get('all').forEach( function(cell) { cell.set('tile', null); } ); },
@@ -47,7 +53,14 @@ Ex.HexMap = Em.Object.extend({
         if(players >= 0) { throw Error('Unable to return requested number of players'); }
         return ret;
     },
+
     init: function() {
+        this._super();
+        this.setProperties({
+            all: [],
+            organized: []
+        });
+
         var all = this.get('all'),
             org = this.get('organized'),
             edge = this.get('edge') - 1;
@@ -59,7 +72,7 @@ Ex.HexMap = Em.Object.extend({
         for(i = -edge; Math.abs(i) <= edge; i++) {
             row = [];
             for(k = 2 * edge - Math.abs(i); k >= 0; k--) {
-                cell = Ex.HexCell.create({position: all.legnth});
+                cell = Ex.HexCell.create({position: all.length});
                 row.pushObject(cell);
                 all.pushObject(cell);
             }
@@ -67,9 +80,9 @@ Ex.HexMap = Em.Object.extend({
         }
         
         //Create expansion map for linking adjacencies
-        var exp = [org[0].slice()];
+        var exp = [last(org).slice()];
         for(i = 0; i < org.length; i++) { exp.push(org[i].slice()); }
-        exp.push( last(org).slice() );
+        exp.push( org[0].slice() );
 
         for(i = 0; i <= edge; i++) { 
             exp[i].unshift(last(org[edge + i]) ); //Bottom right -> top left
@@ -79,38 +92,43 @@ Ex.HexMap = Em.Object.extend({
         }
 
         //Link up adjacencies
-        for(i = 1; i <= org.length; i++) {
+        edge++;
+        for(i = 1; i < exp.length - 1; i++) {
             row = exp[i];
             for(k = 1; k < row.length - 1; k++) {
-                cell = row[k];
+                var adj = row[k].get('adjacent');
 
-                cell.adjacent[0] = exp[i - 1][k + (i <= edge) ? 0 : 1]; 
-                cell.adjacent[1] = exp[i]    [k + 1];                   
-                cell.adjacent[2] = exp[i + 1][k + (i >= edge) ? 0 : 1]; 
-                cell.adjacent[3] = exp[i + 1][k - (i >= edge) ? 1 : 0]; 
-                cell.adjacent[4] = exp[i]    [k - 1];                   
-                cell.adjacent[5] = exp[i - 1][k - (i <= edge) ? 1 : 0]; 
+                adj.pushObject( exp[i - 1][k + (i <= edge ? 0 : 1)] );
+                adj.pushObject( exp[i]    [k + 1] );                   
+                adj.pushObject( exp[i + 1][k + (i >= edge ? 0 : 1)] ); 
+                adj.pushObject( exp[i + 1][k - (i >= edge ? 1 : 0)] ); 
+                adj.pushObject( exp[i]    [k - 1] );                   
+                adj.pushObject( exp[i - 1][k - (i <= edge ? 1 : 0)] ); 
             }
-        }      
+        } 
     }
 });
 
 Ex.Tile = Em.Object.extend({
     team: null,
     cell: null,
-    proxy: {},
+    proxy: null,
 
     position: function() { return this.get('cell.position'); }.property('cell.position'),
     adjacentCells: function() { return this.get('cell.adjacent'); }.property('cell.adjacent'),
-    adjacentTypes: function() { return this.get('adjacentCells').map( function(cell) { return cell.get('css'); } ); }.property('adjacentCells.@each.css')
+    adjacentTypes: function() { return this.get('adjacentCells').map( function(cell) { return cell.get('css'); } ); }.property('adjacentCells.@each.css'),
+
+    init: function() { this.set('proxy', {}); }
 });
 
 Ex.CyclicList = Em.Object.extend({
-    list: [],
+    list: null,
     index: 0,
 
     active: function() { return this.get('list').objectAt(this.get('index')); }.property('index', 'list'),
     advance: function() { this.set('index', (this.get('index') + 1) % this.get('list.length')); },
+
+    init: function() { if(!this.get('list')) { this.set('list', []); } }
 });
 
 Ex.TeamGroup = Ex.CyclicList.extend({
@@ -120,6 +138,9 @@ Ex.TeamGroup = Ex.CyclicList.extend({
     forEach: function(callback, target) { return this.get('list').forEach(callback, target); },
 
     init: function() {
+        this._super();
+        this.set('proxy', {});
+
         this.get('list').forEach( function(team) { team.set('group', this); }, this);
     }
 });
@@ -176,7 +197,8 @@ Ex.executeAction = function(teams) {
     var aTeam = teams.get('active'),
         command = aTeam.run(),
         aTile = aTeam.get('active'),
-        nextCell = aTile.get('adjacentCells')[command.param];
+        nextCell = aTile.get('adjacentCells')[command.param],
+        nextTile = nextCell.get('tile')
 
     //Sanity check
     if(!command || !command.task || !command.param) { return; }
@@ -185,18 +207,18 @@ Ex.executeAction = function(teams) {
 debugger;
 
     //Do the thing
-    if(command.task == Ex.tasks.MOVE && !nextCell.get('tile')) {
+    if(command.task == Ex.tasks.MOVE && !nextTile) {
         aTile.set('cell.tile', null);
         aTile.set('cell', nextCell);
         nextCell.set('tile', aTile);
     }
-    else if(command.task == Ex.tasks.ATTACK && nextCell.get('tile')) {
+    else if(command.task == Ex.tasks.ATTACK && nextTile) {
         var bTile = nextCell.get('tile');
         teams.forEach( function(team) { team.remove(bTile); } );
         bTile.set('team', null);
     }
-    else if(command.task == Ex.tasks.ASSIMILATE && nextCell.get('tile')) {
-        var bTile = nextCell.get('tile'),
+    else if(command.task == Ex.tasks.ASSIMILATE && nextTile) {
+        var bTile = nextTile,
             bTeam = bTile.get('team');
 
         if(!bTeam) {

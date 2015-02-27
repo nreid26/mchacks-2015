@@ -75,7 +75,7 @@
                     {{#each row in organized}}
                     <div class="cell_row">
                         {{#each cell in row}}
-                        <div class="cell hex_inter hex"><div {{bind-attr class="cell.css" }}></div></div>
+                        {{#view App.CellView object=cell}}<div {{bind-attr class="cell.touch:touch cell.css"}}></div>{{/view}}
                         {{/each}}
                     </div>
                     {{/each}}
