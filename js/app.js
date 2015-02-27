@@ -49,6 +49,7 @@ App.PlayerController = Em.ObjectController.extend({
     paused: false,
     stopped: true,
     pauseContext: null,
+    teams: null,
 
     gameCycle: function(teams) {
         //Test if game should keep running
@@ -74,10 +75,9 @@ App.PlayerController = Em.ObjectController.extend({
         Em.run.later(this, this.get('gameCycle'), teams, this.get('delay')); 
     },
 
-
     actions:{
         startGame: function() {
-            try { var f = eval('( function(team, index, position, surroundings, move, attack, assimilate) { var console = null, document = null, alert = null; ' + Ex.editor.data + '} )'); }
+            try { var f = eval('( function(team, index, position, surroundings, move, attack, assimilate) { var window = null, document = null, alert = null; ' + Ex.editor.data + '} )'); }
             catch(e) { return alert('Your AI contains errors.  Please correct them and try again.'); }
             
             this.setProperties({
@@ -94,7 +94,8 @@ App.PlayerController = Em.ObjectController.extend({
                         Ex.Team.create({first: roots[1], name: 'Red',  type: Ex.tileTypes.HOSTILE,  script: Ex.AIScript})
                     ]
                 });
-
+            
+            this.set('teams', group);
             Em.run.later(this, this.get('gameCycle'), group, this.get('delay')); 
         },
 
@@ -114,6 +115,26 @@ App.PlayerController = Em.ObjectController.extend({
             this.get('gameCycle').call(this, this.get('pauseContext'));
         }
     }
+});
+
+App.ScoreboxView = Em.View.extend({
+    tagName: 'div',
+    classNameBindings: ['team.type'],
+
+    team: null,
+    map: null,
+
+    adjustHeight: function() {
+        Em.run.scheduleOnce('afterRender', this, function() {
+            var size = this.get('team.size');
+            if(size > 0) {
+                this.$().animate({height: (size / this.get('map.tileCount') * 100) + '%'}, 200);
+            }
+            else { 
+                this.$().css({height: 0});
+            }
+        });
+    }.observes('team.size', 'map.tileCount').on('init')
 });
 
 

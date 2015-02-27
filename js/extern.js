@@ -3,15 +3,16 @@ var Ex = {};
 Ex.tileTypes = Object.freeze({EMPTY: 'empty', DEAD: 'dead', HOSTILE: 'hostile', FRIENDLY: 'friendly'});
 Ex.taskNames = Object.freeze({MOVE: 'move', ATTACK: 'attack', ASSIMILATE: 'assimilate'});
 Ex.taskFunctions = Object.freeze({
-    MOVE: function(i) { return {task: Ex.taskNames.MOVE,             param: i}; },
-    ATTACK: function(i) { return {task: Ex.taskNames.ATTACK,         param: i}; },
-    ASSIMILATE: function(i) { return {task: Ex.taskNames.ASSIMILATE, param: i}; }
+    MOVE: Object.freeze(function(i) { return {task: Ex.taskNames.MOVE, param: i}; }),
+    ATTACK: Object.freeze(function(i) { return {task: Ex.taskNames.ATTACK, param: i}; }),
+    ASSIMILATE: Object.freeze(function(i) { return {task: Ex.taskNames.ASSIMILATE, param: i}; }),
 });
 
 Ex.HexCell= Em.Object.extend({
     position: 0,
     tile: null,
     adjacent: null,
+    tileCount: 0,
 
     css: function() {
         if(this.get('tile.team.type')) { return this.get('tile.team.type') }
@@ -37,6 +38,8 @@ Ex.HexMap = Em.Object.extend({
             start = Math.floor(all.length / 4),
             dead = Math.floor(all.length * 0.2),
             ret = [];
+
+        this.set('tileCount', dead);
 
         this.clear();
         this.all[start].set('tile', ret[0]);
@@ -166,6 +169,7 @@ Ex.TeamGroup = Ex.CyclicList.extend({
 Ex.Team = Ex.CyclicList.extend({
     script: null,
     first: null, //The first tile to exist when the team is instantiated
+    size: function() { return this.get('list.length'); }.property('list.length'),
     group: null,
     type: '',
     name: '',
@@ -177,7 +181,7 @@ Ex.Team = Ex.CyclicList.extend({
         return this.get('script').call(
             tile.get('proxy'),
 
-            this.get('tiles.length'),
+            this.get('size'),
             this.get('index'),
             tile.get('position'),
             tile.get('cell.adjacentTypes'),
@@ -207,7 +211,7 @@ Ex.Team = Ex.CyclicList.extend({
 
 Ex.editor = Em.Object.create({data: "function randInt(a) { return Math.floor(Math.random() * a); }\n\nif(!this.init) {\n\tthis.init = true;\n\tthis.dir = 0;\n\tthis.tasks = [move, attack, assimilate];\n}\n\nthis.dir = (this.dir + 1) % 6;\nreturn this.tasks[randInt(3)](this.dir);"});
 
-Ex.map = Ex.HexMap.create();
+Ex.map;
 
 Ex.AIScript = function() {
     function int(a) { return Math.round(Math.random() * a); }
