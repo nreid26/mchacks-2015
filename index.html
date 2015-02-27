@@ -49,12 +49,12 @@
                             <li>return attack(direction)</li>
                             <li>return assimilate(direction)</li>
                         </ul>
-                        Some other data is also provided about a tile and its team
+                        Some other variables are also provided about a tile and its team
                         <ul>
                             <li>team: <i>the number of other players on the team</i></li>
                             <li>index: <i>the index of this tile in the team</i></li>
                             <li>position: <i>the unique identifier of the cell this tile occupies</i></li>
-                            <li>surroundings: <i>an array of strings indicating the types of the tiles around this one</i></li>
+                            <li>surroundings: <i>an array of strings indicating the types of the tiles around this one ('empty', 'dead', 'friendly', 'hostile')</i></li>
                         </ul>
                         Beyond the provided data, it is also possible to attach new variables to <i>this</i>. Any values saved this way are only accessible to on specific tile, and they will be lost should that tile die.
                         {{/if}}

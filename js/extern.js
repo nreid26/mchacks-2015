@@ -184,7 +184,7 @@ Ex.Team = Ex.CyclicList.extend({
             this.get('size'),
             this.get('index'),
             tile.get('position'),
-            tile.get('cell.adjacentTypes'),
+            tile.get('adjacentTypes').slice(),
             Ex.taskFunctions.MOVE,
             Ex.taskFunctions.ATTACK,
             Ex.taskFunctions.ASSIMILATE
