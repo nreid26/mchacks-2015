@@ -37,7 +37,10 @@ App.EditController = Em.Controller.extend({
 
 App.PlayerRoute = Em.Route.extend({
     model: function() {
-        if(!Ex.map) { Ex.map = Ex.HexMap.create(); }
+        if(!Ex.map) { 
+            Ex.map = Ex.HexMap.create();
+            Ex.map.prepare();
+        }
         return Ex.map;
     }
 });
@@ -49,7 +52,7 @@ App.PlayerController = Em.ObjectController.extend({
 
     gameCycle: function(teams) {
         //Test if game should keep running
-        var fil = teams.filter( function(team) { return team.length > 0; } );
+        var fil = teams.filter( function(team) { return team.get('list.length') > 0; } );
         if(fil.length == 1) {
             alert(fil[0].get('name') + ' won!');
             this.set('stopped', true);
@@ -74,7 +77,7 @@ App.PlayerController = Em.ObjectController.extend({
 
     actions:{
         startGame: function() {
-            try { var f = eval('( function(team, index, position, move, attack, assimilate) { var console = null, document = null, alert = null; ' + Ex.editor.data + '} )'); }
+            try { var f = eval('( function(team, index, position, surroundings, move, attack, assimilate) { var console = null, document = null, alert = null; ' + Ex.editor.data + '} )'); }
             catch(e) { return alert('Your AI contains errors.  Please correct them and try again.'); }
             
             this.setProperties({
@@ -108,7 +111,7 @@ App.PlayerController = Em.ObjectController.extend({
 
         unpauseGame: function() {
             this.set('paused', false); 
-            this.get('playCycle')(this.get('pauseContext'));
+            this.get('gameCycle').call(this, this.get('pauseContext'));
         }
     }
 });
@@ -120,18 +123,3 @@ App.AllRoute = Em.Route.extend({
     }
 });
 App.IndexRoute = App.AllRoute;
-
-
-App.CellView = Em.View.extend({
-    tagname: 'div',
-    classNames: ['cell', 'hex_inter', 'hex'],
-    object: null,
-
-    mouseEnter: function() {
-        this.get('object.adjacent').forEach( function(cell) { cell.set('touch', true); });
-    },
-    mouseLeave: function() {
-        this.get('object.adjacent').forEach( function(cell) { cell.set('touch', false); });
-    },
-
-});

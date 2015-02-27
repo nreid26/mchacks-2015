@@ -5,7 +5,6 @@
     <title>Hexgame</title>
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/other.css">
 </head>
 <body>
     <script type="text/x-handlebars">
@@ -75,17 +74,18 @@
                     {{#each row in organized}}
                     <div class="cell_row">
                         {{#each cell in row}}
-                        {{#view App.CellView object=cell}}<div {{bind-attr class="cell.touch:touch cell.css"}}></div>{{/view}}
+                        {<div class="cell hex_inter hex"><div {{bind-attr class="cell.touch:touch cell.css"}}></div></div>
                         {{/each}}
                     </div>
                     {{/each}}
                 </td>
 
                 <td id="controls">
-                    {{#if stopped}}<div {{action "startGame"}}>Play</div>
-                    {{else}}<div {{action "stopGame" }}>Stop</div>{{/if}}
-                    {{#if paused}}<div {{action "unpauseGame" }}>Unpause</div>
-                    {{else}}<div {{action "pauseGame" }}>Pause</div>{{/if}}
+                    {{#if stopped}}<div {{action "startGame"}}    class="play"></div>
+                    {{else}}       <div {{action "stopGame" }}    class="stop"></div>{{/if}}
+                    <hr style="border-color: black"/>
+                    {{#if paused}} <div {{action "unpauseGame" }} class="play"></div>
+                    {{else}}       <div {{action "pauseGame" }}   class="pause"></div>{{/if}}
                 </td>
             </tr>
             <tr>
