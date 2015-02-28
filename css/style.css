@@ -41,7 +41,7 @@ html, body {
     text-align: center;
     display: inline-block;
 }
-.hex div {
+.hex > div {
     box-sizing: border-box;
     position: relative;
     width: 100%;
@@ -49,8 +49,8 @@ html, body {
     padding-top: calc(100% * 0.57735);
     display: inline-block;
 }
-.hex div:before,
-.hex div:after {
+.hex > div:before,
+.hex > div:after {
     box-sizing: border-box;
     transform-origin: center;
 
@@ -63,14 +63,14 @@ html, body {
     background-color: inherit;
     content: '';
 }
-.hex div:after { transform: rotateZ(60deg); }
-.hex div:before { transform: rotateZ(-60deg); }
+.hex > div:after { transform: rotateZ(60deg); }
+.hex > div::before { transform: rotateZ(-60deg); }
 
-.hex_collapse div { 
+.hex_collapse > div { 
     margin-top: 0;
     margin-bottom: 0;
 }
-.hex_inter div {
+.hex_inter > div {
     margin-top: calc(25% * 0.57735);
     margin-bottom: calc(25% * 0.57735);
 }
@@ -102,23 +102,23 @@ html, body {
     font-size: 0px;
     margin-bottom: 35px;
 }
-.nav_bar span { 
+.nav_bar > span { 
     display: inline-block;
     vertical-align: bottom;
     font-size: 18px;
     transition: all 0.2s ease;
 }
-.nav_bar span:hover { color: #888888; }
-.nav_bar span:after {
+.nav_bar > span:hover { color: #888888; }
+.nav_bar > span:after {
     color: black;
     content: "|";
     margin: 0 15px;
 }
-.nav_bar span:last-of-type:after {
+.nav_bar > span:last-of-type:after {
     content: "";
     margin: 0;
 }
-.nav_bar span:first-of-type:before { 
+.nav_bar > span:first-of-type:before { 
     content: "";
     margin-left: 15px;
 }
@@ -130,7 +130,7 @@ html, body {
     font-size: 0px;
 	border-radius: 5px;
 }
-#score div {
+#score > div {
     width: 100%;
     display: inline-block;
 }
@@ -186,7 +186,7 @@ html, body {
 #info_pane {
 	min-width: 300px;
 	vertical-align: top;
-	padding-right: 10px;
+	padding: 0 10px 0 0;
 }
 #info_pane div {
 	margin-bottom: 10px;
@@ -194,12 +194,23 @@ html, body {
 	background: #333333;
 	padding: 20px;
 }
-#info_pane div.hoverable { transition: all 0.2s ease; }
-#info_pane div.hoverable:hover { color: #888888; }
-#info_pane div:last-of-type {
+#info_pane > div.hoverable { transition: all 0.2s ease; }
+#info_pane > div.hoverable:hover { color: #888888; }
+#info_pane > div:last-of-type {
 	margin-bottom: 0;
 }
 #info_pane img {
 	margin: 0 auto;
 	height: 250px;
+}
+
+/* Logo H */
+#H {
+    position: absolute;
+    top: calc(50% + 1px);
+    z-index: 3;
+
+    width: 100%;
+    font-size: 100px;
+    line-height: 0;
 }

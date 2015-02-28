@@ -42,6 +42,13 @@ App.PlayerRoute = Em.Route.extend({
             Ex.map.prepare();
         }
         return Ex.map;
+    },
+
+    actions: {
+        willTransition: function() { //Pause game when leaving player
+            this.get('controller').send('pauseGame');
+            return true;
+        }
     }
 });
 App.PlayerController = Em.ObjectController.extend({
@@ -107,12 +114,16 @@ App.PlayerController = Em.ObjectController.extend({
         },
 
         pauseGame: function() {
-            this.set('paused', true); 
+            if(!this.get('stopped')) {
+                this.set('paused', true);
+            }
         },
 
         unpauseGame: function() {
-            this.set('paused', false); 
-            this.get('gameCycle').call(this, this.get('pauseContext'));
+            if(!this.game('stopped')) {
+                this.set('paused', false); 
+                this.get('gameCycle').call(this, this.get('pauseContext'));
+            }
         }
     }
 });
