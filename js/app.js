@@ -59,21 +59,21 @@ App.PlayerController = Em.ObjectController.extend({
     teams: null,
 
     gameCycle: function(teams) {
+        if(this.get('stopped')) { return; }
+        else if(this.get('paused')) { return this.set('pauseContext', teams); }
+
         //Test if game should keep running
         var fil = teams.filter( function(team) { return team.get('list.length') > 0; } );
         if(fil.length == 1) {
             alert(fil[0].get('name') + ' won!');
-            this.set('stopped', true);
+            return this.send('toggleStopped');
         }
-
-        if(this.get('stopped')) { return this.send('stopGame'); }
-        else if(this.get('paused')) { return this.set('pauseContext', teams); }
             
         //Validate turn context and execute
         try { Ex.executeAction(teams); }
         catch(e) { 
             alert('An error was enconutered during this turn; the game has been terminated.\n\n' + e);
-            return this.send('stopGame');
+            return this.send('toggleStopped');
         }
 
         //Prepare for next turn 
@@ -81,48 +81,45 @@ App.PlayerController = Em.ObjectController.extend({
         teams.advance();
         Em.run.later(this, this.get('gameCycle'), teams, this.get('delay')); 
     },
+    launch: function() {
+        try { var f = eval('( function(team, index, position, surroundings, move, attack, assimilate) { var window = null, document = null, alert = null; ' + Ex.editor.data + '} )'); }
+        catch(e) { return alert('Your AI contains errors.  Please correct them and try again.'); }
+
+        var map = this.get('model'),
+            roots = map.prepare(2),
+            group = Ex.TeamGroup.create({
+                hexMap: map,
+                list: [
+                    Ex.Team.create({first: roots[0], name: 'Blue', type: Ex.tileTypes.FRIENDLY, script: f}),
+                    Ex.Team.create({first: roots[1], name: 'Red',  type: Ex.tileTypes.HOSTILE,  script: Ex.AIScript})
+                ]
+            });
+            
+        this.set('teams', group);
+        Em.run.later(this, this.get('gameCycle'), group, this.get('delay'));
+    },
 
     actions:{
-        startGame: function() {
-            try { var f = eval('( function(team, index, position, surroundings, move, attack, assimilate) { var window = null, document = null, alert = null; ' + Ex.editor.data + '} )'); }
-            catch(e) { return alert('Your AI contains errors.  Please correct them and try again.'); }
-            
-            this.setProperties({
-                paused: false,
-                stopped: false
-            });
-
-            var map = this.get('model'),
-                roots = map.prepare(2),
-                group = Ex.TeamGroup.create({
-                    hexMap: map,
-                    list: [
-                        Ex.Team.create({first: roots[0], name: 'Blue', type: Ex.tileTypes.FRIENDLY, script: f}),
-                        Ex.Team.create({first: roots[1], name: 'Red',  type: Ex.tileTypes.HOSTILE,  script: Ex.AIScript})
-                    ]
-                });
-            
-            this.set('teams', group);
-            Em.run.later(this, this.get('gameCycle'), group, this.get('delay')); 
-        },
-
-        stopGame: function() {
-            this.setProperties({
-                stopped: true,
-                paused: false
-            });
-        },
-
-        pauseGame: function() {
-            if(!this.get('stopped')) {
-                this.set('paused', true);
+        toggleStopped: function() {
+            if(this.get('stopped')) {
+                this.set('stopped', false);
+                this.get('launch').call(this);
             }
+            else {
+                 this.set('stopped', true);
+            }
+            this.set('paused', false);
         },
 
-        unpauseGame: function() {
-            if(!this.game('stopped')) {
+        togglePaused: function() {
+            if(this.get('stopped')) { return; }
+
+            if(this.get('paused')) {
                 this.set('paused', false); 
                 this.get('gameCycle').call(this, this.get('pauseContext'));
+            }
+            else {
+                this.set('paused', true);
             }
         }
     }

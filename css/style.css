@@ -106,7 +106,7 @@ html, body {
     display: inline-block;
     vertical-align: bottom;
     font-size: 18px;
-    transition: all 0.2s ease;
+    transition: hover 0.2s ease;
 }
 .nav_bar > span:hover { color: #888888; }
 .nav_bar > span:after {
@@ -148,7 +148,7 @@ html, body {
 
 
 /* Buttons */
-.stop, .pause, .play { transition: all 0.2s ease; }
+.stop, .pause, .play { transition: hover 0.2s ease; }
 .stop, .pause {
     height: 20px;
     width: 20px;
@@ -194,7 +194,7 @@ html, body {
 	background: #333333;
 	padding: 20px;
 }
-#info_pane > div.hoverable { transition: all 0.2s ease; }
+#info_pane > div.hoverable { transition: hover 0.2s ease; }
 #info_pane > div.hoverable:hover { color: #888888; }
 #info_pane > div:last-of-type {
 	margin-bottom: 0;

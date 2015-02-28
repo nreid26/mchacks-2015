@@ -89,11 +89,9 @@
                 </td>
 
                 <td id="controls">
-                    {{#if stopped}}<div {{action "startGame"}}    class="play"></div>
-                    {{else}}       <div {{action "stopGame" }}    class="stop"></div>{{/if}}
+                    <div {{action "toggleStopped"}} {{bind-attr class="stopped:play:stop"}}></div>
                     <hr style="border-color: black"/>
-                    {{#if paused}} <div {{action "unpauseGame" }} class="play"></div>
-                    {{else}}       <div {{action "pauseGame" }}   class="pause"></div>{{/if}}
+                    <div {{action "togglePaused"}} {{bind-attr class="paused:play:pause"}}></div>
                 </td>
             </tr>
             <tr>
