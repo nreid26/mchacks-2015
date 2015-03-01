@@ -46,7 +46,8 @@ App.PlayerRoute = Em.Route.extend({
 
     actions: {
         willTransition: function() { //Pause game when leaving player
-            this.get('controller').send('pauseGame');
+            var controller = this.get('controller');
+            controller.get('pause').call(controller);
             return true;
         }
     }
@@ -57,23 +58,24 @@ App.PlayerController = Em.ObjectController.extend({
     stopped: true,
     pauseContext: null,
     teams: null,
+    cellWidth: function() {  return 'calc(100% / ' + (2 * this.get('model.edge') - 1) + ' - 5px)'; }.property('model.edge'),
 
     gameCycle: function(teams) {
-        if(this.get('stopped')) { return; }
-        else if(this.get('paused')) { return this.set('pauseContext', teams); }
-
         //Test if game should keep running
         var fil = teams.filter( function(team) { return team.get('list.length') > 0; } );
         if(fil.length == 1) {
             alert(fil[0].get('name') + ' won!');
-            return this.send('toggleStopped');
+            return this.get('stop').call(this); //Automatically call the stop function if the game ends
         }
+
+        if(this.get('stopped')) { return; }
+        else if(this.get('paused')) { return this.set('pauseContext', teams); }
             
         //Validate turn context and execute
         try { Ex.executeAction(teams); }
         catch(e) { 
             alert('An error was enconutered during this turn; the game has been terminated.\n\n' + e);
-            return this.send('toggleStopped');
+            return this.get('stop').call(this); //Stop the game on error
         }
 
         //Prepare for next turn 
@@ -81,7 +83,8 @@ App.PlayerController = Em.ObjectController.extend({
         teams.advance();
         Em.run.later(this, this.get('gameCycle'), teams, this.get('delay')); 
     },
-    launch: function() {
+
+    play: function() {
         try { var f = eval('( function(team, index, position, surroundings, move, attack, assimilate) { var window = null, document = null, alert = null; ' + Ex.editor.data + '} )'); }
         catch(e) { return alert('Your AI contains errors.  Please correct them and try again.'); }
 
@@ -95,32 +98,36 @@ App.PlayerController = Em.ObjectController.extend({
                 ]
             });
             
-        this.set('teams', group);
+        this.setProperties({
+            teams: group,
+            stopped: false,
+            paused: false
+        });
         Em.run.later(this, this.get('gameCycle'), group, this.get('delay'));
     },
+    stop: function() { 
+        this.setProperties({
+            stopped: true,
+            paused: false
+        });
+    },
+    pause: function() { this.set('paused', true); },
+    unpause: function() { 
+        var context = this.get('pauseContext');
+        if(context) {
+            this.set('paused', false);
+            this.get('gameCycle').call(this, context);
+        }
+        else { this.get('play').call(this); }
+    },
+    
 
     actions:{
-        toggleStopped: function() {
-            if(this.get('stopped')) {
-                this.set('stopped', false);
-                this.get('launch').call(this);
-            }
-            else {
-                 this.set('stopped', true);
-            }
-            this.set('paused', false);
-        },
+        toggleStopped: function() { this.get((this.get('stopped')) ? 'play' : 'stop').call(this); },
 
-        togglePaused: function() {
+        togglePaused: function() { 
             if(this.get('stopped')) { return; }
-
-            if(this.get('paused')) {
-                this.set('paused', false); 
-                this.get('gameCycle').call(this, this.get('pauseContext'));
-            }
-            else {
-                this.set('paused', true);
-            }
+            this.get((this.get('paused')) ? 'unpause' : 'pause').call(this);
         }
     }
 });

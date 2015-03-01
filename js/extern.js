@@ -29,7 +29,7 @@ Ex.HexCell= Em.Object.extend({
 Ex.HexMap = Em.Object.extend({
     all: null,
     organized: null,
-    edge: 6,
+    edge: 9,
 
     clear: function() { this.get('all').forEach( function(cell) { cell.set('tile', null); } ); },
     prepare: function(players) {

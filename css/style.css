@@ -21,6 +21,7 @@ html, body {
 #game {
     z-index: 0;
     width: 900px;
+    min-width: 300px;
 
     margin: 20px auto;
     padding-right: 40px;
@@ -86,7 +87,6 @@ html, body {
     margin-bottom: 5px;
 }
 .cell {
-    width: 8%;
     margin-right: 5px;
 }
 
