@@ -58,13 +58,12 @@ App.PlayerController = Em.ObjectController.extend({
     stopped: true,
     pauseContext: null,
     teams: null,
-    cellWidth: function() {  return 'calc(100% / ' + (2 * this.get('model.edge') - 1) + ' - 5px)'; }.property('model.edge'),
 
     gameCycle: function(teams) {
         //Test if game should keep running
-        var fil = teams.filter( function(team) { return team.get('list.length') > 0; } );
-        if(fil.length == 1) {
-            alert(fil[0].get('name') + ' won!');
+        var winner = teams.get('winner');
+        if(winner) {
+            alert(winner + ' won!');
             return this.get('stop').call(this); //Automatically call the stop function if the game ends
         }
 
@@ -85,7 +84,13 @@ App.PlayerController = Em.ObjectController.extend({
     },
 
     play: function() {
-        try { var f = eval('( function(team, index, position, surroundings, move, attack, assimilate) { var window = null, document = null, alert = null; ' + Ex.editor.data + '} )'); }
+        try { 
+            var AI = new Function(
+                'team', 'position', //Variables
+                'move', 'attack', 'assimilate', 'look', 'pass', //Functions
+                'var window = null, document = null, alert = null; ' + Ex.editor.data //AI
+            );
+        }
         catch(e) { return alert('Your AI contains errors.  Please correct them and try again.'); }
 
         var map = this.get('model'),
@@ -93,8 +98,8 @@ App.PlayerController = Em.ObjectController.extend({
             group = Ex.TeamGroup.create({
                 hexMap: map,
                 list: [
-                    Ex.Team.create({first: roots[0], name: 'Blue', type: Ex.tileTypes.FRIENDLY, script: f}),
-                    Ex.Team.create({first: roots[1], name: 'Red',  type: Ex.tileTypes.HOSTILE,  script: Ex.AIScript})
+                    Ex.Team.create({first: roots[0], name: 'Blue', color: Ex.tileColors.FRIENDLY, script: AI}),
+                    Ex.Team.create({first: roots[1], name: 'Red',  color: Ex.tileColors.HOSTILE,  script: Ex.AIScript})
                 ]
             });
             

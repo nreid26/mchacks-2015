@@ -11,7 +11,7 @@
 <body>
     <script type="text/x-handlebars">
         <div class="nav_bar">
-            <div class="hex_collapse hex" style="width: 125px"><div class="friendly"><div id="H">H</div></div></div>
+            <div class="hex_collapse hex" style="width: 125px"><div style="background-color: #39C8FF; "><div id="H">H</div></div></div>
             {{#link-to 'player' tagName="span"}}Player{{/link-to}}
             {{#link-to 'edit' tagName="span"}}Editor{{/link-to}}
         </div>
@@ -35,14 +35,14 @@
                         {{/if}}
                     </div>
 
-                    <div {{action "resize" "b" }} {{bind-attr class="expand.b::hoverable" }}>
+                    <div {{action "resize" "b"}} {{bind-attr class="expand.b::hoverable"}}>
                         <h3>Directions</h3>
                         {{#if expand.b}}
                         <img src="images/directions.png" />
                         {{/if}}
                     </div>
 
-                    <div {{action "resize" "c" }} {{bind-attr class="expand.c::hoverable" }}>
+                    <div {{action "resize" "c"}} {{bind-attr class="expand.c::hoverable"}}>
                         <h3>API</h3>
                         {{#if expand.c}}
                         Move, Attack, and Assimilate commands can be issued using the provided functions
@@ -62,7 +62,7 @@
                         {{/if}}
                     </div>
 
-                    <div {{action "resize" "d" }} {{bind-attr class="expand.d::hoverable" }}>
+                    <div {{action "resize" "d"}} {{bind-attr class="expand.d::hoverable"}}>
                         <h3>Objectives</h3>
                         {{#if expand.d}}
                         The goal of Hexgame is to defeat the bad pink tiles.  You do this by teaching the good blue tiles to march, expand, and war on thier enemies.  This is done by programming them
@@ -76,7 +76,7 @@
     </script>
 
     <script type="text/x-handlebars" id="player">
-        <style>.cell { width: {{cellWidth}}; }</style>
+        <style>.cell { width: calc(100% / (2 * {{edge}} - 1) - 5px); }</style>
 
         <table id="game_wrapper">
             <tr>
@@ -84,7 +84,7 @@
                     {{#each row in organized}}
                     <div class="cell_row">
                         {{#each cell in row}}
-                        {<div class="cell hex_inter hex"><div {{bind-attr class="cell.touch:touch cell.css"}}></div></div>
+                        <div class="cell hex_inter hex"><div {{bind-attr style=cell.style}}></div></div>
                         {{/each}}
                     </div>
                     {{/each}}

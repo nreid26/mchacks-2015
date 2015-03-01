@@ -1,24 +1,36 @@
 var Ex = {};
 
-Ex.tileTypes = Object.freeze({EMPTY: 'empty', DEAD: 'dead', HOSTILE: 'hostile', FRIENDLY: 'friendly'});
-Ex.taskNames = Object.freeze({MOVE: 'move', ATTACK: 'attack', ASSIMILATE: 'assimilate'});
+Ex.tileColors = Object.freeze({EMPTY: '333333', DEAD: 'FFA500', HOSTILE: 'FA3296', FRIENDLY: '39C8FF'});
+Ex.taskCodes = Object.freeze({MOVE: 1, ATTACK: 2, ASSIMILATE: 3, LOOK: 4, PASS: 5});
 Ex.taskFunctions = Object.freeze({
-    MOVE: Object.freeze(function(i) { return {task: Ex.taskNames.MOVE, param: i}; }),
-    ATTACK: Object.freeze(function(i) { return {task: Ex.taskNames.ATTACK, param: i}; }),
-    ASSIMILATE: Object.freeze(function(i) { return {task: Ex.taskNames.ASSIMILATE, param: i}; }),
+    MOVE: Object.freeze(function(i) { return {task: Ex.taskCodes.MOVE, param: i}; }),
+    ATTACK: Object.freeze(function(i) { return {task: Ex.taskCodes.ATTACK, param: i}; }),
+    ASSIMILATE: Object.freeze(function(i) { return {task: Ex.taskCodes.ASSIMILATE, param: i}; }),
+    LOOK: Object.freeze(function(i) { return {task: Ex.taskCodes.LOOK, param: i}; }),
+    PASS: Object.freeze(function() { return {task: Ex.taskCodes.ASSIMILATE, param: 1}; }),
 });
+
+Ex.CyclicList = Em.Object.extend({
+    list: null,
+    index: 0,
+
+    active: function() { 
+        if(!this.get('list').objectAt(this.get('index'))) { this.advance(); }
+        return this.get('list').objectAt(this.get('index'));
+    }.property('index', 'list'),
+    advance: function() { this.set('index', (this.get('index') + 1) % this.get('list.length')); },
+
+    init: function() { if(!this.get('list')) { this.set('list', []); } }
+});
+
 
 Ex.HexCell= Em.Object.extend({
     position: 0,
     tile: null,
     adjacent: null,
-    tileCount: 0,
 
-    css: function() {
-        if(this.get('tile.team.type')) { return this.get('tile.team.type') }
-        else if(this.get('tile'))      { return Ex.tileTypes.DEAD; }
-        else                           { return Ex.tileTypes.EMPTY; } 
-    }.property('tile.team.type'),
+    color: function() { return this.get('tile.team.color') || (this.get('tile') ? Ex.tileColors.DEAD : Ex.tileColors.EMPTY); }.property('tile.team.color'),
+    style: function() { return 'background-color: #' + this.get('color') + ';'; }.property('color'),
 
     init: function() {
         this._super();
@@ -30,6 +42,7 @@ Ex.HexMap = Em.Object.extend({
     all: null,
     organized: null,
     edge: 9,
+    tileCount: 0,
 
     clear: function() { this.get('all').forEach( function(cell) { cell.set('tile', null); } ); },
     prepare: function(players) {
@@ -122,8 +135,6 @@ Ex.Tile = Em.Object.extend({
     proxy: null,
 
     position: function() { return this.get('cell.position'); }.property('cell.position'),
-    adjacentCells: function() { return this.get('cell.adjacent'); }.property('cell.adjacent'),
-    adjacentTypes: function() { return this.get('adjacentCells').map( function(cell) { return cell.get('css'); } ); }.property('adjacentCells.@each.css'),
     kill: function() {
         var team = this.get('team');
 
@@ -139,40 +150,14 @@ Ex.Tile = Em.Object.extend({
     init: function() { this.set('proxy', {}); }
 });
 
-Ex.CyclicList = Em.Object.extend({
-    list: null,
-    index: 0,
-
-    active: function() { 
-        if(!this.get('list').objectAt(this.get('index'))) { this.advance(); }
-        return this.get('list').objectAt(this.get('index'));
-    }.property('index', 'list'),
-    advance: function() { this.set('index', (this.get('index') + 1) % this.get('list.length')); },
-
-    init: function() { if(!this.get('list')) { this.set('list', []); } }
-});
-
-Ex.TeamGroup = Ex.CyclicList.extend({
-    hexMap: null,
-
-    filter: function(predicate) { return this.get('list').filter(predicate); },
-    forEach: function(callback, target) { return this.get('list').forEach(callback, target); },
-
-    init: function() {
-        this._super();
-        this.set('proxy', {});
-
-        this.get('list').forEach( function(team) { team.set('group', this); }, this);
-    }
-});
-
 Ex.Team = Ex.CyclicList.extend({
     script: null,
     first: null, //The first tile to exist when the team is instantiated
     size: function() { return this.get('list.length'); }.property('list.length'),
     group: null,
-    type: '',
+    color: '',
     name: '',
+    proxy: null,
 
     run: function() {
         var map = this.get('group.hexMap.all'),
@@ -181,13 +166,14 @@ Ex.Team = Ex.CyclicList.extend({
         return this.get('script').call(
             tile.get('proxy'),
 
-            this.get('size'),
-            this.get('index'),
+            this.get('proxy'),
             tile.get('position'),
-            tile.get('adjacentTypes').slice(),
+
             Ex.taskFunctions.MOVE,
             Ex.taskFunctions.ATTACK,
-            Ex.taskFunctions.ASSIMILATE
+            Ex.taskFunctions.ASSIMILATE,
+            Ex.taskFunctions.LOOK,
+            Ex.taskFunctions.PASS
         );
     },
     advance: function() {
@@ -205,42 +191,79 @@ Ex.Team = Ex.CyclicList.extend({
         var tile = this.get('first');
 
         tile.set('team', this);
-        this.set('list', [tile]);
+        this.setProperties({
+            list: [tile],
+            proxy: {}
+        });
     }
 });
+
+Ex.TeamGroup = Ex.CyclicList.extend({
+    hexMap: null,
+
+    forEach: function(callback, target) { return this.get('list').forEach(callback, target); },
+    winner: function() {
+        var rem = this.get('list').filter(function(item) { return item.get('size') > 0; });
+        if(rem.length > 1) { return null; }
+        return rem[0].get('name');
+    }.property('list.@each.size'),
+
+    init: function() {
+        this._super();
+        this.set('proxy', {});
+
+        this.get('list').forEach( function(team) { team.set('group', this); }, this);
+    }
+});
+
 
 Ex.editor = Em.Object.create({data: "function randInt(a) { return Math.floor(Math.random() * a); }\n\nif(!this.init) {\n\tthis.init = true;\n\tthis.dir = 0;\n\tthis.tasks = [move, attack, assimilate];\n}\n\nthis.dir = (this.dir + 1) % 6;\nreturn this.tasks[randInt(3)](this.dir);"});
 
 Ex.map;
 
 Ex.AIScript = function() {
-    function int(a) { return Math.round(Math.random() * a); }
-    var moves = ['attack', 'assimilate', 'move'];
-    return {task: moves[int(2)], param: int(5)}; 
+    function int(a) { return Math.floor(Math.random() * a); }
+    return {task: int(5) + 1, param: int(6)}; 
 };
 
 Ex.executeAction = function(teams) {
-    var aTeam = teams.get('active'),
+    var aTeam = teams.get('active');
+
+    //Pass
+    var command = aTeam.run();
+    if(!command || !command.task) { return; }
+    while(command.task == Ex.taskCodes.PASS) {
+        aTeam.advance();
         command = aTeam.run();
+        if(!command || !command.task) { return; }
+    }
 
-    //Sanity check
-    if(!command || !command.task || typeof command.param !== 'number') { return; }
-    command.param = (command.param % 6 + 6) % 6;
+    //Look
+    var aTile = aTeam.get('active');
+    if(command.task == Ex.taskCodes.LOOK) {
+        if(typeof command.param === 'function') { 
+            command.param.call(
+                aTile.get('proxy'),
+                aTile.get('cell.adjacent').mapBy('color')
+            );
+        }
+        return;
+    }
 
-    var aTile = aTeam.get('active'),
-        nextCell = aTile.get('adjacentCells')[command.param],
+    //Move, Attack, Assimilate
+    if(typeof command.param !== 'number') { return; }
+    command.param = (Math.floor(command.param) % 6 + 6) % 6; //Accept any number
+    var nextCell = aTile.get('cell.adjacent')[command.param],
         bTile = nextCell.get('tile')
-
-    //Do the thing
-    if(command.task == Ex.taskNames.MOVE && !bTile) {
+    if(command.task == Ex.taskCodes.MOVE && !bTile) {
         aTile.set('cell.tile', null);
         aTile.set('cell', nextCell);
         nextCell.set('tile', aTile);
     }
-    else if(command.task == Ex.taskNames.ATTACK && bTile) {
+    else if(command.task == Ex.taskCodes.ATTACK && bTile) {
         bTile.kill();
     }
-    else if(command.task == Ex.taskNames.ASSIMILATE && bTile) {
+    else if(command.task == Ex.taskCodes.ASSIMILATE && bTile) {
         var bTeam = bTile.get('team');
 
         if(!bTeam) { //If the adjacent tile has no team
