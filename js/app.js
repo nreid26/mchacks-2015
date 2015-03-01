@@ -45,9 +45,9 @@ App.PlayerRoute = Em.Route.extend({
     },
 
     actions: {
-        willTransition: function() { //Pause game when leaving player
+        willTransition: function() { //Pause game when leaving running player
             var controller = this.get('controller');
-            controller.get('pause').call(controller);
+            if(!controller.get('stopped')) { controller.get('pause').call(controller); }
             return true;
         }
     }

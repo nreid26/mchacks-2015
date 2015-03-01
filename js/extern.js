@@ -224,14 +224,12 @@ Ex.executeAction = function(teams) {
         command = aTeam.run();
 
     //Sanity check
-    if(!command || !command.task || !command.param) { return; }
-    command.param = command.param % 6;
+    if(!command || !command.task || typeof command.param !== 'number') { return; }
+    command.param = (command.param % 6 + 6) % 6;
 
     var aTile = aTeam.get('active'),
         nextCell = aTile.get('adjacentCells')[command.param],
         bTile = nextCell.get('tile')
-
-
 
     //Do the thing
     if(command.task == Ex.taskNames.MOVE && !bTile) {
