@@ -13,18 +13,26 @@
         <div class="nav_bar">
             <div class="hex_collapse hex" style="width: 125px"><div style="background-color: #39C8FF; "><div id="H">H</div></div></div>
             {{#link-to 'player' tagName="span"}}Player{{/link-to}}
-            {{#link-to 'edit' tagName="span"}}Editor{{/link-to}}
+            {{#link-to 'editor' tagName="span"}}Editor{{/link-to}}
         </div>
         {{outlet}}
     </script>
 
-    <script type="text/x-handlebars" id="edit">
+    <script type="text/x-handlebars" id="editor">
         <table id="editor_table">
             <tr>
                 <td id="info_pane">
-                    <div {{action "resize" "a"}} {{bind-attr class="expand.a::hoverable"}}>
+                    <div {{action "expand" "objective" }} {{bind-attr class="expand.d::hoverable" }}>
+                        <h3>Objective</h3>
+                        {{#if expand.objective}}
+                        The goal of Hexgame is to defeat the evil pink tiles.  You do this by teaching the good blue tiles to march, expand, and war on thier enemies.  This is done by programming them
+                        where and when to strike using the console to the right.  The basics are listed here, but it will take more than that to claim victory!  The rest is to be discovered.
+                        {{/if}}
+                    </div>
+
+                    <div {{action "expand" "tiles"}} {{bind-attr class="expand.a::hoverable"}}>
                         <h3>Tiles</h3>
-                        {{#if expand.a}}
+                        {{#if expand.tiles}}
                         <img src="images/tiles.png" />
                         <ol>
                             <li>Good Tiles</li>
@@ -35,16 +43,16 @@
                         {{/if}}
                     </div>
 
-                    <div {{action "resize" "b"}} {{bind-attr class="expand.b::hoverable"}}>
+                    <div {{action "expand" "directions"}} {{bind-attr class="expand.b::hoverable"}}>
                         <h3>Directions</h3>
-                        {{#if expand.b}}
+                        {{#if expand.directions}}
                         <img src="images/directions.png" />
                         {{/if}}
                     </div>
 
-                    <div {{action "resize" "c"}} {{bind-attr class="expand.c::hoverable"}}>
+                    <div {{action "expand" "api"}} {{bind-attr class="expand.c::hoverable"}}>
                         <h3>API</h3>
-                        {{#if expand.c}}
+                        {{#if expand.api}}
                         Move, Attack, and Assimilate commands can be issued using the provided functions
                         <ul>
                             <li>return move(direction)</li>
@@ -59,14 +67,6 @@
                             <li>surroundings: <i>an array of strings indicating the types of the tiles around this one ('empty', 'dead', 'friendly', 'hostile')</i></li>
                         </ul>
                         Beyond the provided data, it is also possible to attach new variables to <i>this</i>. Any values saved this way are only accessible to on specific tile, and they will be lost should that tile die.
-                        {{/if}}
-                    </div>
-
-                    <div {{action "resize" "d"}} {{bind-attr class="expand.d::hoverable"}}>
-                        <h3>Objectives</h3>
-                        {{#if expand.d}}
-                        The goal of Hexgame is to defeat the bad pink tiles.  You do this by teaching the good blue tiles to march, expand, and war on thier enemies.  This is done by programming them
-                        where and when to strike using the console to the right.  The basics are listed here, but it will take more than that to claim victory!  The rest is to be discovered.
                         {{/if}}
                     </div>
                 </td>
@@ -106,13 +106,17 @@
         </table>
     </script>
 
-
+    <!--Libraries-->
     <script src="js/libs/vendor/jquery.js"></script>
     <script src="js/libs/ember-template-compiler-1.10.0.js"></script>
     <script src="js/libs/ember-1.10.0.debug.js"></script>
     <script src="js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+
+    <!--Application-->
     <script src="js/extern.js"></script>
-    <script src="js/helpers.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/init.js"></script>
+    <script src="js/routes.js"></script>
+    <script src="js/views.js"></script>
+    <script src="js/controllers.js"></script>
 </body>
 </html>

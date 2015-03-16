@@ -1,0 +1,7 @@
+#Nick
+bin/
+obj/
+tests/
+*.csproj
+*.sln
+*.suo
