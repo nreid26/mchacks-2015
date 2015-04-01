@@ -12,11 +12,11 @@ var G = {
     AI: null,
     team: {tiles: {}, proxy: {}},
 
-    shadows: function() {
+    shadows: (function() {
         var s = [];
         for(var k in this) { s.push(k); }
         return s.join();
-    }
+    })()
 };
 
 onmessage = function(event) {
@@ -28,7 +28,7 @@ onmessage = function(event) {
                 'team', 'position', //Variables
                 'move', 'attack', 'assimilate', 'look', //Functions
 
-                'var ' + G.shadows() + ';' + //Shadows
+                'var ' + G.shadows + ';' + //Shadows
                 msg.text //AI
             );
             break;
@@ -63,7 +63,7 @@ onmessage = function(event) {
                     res.param = 0;
                 }
             }
-            else { res = {}; }
+            else { res = {task: G.taskCodes.NULL, param: 0}; }
 
             res.id = msg.id; //Return the affected tile
             postMessage(res);

@@ -9,17 +9,21 @@ App.EditorController = Em.Controller.extend({
     }),
     editor: null,
 
+    save: function() {
+        window.localStorage.setItem('program', this.get('model.data'));
+    },
     syncEditor: function() {
         var e = this.get('editor'),
             m = this.get('model');
 
-        if(!e || !m) { return; }
-
-        e.setTheme("ace/theme/monokai");
-        e.getSession().setMode("ace/mode/javascript");
-        e.setValue(m.get('data'));
-        e.on('change', function() { m.set('data', e.getValue()); }); //Synchronize model with editor
-        
+        if(e) {
+            e.setTheme("ace/theme/monokai");
+            e.getSession().setMode("ace/mode/javascript");
+        }
+        if(e && m) {
+            e.setValue(m.get('data'));
+            e.on('change', function() { m.set('data', e.getValue()); }); //Synchronize model with editor
+        }
     }.observes('editor', 'model'),
 
     actions: {
@@ -30,22 +34,19 @@ App.EditorController = Em.Controller.extend({
             e.set(key, true);
         },
 
-        save: function() {
-            window.localStorage.setItem('program', this.get('model.data'));
-        }
+        save: function() { this.save(); }
     },
 
     init: function() {
         this._super();
 
-        $(window).on('beforeunload', function() { //Set to save on unload
-            this.send('save');
-        });
+        var cont = this;
+        window.addEventListener('beforeunload', function() { cont.get('save').call(cont); });
     }
 });
 
 App.PlayerController = Em.ObjectController.extend({
-    delay: 80,
+    delay: 1000,
     paused: false,
     stopped: true,
     teamGroup: null,
@@ -80,6 +81,8 @@ App.PlayerController = Em.ObjectController.extend({
         //Prepare map
         var map = this.get('model'),
             roots = map.prepare(2);
+
+        console.log(Ex.editor.get('data')); //THE EDITOR DOESN'T ALWAYS HAVE DATA
             
         this.setProperties({
             stopped: false,
@@ -101,7 +104,7 @@ App.PlayerController = Em.ObjectController.extend({
             stopped: true,
             paused: false
         });
-        this.get('teams').terminate();
+        this.get('teamGroup').terminate();
         if(message) { alert(message); }
     },
     pause: function() { this.set('paused', true); },

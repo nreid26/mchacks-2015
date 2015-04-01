@@ -149,11 +149,18 @@ Ex.Team = Em.Object.extend({
         this.get('tiles').pushObject(tile);
         this.get('worker').postMessage({type: Ex.messageCodes.ANIMATE, id: tile.get('id')});
     },
+    getById: function(id) {
+        var tiles = this.get('tiles');
+        for(var i = 0; i < tiles.length; i++) { 
+            if(tiles.objectAt(i).get('id') == id) { return tiles.objectAt(i); }
+        }
+        return null;
+    },
     terminate: function()  { this.get('worker').terminate(); },
 
     init: function() {
         var tile = this.get('tiles').objectAt(0),
-            worker = new Worker('sandbox.js'),
+            worker = new Worker('js/sandbox.js'),
             _this = this;
 
         worker.onmessage = function(event) { _this.set('command', event.data); };
@@ -203,19 +210,20 @@ Ex.editor = Em.Object.create({data: null});
 
 Ex.AIScript = 'function int(a) { return Math.floor(Math.random() * a); } return {task: int(5) + 1, param: int(6)};';
 
-Ex.executeAction = function(team, command) {
+Ex.executeAction = function(aTeam, command) {
     //Validation
     if(
         typeof command.task != 'number' ||
         typeof command.param != 'number' ||
-        !team.get('tiles')[command.index]
+        !aTeam.getById(command.id)
     )
     { throw new Error('A malformed command has been issued'); }
-
+    debugger;
     if(command.task == Ex.taskCodes.LOOK) { return; } //Nothing to do
 
     command.param = (Math.floor(command.param) % 6 + 6) % 6; //Accept any number
-    var nextCell = aTile.get('cell.adjacent')[command.param],
+    var aTile = aTeam.getById(command.id),
+        nextCell = aTile.get('cell.adjacent')[command.param],
         bTile = nextCell.get('tile')
 
     //MOVE, ATTACK, ASSIMILATE
